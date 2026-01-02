@@ -356,7 +356,7 @@ lemma interior_isOpen [HX : Topology X] (A : Set X) :
   simp [interior]
   apply HX.isOpen_union; simp; grind
 
-lemma interior_le [HX : Topology X] (A : Set X) :
+lemma le_interior [HX : Topology X] (A : Set X) :
   ∀ U ⊆ A, HX.isOpen U → U ⊆ interior A
 := by
   intro U AU HU x Hx
