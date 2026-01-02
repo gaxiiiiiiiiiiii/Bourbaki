@@ -496,7 +496,7 @@ def closure_mem_iff_adherent [HX : Topology X] {A : Set X} {x : X} :
     apply F
     ext x; simp; grind
 
-lemma comple_closure_eq_interior_compl [HX : Topology X] (A : Set X) :
+lemma compl_closure_eq_interior_compl [HX : Topology X] (A : Set X) :
   (closure A)ᶜ = interior Aᶜ
 := by
   simp [closure, interior]
@@ -507,7 +507,7 @@ lemma comple_closure_eq_interior_compl [HX : Topology X] (A : Set X) :
 lemma compl_interior_eq_closure_compl [HX : Topology X] (A : Set X) :
   (interior A)ᶜ = closure Aᶜ
 := by
-  conv => arg 1; rw [<- compl_compl A, <- comple_closure_eq_interior_compl, compl_compl]
+  conv => arg 1; rw [<- compl_compl A, <- compl_closure_eq_interior_compl, compl_compl]
 
 lemma closure_le [HX : Topology X] (A : Set X) :
   ∀ B, HX.isClosed B → A ⊆ B → closure A ⊆ B
@@ -524,7 +524,7 @@ lemma isCloses_iff_eq_closure [HX : Topology X] {A : Set X} :
   constructor<;> intro H
   · conv => arg 2; rw [<- compl_compl A, <- H]
     conv => arg 1; rw [<- compl_compl A, <- compl_interior_eq_closure_compl]
-  · conv => arg 2; rw [<- H, comple_closure_eq_interior_compl]
+  · conv => arg 2; rw [<- H, compl_closure_eq_interior_compl]
 
 lemma closure_union [HX : Topology X] (A B : Set X) :
   closure (A ∪ B) = closure A ∪ closure B
