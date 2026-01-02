@@ -557,6 +557,20 @@ lemma inter_closure_le_closure_inter [HX : Topology X] (A B : Set X) (HA : HX.is
   have := H _ HAC BAC
   rcases this; contradiction; assumption
 
+lemma closure_mono [HX : Topology X] {A B : Set X} :
+  A ⊆ B → closure A ⊆ closure B
+:= by
+  intro H x
+  rw [closure_mem_iff_adherent, closure_mem_iff_adherent]
+  intro Hx U HU F
+  specialize Hx U HU
+  apply Hx; ext y; simp
+  intro Ay Fy
+  specialize H Ay
+  have : y ∈ B ∩ U := by grind
+  grind
+
+
 example [HX : Topology X] (A : Set X) :
   ∀ x ∈ closure A, x ∉ A → ∀ B ∈ neighborOf x, ∃ y ∈ A, y ∈ B ∧ x ≠ y
 := by
