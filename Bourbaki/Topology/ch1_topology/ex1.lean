@@ -34,7 +34,6 @@ where
 
 --ex1.3
 
-section
 
 def α [Topology X] (A : Set X) := interior (closure A)
 def β [Topology X] (A : Set X) := closure (interior A)
@@ -59,7 +58,7 @@ lemma le_α [HX : Topology X] (A : Set X) (HA : HX.isOpen A) :
   A ⊆ α A
 := by
   simp [α]
-  apply interior_le _ A _ HA
+  apply le_interior _ A _ HA
   intro x Hx
   rw [mem_closure_iff_adherent]
   intro B HB F
@@ -130,12 +129,23 @@ lemma α_disjunction [HX : Topology X] (A B : Set X) (HA : HX.isOpen A) (HB : HX
   rw [Set.inter_comm, H]
 
 
+-- ex1.5
 
+example [Topology X] (A : Set X) :
+  frontier (closure A) ⊆ frontier A
+:= by
+  simp [frontier]
+  rw [closure_idem]; simp
+  apply subset_trans (b := closure (closure A)ᶜ); simp
+  apply closure_mono
+  rw [compl_closure]
+  apply interior_le
 
-
-
-
-
-
-
-end
+example [Topology X] (A : Set X) :
+  frontier (interior A) ⊆ frontier A
+:= by
+  simp [frontier]
+  rw [compl_interior, closure_idem]; simp
+  apply subset_trans (b := closure (interior A)); simp
+  apply closure_mono
+  apply interior_le
