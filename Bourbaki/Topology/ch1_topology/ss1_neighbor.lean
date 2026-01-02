@@ -570,6 +570,11 @@ lemma closure_mono [HX : Topology X] {A B : Set X} :
   have : y ∈ B ∩ U := by grind
   grind
 
+lemma closure_idem [HX : Topology X] (A : Set X) :
+  closure (closure A) = closure A
+:= by
+  rw [<- isCloses_iff_eq_closure]
+  apply closure_isClosed
 
 example [HX : Topology X] (A : Set X) :
   ∀ x ∈ closure A, x ∉ A → ∀ B ∈ neighborOf x, ∃ y ∈ A, y ∈ B ∧ x ≠ y
