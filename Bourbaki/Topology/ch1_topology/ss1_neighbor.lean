@@ -368,6 +368,13 @@ lemma mem_interior_iff_neighborOf [HX : Topology X] {A : Set X} {x : X} :
 := by
   simp [interior, neighborOf, NeighborOf]; grind
 
+lemma interior_le [HX : Topology X] (A : Set X) :
+  interior A ⊆ A
+:= by
+  intro x Hx
+  rw [mem_interior_iff_neighborOf] at Hx
+  apply neighborOf_mem_self Hx
+
 lemma interior_mono [HX : Topology X] {A B : Set X} :
   A ⊆ B → interior A ⊆ interior B
 := by
