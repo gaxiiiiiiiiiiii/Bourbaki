@@ -149,3 +149,54 @@ example [Topology X] (A : Set X) :
   apply subset_trans (b := closure (interior A)); simp
   apply closure_mono
   apply interior_le
+
+-- ex1.6
+
+example [HX : Topology X] (A B : Set X) :
+  frontier (A ∪ B) ⊆ frontier A ∪ frontier B
+:= by
+simp [frontier, closure_union]
+rw [Set.union_inter_distrib_right]; simp
+constructor
+· intro x ⟨Hx, Hx'⟩; simp
+  left; use Hx; clear Hx
+  revert x
+  change closure _ ⊆ closure _
+  apply closure_mono; simp
+· intro x ⟨Hx, Hx'⟩; simp
+  right; use Hx; clear Hx
+  revert x
+  change closure _ ⊆ closure _
+  apply closure_mono; simp
+
+example [HX : Topology X] (A B : Set X) (H : closure A ∩ closure B = ∅) :
+  frontier A ∪ frontier B ⊆ frontier (A ∪ B)
+:= by
+  simp [frontier, closure_union]
+  constructor<;> constructor
+  · apply subset_trans (b := closure A)<;> simp
+  · apply subset_trans (b := closure B)<;> simp
+  · intro x ⟨Hx, Hx'⟩
+    have Fx : x ∉ closure B := by intro F; have : x ∈ closure A ∩ closure B := by {grind}; grind
+    clear Hx
+    rw [mem_closure_iff_adherent] at Fx Hx' ⊢; simp at Fx
+    rcases Fx with ⟨V, HV, EV⟩
+    intro U HU F
+    have HUV := neighborOf_inter HU HV
+    apply Hx' _ HUV
+    ext i; simp
+    intro Ai Ui Vi
+    have Bi : i ∉ B := by intro F; have : i ∈ B ∩ V := by {grind}; grind
+    have : i ∈ Aᶜ ∩ Bᶜ ∩ U := by grind
+    grind
+  · intro x ⟨Hx, Hx'⟩
+    have Fx : x ∉ closure A := by intro F; have : x ∈ closure A ∩ closure B := by {grind}; grind
+    rw [mem_closure_iff_adherent] at Fx Hx' Hx ⊢; simp at Fx
+    rcases Fx with ⟨V, HV, EV⟩
+    intro U HU F
+    have HUV := neighborOf_inter HU HV
+    apply Hx' _ HUV
+    ext i; simp
+    intro Bi Ui Vi
+    grind
+
