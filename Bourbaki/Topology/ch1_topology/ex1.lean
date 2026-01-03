@@ -186,8 +186,6 @@ example [HX : Topology X] (A B : Set X) (H : closure A ∩ closure B = ∅) :
     apply Hx' _ HUV
     ext i; simp
     intro Ai Ui Vi
-    have Bi : i ∉ B := by intro F; have : i ∈ B ∩ V := by {grind}; grind
-    have : i ∈ Aᶜ ∩ Bᶜ ∩ U := by grind
     grind
   · intro x ⟨Hx, Hx'⟩
     have Fx : x ∉ closure A := by intro F; have : x ∈ closure A ∩ closure B := by {grind}; grind
@@ -199,4 +197,3 @@ example [HX : Topology X] (A B : Set X) (H : closure A ∩ closure B = ∅) :
     ext i; simp
     intro Bi Ui Vi
     grind
-
