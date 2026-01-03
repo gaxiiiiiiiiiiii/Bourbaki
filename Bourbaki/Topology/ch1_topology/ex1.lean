@@ -317,3 +317,45 @@ example [HX : Topology X] (A : Set X) :
     rw [mem_interior_iff_neighborOf] at Ax
     apply HU A Ax
     rw [Set.inter_comm, F]
+
+-- ex1.8
+example [HX : Topology X] (A : Set X) :
+  isolate A = ∅ → isolate (closure A) = ∅
+:= by
+  intro H; ext x; simp
+  intro Hx
+  simp [isolate] at Hx H
+  rcases Hx with ⟨Hx, Fx⟩
+  rw [mem_closure_iff_adherent] at Hx Fx
+  apply Fx; clear Fx
+  intro U HU F
+  apply Hx _ HU
+  rw [<- F]
+  apply Set.inter_congr_right
+  · intro y; simp
+    intro Hy Fy Uy
+    by_contra FA; apply Fy; clear Fy
+    have Fy : y ∉ closure A \ {x} := by intro F; have : y ∈ closure A \ {x} ∩ U := by {grind}; grind
+    simp at Fy
+    apply Fy Hy
+  · intro y ⟨Ay, Uy⟩
+    simp; constructor; swap
+    · intro E; subst y
+      specialize H x Ay
+      rw [mem_closure_iff_adherent] at H
+      apply H U HU
+      ext y; simp
+      intro Ay' E Uy'
+      have Fy : y ∉ closure A \ {x} := by intro F; have : y ∈ closure A \ {x} ∩ U := by {grind}; grind
+      apply Fy; simp; clear Fy
+      use ?_, E
+      rw [mem_closure_iff_adherent]
+      intro V HV AV
+      have Vy := neighborOf_mem_self HV
+      have Ax : y ∉ A := by by_contra F; have : y ∈ A ∩ V := by {grind}; grind
+      contradiction
+    · rw [mem_closure_iff_adherent]
+      intro V HV AV
+      have Vy := neighborOf_mem_self HV
+      have Fy : y ∈ A ∩ V := by grind
+      grind
