@@ -625,7 +625,7 @@ lemma frontier_isCloses [HX : Topology X] (A : Set X) :
   intro x Hx
   rcases Hx<;> subst x<;> apply closure_isClosed
 
-lemma frontie_mem_iff [HX : Topology X] {A : Set X} {x : X} :
+lemma frontier_mem_iff [HX : Topology X] {A : Set X} {x : X} :
   x ∈ frontier A ↔
   (∀ B, B ∈ neighborOf x → A ∩ B ≠ ∅ ∧ Aᶜ ∩ B ≠ ∅)
 := by
