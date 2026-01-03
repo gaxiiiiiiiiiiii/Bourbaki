@@ -197,3 +197,96 @@ example [HX : Topology X] (A B : Set X) (H : closure A ∩ closure B = ∅) :
     ext i; simp
     intro Bi Ui Vi
     grind
+
+example {X : Type} (A B : Set X) :
+  A ⊆ B ↔ A ∩ Bᶜ = ∅
+:= by
+  constructor<;> intro H
+  · ext x; simp
+    grind
+  · intro x Ax
+    by_contra (F : x ∈ Bᶜ)
+    have : x ∈ A ∩ Bᶜ := by grind
+    grind
+
+
+example [HX : Topology X]  (A B : Set X) (HA : HX.isOpen A) (HB : HX.isOpen B) :
+  (A ∩ frontier B) ∪ (B ∩ frontier A) ⊆ frontier (A ∩ B)
+:= by
+  simp [frontier]
+  constructor<;> constructor<;>
+  intro x ⟨Hx, H, H'⟩<;>
+  rw [mem_closure_iff_adherent] at H H' ⊢<;>
+  intro U HU F
+  · rw [isOpen_iff_eq_interior] at HA
+    rw [<- HA, mem_interior_iff_neighborOf] at Hx
+    have HAU := neighborOf_inter HU Hx
+    specialize H _ HAU
+    grind
+  · rw [isOpen_iff_eq_interior] at HB
+    rw [<- HB, mem_interior_iff_neighborOf] at Hx
+    have HBU := neighborOf_inter HU Hx
+    specialize H' _ HBU
+    grind
+  · rw [isOpen_iff_eq_interior] at HA
+    rw [<- HA, mem_interior_iff_neighborOf] at Hx
+    have HAU := neighborOf_inter HU Hx
+    specialize H' _ HAU
+    grind
+  · rw [isOpen_iff_eq_interior] at HB
+    rw [<- HB, mem_interior_iff_neighborOf] at Hx
+    have HBU := neighborOf_inter HU Hx
+    specialize H _ HBU
+    grind
+
+example [HX : Topology X]  (A B : Set X) (HA : HX.isOpen A) (HB : HX.isOpen B) :
+  frontier (A ∩ B) ⊆ (A ∩ frontier B) ∪ (B ∩ frontier A) ∪ (frontier A ∩ frontier B)
+:= by
+  intro x ⟨H1, H2⟩; simp
+  rw [mem_closure_iff_adherent] at H1 H2
+  by_cases Ax : x ∈ A
+  · left; left; use Ax
+    rw [frontier_mem_iff]
+    intro U HU
+    constructor<;> intro F
+    · have Ux := neighborOf_mem_self HU
+      apply H1 U HU
+      rw [Set.inter_assoc, F]; simp
+    · have Ux := neighborOf_mem_self HU
+      have Bx : x ∈ B := by by_contra F; have : x ∈ Bᶜ ∩ U := by {grind}; grind
+      rw [isOpen_iff_eq_interior] at HB HA
+      rw [<- HB, mem_interior_iff_neighborOf] at Bx
+      rw [<- HA, mem_interior_iff_neighborOf] at Ax
+      have HAB := neighborOf_inter Ax Bx
+      apply H2 _ HAB
+      simp
+  by_cases Bx : x ∈ B
+  · left; right; use Bx
+    rw [frontier_mem_iff]
+    intro U HU
+    constructor<;> intro F
+    · have Ux := neighborOf_mem_self HU
+      apply H1 U HU
+      rw [Set.inter_comm A B, Set.inter_assoc, F]; simp
+    · have Ux := neighborOf_mem_self HU
+      have Ax : x ∈ A := by by_contra F; have : x ∈ Aᶜ ∩ U := by {grind}; grind
+      rw [isOpen_iff_eq_interior] at HA HB
+      rw [<- HA, mem_interior_iff_neighborOf] at Ax
+      rw [<- HB, mem_interior_iff_neighborOf] at Bx
+      have HAB := neighborOf_inter Ax Bx
+      apply H2 _ HAB
+      simp
+  · right
+    rw [frontier_mem_iff, frontier_mem_iff]
+    constructor<;> intro U HU<;> constructor<;> intro F
+    · apply H1 U HU
+      rw [Set.inter_comm A B, Set.inter_assoc, F]; simp
+    · have Ux := neighborOf_mem_self HU
+      have : x ∈ Aᶜ ∩ U := by grind
+      grind
+    · apply H1 U HU
+      rw [Set.inter_assoc, F]; simp
+    · have Ux := neighborOf_mem_self HU
+      have : x ∈ Bᶜ ∩ U := by grind
+      grind
+
