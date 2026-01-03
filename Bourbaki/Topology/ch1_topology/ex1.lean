@@ -150,7 +150,6 @@ example [Topology X] (A : Set X) :
   apply closure_mono
   apply interior_le
 
--- ex1.6
 
 example [HX : Topology X] (A B : Set X) :
   frontier (A ∪ B) ⊆ frontier A ∪ frontier B
@@ -290,3 +289,31 @@ example [HX : Topology X]  (A B : Set X) (HA : HX.isOpen A) (HB : HX.isOpen B) :
       have : x ∈ Bᶜ ∩ U := by grind
       grind
 
+
+-- ex1.6
+
+example [HX : Topology X] (A : Set X) :
+  (∀ U, Dense U → A ∩ U ≠ ∅) ↔ interior A ≠ ∅
+:= by
+  unfold Dense
+  constructor<;> intro H
+  · intro F
+    apply H Aᶜ; swap; simp
+    intro x
+    rw [mem_closure_iff_adherent]
+    intro U HU FU
+    have Ux := neighborOf_mem_self HU
+    have Ax : x ∈ A := by by_contra Fx; have : x ∈ Aᶜ ∩ U := by {grind}; grind
+    have : x ∉ interior A := by intro Fx; grind
+    rw [mem_interior_iff] at this; simp at this
+    apply this U HU
+    rw [Set.inter_comm, FU]
+  · intro U HU F
+    apply H; clear H
+    ext x; simp
+    intro Ax
+    specialize HU x
+    rw [mem_closure_iff_adherent] at HU
+    rw [mem_interior_iff_neighborOf] at Ax
+    apply HU A Ax
+    rw [Set.inter_comm, F]
