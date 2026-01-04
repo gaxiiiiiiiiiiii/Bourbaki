@@ -532,7 +532,7 @@ lemma closure_le [HX : Topology X] (A : Set X) :
   simp [closure] at Hx
   grind
 
-lemma isCloses_iff_eq_closure [HX : Topology X] {A : Set X} :
+lemma isClosed_iff_eq_closure [HX : Topology X] {A : Set X} :
   HX.isClosed A ↔ closure A = A
 := by
   simp [Topology.isClosed]
