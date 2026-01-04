@@ -345,6 +345,9 @@ lemma union_of_ClosedLocallyFinite_isClosed [HX : Topology X] {ι : Type _}  (f 
         apply Hx
 
 
+
+
+
 -- 内点
 
 def interior [HX : Topology X] (A : Set X) :=
@@ -424,6 +427,12 @@ lemma interior_inter [HX : Topology X] (A B : Set X) :
     · intro x ⟨Hx, _⟩; apply HAA Hx
     · intro x ⟨_, Hx⟩; apply HBA Hx
     · simp; grind
+
+lemma interior_idem [HX : Topology X] (A : Set X) :
+  interior (interior A) = interior A
+:= by
+  rw [<- isOpen_iff_eq_interior]
+  apply interior_isOpen
 
 
 -- 外部
