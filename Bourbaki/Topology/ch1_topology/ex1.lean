@@ -197,18 +197,6 @@ example [HX : Topology X] (A B : Set X) (H : closure A ∩ closure B = ∅) :
     intro Bi Ui Vi
     grind
 
-example {X : Type} (A B : Set X) :
-  A ⊆ B ↔ A ∩ Bᶜ = ∅
-:= by
-  constructor<;> intro H
-  · ext x; simp
-    grind
-  · intro x Ax
-    by_contra (F : x ∈ Bᶜ)
-    have : x ∈ A ∩ Bᶜ := by grind
-    grind
-
-
 example [HX : Topology X]  (A B : Set X) (HA : HX.isOpen A) (HB : HX.isOpen B) :
   (A ∩ frontier B) ∪ (B ∩ frontier A) ⊆ frontier (A ∩ B)
 := by
