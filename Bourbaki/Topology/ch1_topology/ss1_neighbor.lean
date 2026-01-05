@@ -4,6 +4,7 @@ namespace Bourbaki
 
 
 -- 位相空間
+@[ext]
 class Topology (X : Type _) where
   isOpen : Set X → Prop
   isOpen_inter (s t : Set X ): isOpen s → isOpen t → isOpen (s ∩ t)
