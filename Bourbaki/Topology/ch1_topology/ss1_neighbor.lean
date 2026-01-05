@@ -66,7 +66,7 @@ lemma neighborOf_notempty [HX : Topology X] (x : X) :
   apply HX.isOpen_univ
 
 
-lemma neighbor_mem_iff_isOpen [HX : Topology X]  {V : Set X} :
+lemma mem_neighbor_iff_isOpen [HX : Topology X]  {V : Set X} :
     (∀ x ∈ V, V ∈ neighborOf x) ↔  HX.isOpen V
   := by
     simp [neighborOf, NeighborOf]
@@ -131,7 +131,7 @@ lemma neighbor_core {X} [HX : Topology X] {x : X} {V : Set X} :
 := by
   intro ⟨U, HU, Ux, UV⟩
   simp at Ux
-  rw [<- neighbor_mem_iff_isOpen] at HU
+  rw [<- mem_neighbor_iff_isOpen] at HU
   have Hx := HU x Ux
   use U, Hx
   intro y Uy
@@ -242,7 +242,7 @@ where
   base_isOpen := by
     intro S HS
     change HX.isOpen S
-    rw [<- neighbor_mem_iff_isOpen]
+    rw [<- mem_neighbor_iff_isOpen]
     intro x Hx; simp [neighborOf, NeighborOf]
     have ⟨G, E⟩ := H x
     have SG : S ∈ G.base := by rw [E]; grind
@@ -317,7 +317,7 @@ lemma union_of_ClosedLocallyFinite_isClosed [HX : Topology X] {ι : Type _}  (f 
   HX.isClosed (⋃ i, f i)
 := by
   simp [Topology.isClosed]
-  rw [<- neighbor_mem_iff_isOpen]
+  rw [<- mem_neighbor_iff_isOpen]
   intro x Hx; simp at Hx
   have ⟨t, Ht, E⟩ := Hf x
   let F := E.toFinset
@@ -340,7 +340,7 @@ lemma union_of_ClosedLocallyFinite_isClosed [HX : Topology X] {ι : Type _}  (f 
       | cons j S Fi IH =>
         simp
         apply neighborOf_inter ?_ IH
-        specialize Hf' j; rw [Topology.isClosed, <- neighbor_mem_iff_isOpen] at Hf'; simp at Hf'
+        specialize Hf' j; rw [Topology.isClosed, <- mem_neighbor_iff_isOpen] at Hf'; simp at Hf'
         apply neighborOf_inter Ht
         apply Hf'
         apply Hx
@@ -507,7 +507,7 @@ def mem_closure_iff_adherent [HX : Topology X] {A : Set X} {x : X} :
   · simp [closure]
     intro C HC AC
     by_contra F
-    rw [Topology.isClosed, <- neighbor_mem_iff_isOpen] at HC
+    rw [Topology.isClosed, <- mem_neighbor_iff_isOpen] at HC
     apply HC at F
     apply H at F
     apply F
