@@ -120,3 +120,143 @@ lemma IsContinuous_iff_IsOpen_preimage [HX : Topology X] [HX' : Topology X'] (f 
     simp [Topology.isClosed]
     rw [<- Set.preimage_compl]
     exact this
+
+lemma IsContinuous_iff_base [HX : Topology X] [HX' : Topology X'] (f : X → X') (𝓑 : TopologicalBase X') :
+  IsContinuous f ↔ ∀ U' ∈ 𝓑.base, HX.isOpen (f ⁻¹' U')
+:= by
+  rw [IsContinuous_iff_IsOpen_preimage]
+  constructor<;> intro H
+  · intro U' HU'
+    apply H U' (𝓑.base_isOpen HU')
+  · intro U HU
+    have ⟨B, HB, E⟩ := 𝓑.covered U HU
+    subst U; simp
+    have : (⋃ t ∈ B, f ⁻¹' t) = ⋃₀ ((λ t : Set X' => f ⁻¹' t) '' B)  := by simp
+    rw [this]; clear this
+    apply HX.isOpen_union
+    simp; intro b Hb
+    apply H; apply HB Hb
+
+lemma IsContinuous_compose [Topology X] [Topology X'] [Topology X''] {f : X → X'} {g : X' → X''}
+  (Hf : IsContinuous f) (Hg : IsContinuous g) :
+  IsContinuous (g ∘ f)
+:= by
+  intro s; apply IsContinuousAt_compose; apply Hf; apply Hg
+
+
+#check Homeomorph
+lemma TopologyHom_iff_continuous [Topology X] [Topology X'] :
+  Nonempty (TopologyHom X X') ↔ ∃ f : X ≃ X', IsContinuous f.toFun ∧ IsContinuous f.invFun
+:= by
+  constructor
+  · intro ⟨f⟩
+    use f.toEquiv
+    have H := f.continuous_fun
+    have H' := f.continuous_inv
+    constructor<;> rw [IsContinuous_iff_IsOpen_preimage]<;> assumption
+  . intro ⟨E, H1, H2⟩
+    rw [IsContinuous_iff_IsOpen_preimage] at H1 H2
+    constructor; use E
+
+structure IsTopologyHom [Topology X] [Topology X'] (f : X → X') where
+  continuous : IsContinuous f
+  bij :  f.Bijective
+  open_map : ∀ x U, U ∈ neighborOf x → f '' U ∈ neighborOf (f x)
+
+
+noncomputable def IsTopologyHom.topologyHom [Topology X] [Topology X'] {f : X → X'} (H : IsTopologyHom f) :
+  TopologyHom X X'
+:= by
+  let E := Equiv.ofBijective _ H.bij
+  have Hf := H.continuous
+  have H2 := H.open_map
+  apply TopologyHom.mk E
+  · intro S HS
+    conv => arg 1; arg 1; change f
+    rw [IsContinuous_iff_IsOpen_preimage] at Hf
+    apply Hf S HS
+  · intro S HS
+    rw [<- neighbor_mem_iff_isOpen] at HS ⊢
+    intro x Hx; simp at Hx
+    unfold IsContinuous IsContinuousAt at Hf
+    let g := E.invFun
+    change g x ∈ S at Hx
+    have Hfg := E.right_inv x
+    change f (g x) = x at Hfg
+    have H3 := H2 (g x) S (HS _ Hx)
+    rw [Hfg] at H3
+    apply neighborOf_subset H3
+    intro x; simp
+    intro y Hy E; subst x
+    change g (f y) ∈ S
+    have H := E.left_inv y
+    change g (f y) = y at H
+    rw [H]
+    exact Hy
+def TopologyHom.isTopologyHom [Topology X] [Topology X'] (E : TopologyHom X X') :
+  IsTopologyHom E.toFun
+:= by
+  have H1 := E.continuous_fun
+  have H2 := E.bijective
+  have H3 := E.continuous_inv
+  rw [<- IsContinuous_iff_IsOpen_preimage] at H1
+  use H1, H2
+  intro x U HU
+  set f := E.toFun
+  set g := E.invFun
+  simp [neighborOf, NeighborOf] at HU ⊢
+  rcases HU with ⟨V, HV, Vx, UV⟩
+  specialize H3 V HV
+  use (g ⁻¹' V), H3; simp
+  have : g (f x) = x := E.left_inv x
+  rw [this]
+  use Vx
+  intro y; simp
+  intro Hy
+  apply UV at Hy
+  use g y, Hy
+  have : f (g y) = y := E.right_inv y
+  rw [this]
+
+example [HX : Topology X] (x₀ : X) :
+  NeighborClass X
+where
+  neighbor x := {U | (x = x₀ ∧ U ∈ neighborOf x₀) ∨ (x ≠ x₀ ∧ x ∈ U)}
+  nonempty := by
+    intro x
+    by_cases H : x = x₀
+    · subst x₀; simp
+      apply neighborOf_notempty
+    · use {x}; simp; right; exact H
+  inter x V W HV HW := by
+    simp at HV HW ⊢
+    rcases HV with ⟨E, HV⟩ | ⟨F, HV⟩<;>
+    rcases HW with ⟨E', HW⟩ | ⟨F, HW⟩<;>
+    try contradiction
+    · left; use E; apply neighborOf_inter HV HW
+    · right; use F
+  mem_self := by
+    intro x; simp
+    intro U HU
+    rcases HU with ⟨E, HU⟩ | ⟨F, HU⟩; swap; assumption
+    subst x₀
+    apply neighborOf_mem_self HU
+  core := by
+    intro x U; simp; intro HU
+    rcases HU with ⟨E, HU⟩ | ⟨F, HU⟩
+    · subst x₀; simp
+      use U, HU
+      intro y Hy
+      by_cases E : y = x
+      · subst y; simp; assumption
+      · right; use E
+    · use {x}; constructor
+      · right; use F; simp
+      · simp; right; use F, HU
+  subset x V W  HV VW := by
+    simp at HV ⊢
+    rcases HV with ⟨E, HV⟩ | ⟨F, HV⟩
+    · left; use E
+      apply neighborOf_subset HV VW
+    · right; use F
+      apply VW HV
