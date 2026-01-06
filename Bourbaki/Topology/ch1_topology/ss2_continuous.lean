@@ -176,7 +176,7 @@ noncomputable def IsTopologyHom.topologyHom [Topology X] [Topology X'] {f : X �
     rw [IsContinuous_iff_IsOpen_preimage] at Hf
     apply Hf S HS
   · intro S HS
-    rw [<- neighbor_mem_iff_isOpen] at HS ⊢
+    rw [<- mem_neighbor_iff_isOpen] at HS ⊢
     intro x Hx; simp at Hx
     unfold IsContinuous IsContinuousAt at Hf
     let g := E.invFun
@@ -260,3 +260,37 @@ where
       apply neighborOf_subset HV VW
     · right; use F
       apply VW HV
+
+instance {X} : PartialOrder (Topology X) where
+  le HX HX' := ∀ U, HX'.isOpen U → HX.isOpen U
+  le_refl _ _ := by simp
+  le_trans a b c H1 H2 := by grind
+  le_antisymm a b H1 H2 := by ext x; grind
+
+lemma Topology_le_iff_isOpen (s t : Topology X) :
+  s ≤ t ↔ (∀ U , t.isOpen U → s.isOpen U)
+:= by simp [LE.le]
+
+lemma Topology_le_iff_closure (s t : Topology X) :
+  s ≤ t ↔ (∀ U , @closure _ s U ⊆ @closure _ t U)
+:= by
+  simp [LE.le]
+  have E := @IsContinuous_iff_subset _ _ s t id; simp at E
+  rw [@IsContinuous_iff_IsOpen_preimage] at E; simp at E
+  exact E
+
+lemma Topology_le_iff_neighbor (s t : Topology X) :
+  s ≤ t ↔ (∀ x U, U ∈ @neighborOf _ t x → U ∈ @neighborOf _ s x)
+:= by
+  conv => arg 2; change @IsContinuous _ _ s t id
+  simp [LE.le]
+  rw [@IsContinuous_iff_IsOpen_preimage]; simp
+
+lemma Topology_le_iff_isClosed (s t : Topology X) :
+  s ≤ t ↔ (∀ U , t.isClosed U → s.isClosed U)
+:= by
+  simp [LE.le]
+  have E := @IsContinuous_iff_IsClosed_preimage _ _ s t id; simp at E
+  rw [@IsContinuous_iff_IsOpen_preimage] at E; simp at E
+  exact E
+
