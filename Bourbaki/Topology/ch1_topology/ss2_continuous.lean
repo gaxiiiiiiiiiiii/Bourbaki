@@ -294,3 +294,61 @@ lemma Topology_le_iff_isClosed (s t : Topology X) :
   rw [@IsContinuous_iff_IsOpen_preimage] at E; simp at E
   exact E
 
+instance {X} : OrderBot (Topology X) where
+  bot := {
+    isOpen S := S ∈ Set.univ
+    isOpen_univ := by simp;
+    isOpen_inter := by simp
+    isOpen_union := by simp
+  }
+  bot_le x := by simp [LE.le]
+
+instance {X} : OrderTop (Topology X) where
+  top := {
+    isOpen S := S = ∅ ∨ S = Set.univ
+    isOpen_univ := by simp
+    isOpen_inter := by
+      intro x y Hx Hy
+      rcases Hx with ⟨Hx⟩<;>
+      rcases Hy with ⟨Hy⟩<;>
+      try subst x y; simp
+    isOpen_union := by
+      intro S HS
+      by_contra F; simp at F; rcases F with ⟨F1, F2⟩
+      rcases F1 with ⟨s, Hs, Fs⟩
+      rcases HS s Hs with H | H; contradiction
+      apply F2; ext i; simp
+      subst s
+      use Set.univ, Hs; simp
+  }
+  le_top x := by
+    simp [LE.le]
+    constructor
+    · apply Topology.isOpen_empty
+    · apply Topology.isOpen_univ
+
+
+lemma le_com_continuous (HX HX' : Topology X) [Topology Y ] (f : X → Y) (Hf : @IsContinuous _ _ HX HY f) :
+  HX' ≤ HX → @IsContinuous _ _ HX' HY f
+:= by
+  simp [LE.le]
+  intro H
+  rw [@IsContinuous_iff_IsOpen_preimage] at Hf ⊢
+  intro U HU
+  specialize Hf U HU
+  apply  H _ Hf
+
+lemma cod_le_continuous [Topology X] (HY HY' : Topology Y)  (f : X → Y)
+  (H : HY ≤ HY') (Hf : @IsContinuous _ _ HX HY f) :
+  @IsContinuous _ _ HX HY' f
+:= by
+  simp [LE.le] at H
+  rw [@IsContinuous_iff_IsOpen_preimage] at Hf ⊢
+  intro U HU
+  specialize H U HU
+  apply Hf _ H
+
+
+
+
+end Bourbaki
