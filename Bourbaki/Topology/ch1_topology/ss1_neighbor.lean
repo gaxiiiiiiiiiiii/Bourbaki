@@ -16,6 +16,19 @@ lemma Topology.isOpen_empty [Topology X] : isOpen (∅ : Set X)
   have := isOpen_union (∅ : Set (Set X)); simp at this
   exact this
 
+lemma isOpen_sInter [HX : Topology X] (S : Finset (Set X)) :
+  (∀ s ∈ S, HX.isOpen s) → HX.isOpen (⋂₀ S)
+:= by
+  intro H
+  induction S using Finset.cons_induction with
+  | empty =>
+    simp; apply HX.isOpen_univ
+  | cons A T F IH =>
+    simp at *
+    rcases H with ⟨HA, HT⟩
+    apply HX.isOpen_inter _ _ HA
+    apply IH HT
+
 
 -- 被覆
 @[ext]
