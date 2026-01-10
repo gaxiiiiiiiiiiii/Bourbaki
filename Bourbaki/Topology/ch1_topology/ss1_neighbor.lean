@@ -6,7 +6,7 @@ namespace Bourbaki
 -- 位相空間
 @[ext]
 class Topology (X : Type _) where
-  isOpen : Set X → Prop
+  isOpen : Set (Set X)
   isOpen_inter (s t : Set X ): isOpen s → isOpen t → isOpen (s ∩ t)
   isOpen_union (S : Set (Set X)) : (∀ s ∈ S, isOpen s) → isOpen (⋃₀ S)
   isOpen_univ : isOpen (Set.univ : Set X)
