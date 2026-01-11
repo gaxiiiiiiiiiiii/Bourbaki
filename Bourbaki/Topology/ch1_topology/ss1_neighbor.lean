@@ -218,6 +218,16 @@ structure TopologicalBase (X : Type _) [HX : Topology X] where
   base_isOpen : base ⊆ HX.isOpen
   covered : ∀ U, HX.isOpen U → ∃ B ⊆ base, U = ⋃₀ B
 
+lemma TopologicalBase.inter  [HX : Topology X] (𝓑 : TopologicalBase X) :
+  ∀ S T, S ∈ 𝓑.base → T ∈ 𝓑.base →  ∃ B ⊆ 𝓑.base, S ∩ T = ⋃₀ B
+:= by
+  intro S T HS HT
+  apply 𝓑.base_isOpen at HS
+  apply 𝓑.base_isOpen at HT
+  have HST := HX.isOpen_inter S T HS HT
+  have ⟨U, HU, E⟩ := 𝓑.covered _ HST
+  rw [E]; use U
+
 def IsTopologicalBase [HX : Topology X] (B : Set (Set X)) :=
   ∀ x, ∃ G : NeighborBase x Set.univ, G.base = {V | x ∈ V ∧ V ∈ B}
 
