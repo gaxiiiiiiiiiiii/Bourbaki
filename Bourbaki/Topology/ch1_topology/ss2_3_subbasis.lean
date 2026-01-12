@@ -77,7 +77,7 @@ where
   isOpen_inter S T HS HT := SubbasisOpen.inter S T HS HT
   isOpen_union S HS := by apply SubbasisOpen.union S; grind
 
-example [HX : Topology X] {B : Set (Set X)} (HB : IsTopologicalSubbase B) U :
+lemma Subbase_topology_eq [HX : Topology X] {B : Set (Set X)} (HB : IsTopologicalSubbase B) U :
   U ∈ HB.topologicalBase.topology.isOpen ↔  (Subbase_topology B).isOpen U
 := by
   simp [TopologicalBase.topology]
