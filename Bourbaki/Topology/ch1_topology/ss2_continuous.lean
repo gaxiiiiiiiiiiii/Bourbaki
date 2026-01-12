@@ -265,7 +265,7 @@ instance {X} : PartialOrder (Topology X) where
   le HX HX' := ∀ U, HX'.isOpen U → HX.isOpen U
   le_refl _ _ := by simp
   le_trans a b c H1 H2 := by grind
-  le_antisymm a b H1 H2 := by ext x; grind
+  le_antisymm a b H1 H2 := by ext x; exact ⟨H2 x, H1 x⟩
 
 lemma Topology_le_iff_isOpen (s t : Topology X) :
   s ≤ t ↔ (∀ U , t.isOpen U → s.isOpen U)
@@ -441,7 +441,7 @@ lemma le_inverse {Y : ι → Type _} [HY : ∀ i, Topology (Y i)]  (f : ∀ i, X
   rw [@IsContinuous_iff_IsOpen_preimage] at H
   apply H _ HU
 
-lemma IsContinuous_inverse {Y : ι → Type _} [HY : ∀ i, Topology (Y i)]  (f : ∀ i, X → Y i) :
+lemma IsContinuous_inverse {Y : ι → Type _} [HY : ∀ i, Topology (Y i)]  (f : ∀ i, X → Y i) (i : ι):
   @IsContinuous _ _ (inverse f) _ (f i)
 := by
   rw [@IsContinuous_iff_IsOpen_preimage]
@@ -479,7 +479,7 @@ lemma IsContinuous_inverse_iff [DecidableEq (Set Z)] {Y : ι → Type _} [HY : �
     rcases Hb with ⟨C, HC, rfl⟩
     simp at *
 
-    clear HB US -- ???
+    clear HB US
 
     use (g ⁻¹' ⋂₀ ↑C); constructor; swap; constructor
     · simp; assumption
@@ -499,6 +499,8 @@ lemma IsContinuous_inverse_iff [DecidableEq (Set Z)] {Y : ι → Type _} [HY : �
       apply HU at Hx
       specialize H i x U Hx
       exact H
+
+
 
 
 end Bourbaki
