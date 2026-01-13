@@ -63,19 +63,19 @@ lemma TopologicalBase.topology_eq [HX : Topology X] (𝓑 : TopologicalBase X) :
 def IsTopologicalSubbase [HX : Topology X] (B : Set (Set X)) :=
   IsTopologicalBase {V : Set X | ∃ U : (Finset (Set X)), (U : Set (Set X)) ⊆ B   ∧ V = ⋂₀ U}
 
-inductive SubbasisOpen (B : Set (Set X)) : (Set X) → Prop
-  | base U : U ∈ B → SubbasisOpen B U
-  | univ : SubbasisOpen B Set.univ
-  | inter S T : SubbasisOpen B S → SubbasisOpen B T → SubbasisOpen B (S ∩ T)
-  | union S : (∀ s ∈ S, SubbasisOpen B s) → SubbasisOpen B (⋃₀ S)
+inductive GenedOpen (B : Set (Set X)) : (Set X) → Prop
+  | base U : U ∈ B → GenedOpen B U
+  | univ : GenedOpen B Set.univ
+  | inter S T : GenedOpen B S → GenedOpen B T → GenedOpen B (S ∩ T)
+  | union S : (∀ s ∈ S, GenedOpen B s) → GenedOpen B (⋃₀ S)
 
 instance Subbase_topology (B : Set (Set X)) :
   Topology X
 where
-  isOpen U := SubbasisOpen B U
-  isOpen_univ := SubbasisOpen.univ
-  isOpen_inter S T HS HT := SubbasisOpen.inter S T HS HT
-  isOpen_union S HS := by apply SubbasisOpen.union S; grind
+  isOpen U := GenedOpen B U
+  isOpen_univ := GenedOpen.univ
+  isOpen_inter S T HS HT := GenedOpen.inter S T HS HT
+  isOpen_union S HS := by apply GenedOpen.union S; grind
 
 lemma Subbase_topology_eq [HX : Topology X] {B : Set (Set X)} (HB : IsTopologicalSubbase B) U :
   U ∈ HB.topologicalBase.topology.isOpen ↔  (Subbase_topology B).isOpen U
@@ -85,16 +85,16 @@ lemma Subbase_topology_eq [HX : Topology X] {B : Set (Set X)} (HB : IsTopologica
   simp [Subbase_topology]
   constructor<;> intro H
   · rcases H with ⟨V, HV, rfl⟩
-    apply SubbasisOpen.union
+    apply GenedOpen.union
     intro v Hv; apply HV at Hv; simp at Hv
     rcases Hv with ⟨W, WV, rfl⟩
     induction W using Finset.cons_induction_on with
     | empty =>
-      simp; apply SubbasisOpen.univ
+      simp; apply GenedOpen.univ
     | cons S B' F IH =>
-      simp; apply SubbasisOpen.inter; swap
+      simp; apply GenedOpen.inter; swap
       · grind
-      · apply SubbasisOpen.base
+      · apply GenedOpen.base
         grind
   · induction H with
     | base V HV =>
