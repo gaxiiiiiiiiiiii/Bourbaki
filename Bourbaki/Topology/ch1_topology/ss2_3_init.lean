@@ -22,7 +22,7 @@ def Init_subbase [HY : ∀ i, Topology (Y i)] (f : ∀ i, X → Y i) :=
   {V | ∃ i U, U ∈ (HY i).isOpen ∧ V = Init.to f i ⁻¹' U}
 
 lemma Init_subbase_isSubbase [HY : ∀ i, Topology (Y i)] (f : ∀ i, X → Y i) :
-  let _Hf := Subbase_topology (Init_subbase f)
+  let _Hf := GenedTopology (Init_subbase f)
   IsTopologicalSubbase (Init_subbase f)
 := by classical
   intro Hf x
@@ -79,12 +79,12 @@ lemma Init_subbase_isSubbase [HY : ∀ i, Topology (Y i)] (f : ∀ i, X → Y i)
 
 instance Init.topology [HY : ∀ i, Topology (Y i)] (f : ∀ i, X → Y i) :
   Topology (Init f)
-:= Subbase_topology (Init_subbase f)
+:= GenedTopology (Init_subbase f)
 
 lemma Init.isOpen_iff [HY : ∀ i, Topology (Y i)] {f : ∀ i, X → Y i} U :
   (Init.topology f).isOpen U ↔ U ∈ {U | ∃ B ⊆ {V | ∃ U : Finset (Set (Init f)), ↑U ⊆ Init_subbase f ∧ V = ⋂₀ ↑U}, U = ⋃₀ B}
 := by
-  rw [<- Subbase_topology_eq (Init_subbase_isSubbase f)]; rfl
+  rw [<- GenedTopology_eq (Init_subbase_isSubbase f)]; rfl
 
 
 section Continuous

@@ -69,7 +69,7 @@ inductive GenedOpen (B : Set (Set X)) : (Set X) → Prop
   | inter S T : GenedOpen B S → GenedOpen B T → GenedOpen B (S ∩ T)
   | union S : (∀ s ∈ S, GenedOpen B s) → GenedOpen B (⋃₀ S)
 
-instance Subbase_topology (B : Set (Set X)) :
+instance GenedTopology (B : Set (Set X)) :
   Topology X
 where
   isOpen U := GenedOpen B U
@@ -77,12 +77,12 @@ where
   isOpen_inter S T HS HT := GenedOpen.inter S T HS HT
   isOpen_union S HS := by apply GenedOpen.union S; grind
 
-lemma Subbase_topology_eq [HX : Topology X] {B : Set (Set X)} (HB : IsTopologicalSubbase B) U :
-  U ∈ HB.topologicalBase.topology.isOpen ↔  (Subbase_topology B).isOpen U
+lemma GenedTopology_eq [HX : Topology X] {B : Set (Set X)} (HB : IsTopologicalSubbase B) U :
+  U ∈ HB.topologicalBase.topology.isOpen ↔  (GenedTopology B).isOpen U
 := by
   simp [TopologicalBase.topology]
   simp [IsTopologicalBase.topologicalBase]
-  simp [Subbase_topology]
+  simp [GenedTopology]
   constructor<;> intro H
   · rcases H with ⟨V, HV, rfl⟩
     apply GenedOpen.union
