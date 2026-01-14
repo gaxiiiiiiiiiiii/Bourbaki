@@ -290,6 +290,38 @@ lemma Init.trans {X I L : Type _} {Z : I →  Type _} {Y : L → Type _} [∀ ι
       intro x ⟨s, Hs, E⟩; rw [E]
       apply IHS s Hs
 
+def inverse {X : Type _}  {Y : Type _}  [HY : Topology Y] (f : X → Y) :
+  Topology X
+:= Init.topology (fun _ : PUnit.{1} => f)
+
+def induced {X : Type} [Topology Y] (f : X ↪  Y) :
+  Topology X
+:= inverse (f : X → Y)
+
+structure Subtopology (Y : Type _) [HY : Topology Y] where
+  carrier : Type _
+  inclusion : carrier ↪ Y
+
+instance Subtopology.topology {Y : Type _} [HY : Topology Y] (S : Subtopology Y) :
+  Topology S.carrier
+:= induced S.inclusion
+
+
+lemma IsContinuous_iff_le_inverse [HX : Topology X] [HX' : Topology X'] (f : X → X') :
+  IsContinuous f ↔ HX ≤ inverse f
+:= by
+  constructor<;> intro H
+  · simp [inverse]
+    apply le_Init; simp
+    assumption
+  · simp [LE.le] at H
+    rw [@IsContinuous_iff_IsOpen_preimage]
+    intro U HU
+    apply H
+    apply GenedOpen.base
+    simp [Init_subbase, Init.to]
+    use U, HU
+
 
 
 end Bourbaki
