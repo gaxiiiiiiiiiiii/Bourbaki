@@ -241,9 +241,6 @@ end Continuous
 
 end Def
 
-section Trans
-
-
 lemma Init.trans {X I L : Type _} {Z : I →  Type _} {Y : L → Type _} [∀ ι, Topology (Z ι)]
    (h : ∀ l, X → Y l) (g : ∀ l, ∀ ι : I, Y l → Z ι) :
   let _HY : ∀ l, Topology (Y l) := λ l => Init.topology (fun ι => g l ι)
@@ -293,6 +290,6 @@ lemma Init.trans {X I L : Type _} {Z : I →  Type _} {Y : L → Type _} [∀ ι
       intro x ⟨s, Hs, E⟩; rw [E]
       apply IHS s Hs
 
-end Trans
+
 
 end Bourbaki
