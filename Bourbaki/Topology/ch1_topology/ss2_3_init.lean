@@ -290,6 +290,8 @@ lemma Init.trans {X I L : Type _} {Z : I →  Type _} {Y : L → Type _} [∀ ι
       intro x ⟨s, Hs, E⟩; rw [E]
       apply IHS s Hs
 
+section inverse
+
 def inverse {X : Type _}  {Y : Type _}  [HY : Topology Y] (f : X → Y) :
   Topology X
 := Init.topology (fun _ : PUnit.{1} => f)
@@ -322,6 +324,37 @@ lemma IsContinuous_iff_le_inverse [HX : Topology X] [HX' : Topology X'] (f : X �
     simp [Init_subbase, Init.to]
     use U, HU
 
+end inverse
 
+
+def Init.inf {X I : Type _} (HX : I →  Topology X) :
+  Topology X
+:= Init.topology (HY := HX) (f := fun _ x => x)
+
+lemma Init.le_inf {X I : Type _} (HX : I →  Topology X) :
+  ∀ H, (∀ i, H ≤ HX i) → H ≤ inf HX
+:= by
+  intro H HH
+  simp [inf]
+  apply le_Init (HY := HX) (f := fun (_ : I) (x : X) => x)
+  intro i
+  specialize HH i; simp [LE.le] at HH
+  rw [@IsContinuous_iff_IsOpen_preimage]
+  intro U HU
+  apply HH; simp; assumption
+
+
+
+lemma Init.inf_le {X I : Type _} (HX : I →  Topology X) :
+  ∀ i, inf HX ≤ HX i
+:= by
+  intro i U HU
+  change U ∈ (inf HX).isOpen
+  rw [Init.isOpen_iff (HY := HX) (f := fun (_ : I) (x : X) => x)]
+  simp
+  use {U}; simp
+  use {U}; simp
+  simp [Init_subbase, Init.to]
+  use i, U, HU; rfl
 
 end Bourbaki
