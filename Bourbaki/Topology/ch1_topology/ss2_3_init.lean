@@ -82,8 +82,9 @@ instance Init.topology [HY : ∀ i, Topology (Y i)] (f : ∀ i, X → Y i) :
 := GenedTopology (Init_subbase f)
 
 lemma Init.isOpen_iff [HY : ∀ i, Topology (Y i)] {f : ∀ i, X → Y i} U :
-  (Init.topology f).isOpen U ↔ U ∈ {U | ∃ B ⊆ {V | ∃ U : Finset (Set (Init f)), ↑U ⊆ Init_subbase f ∧ V = ⋂₀ ↑U}, U = ⋃₀ B}
+  U ∈ (Init.topology f).isOpen ↔ U ∈ {U | ∃ B ⊆ {V | ∃ U : Finset (Set (Init f)), ↑U ⊆ Init_subbase f ∧ V = ⋂₀ ↑U}, U = ⋃₀ B}
 := by
+  conv => arg 1; change Topology.isOpen U
   rw [<- GenedTopology_eq (Init_subbase_isSubbase f)]; rfl
 
 
@@ -239,5 +240,59 @@ example (𝓑 : ∀ i, TopologicalBase (Y i)) :
 end Continuous
 
 end Def
+
+section Trans
+
+
+lemma Init.trans {X I L : Type _} {Z : I →  Type _} {Y : L → Type _} [∀ ι, Topology (Z ι)]
+   (h : ∀ l, X → Y l) (g : ∀ l, ∀ ι : I, Y l → Z ι) :
+  let _HY : ∀ l, Topology (Y l) := λ l => Init.topology (fun ι => g l ι)
+  Init.topology (fun p : L × I => g p.1 p.2 ∘ h p.1) = Init.topology h
+:= by
+  intro HY
+  apply le_antisymm; swap
+  · intro U HU
+    induction HU with
+    | base V HV =>
+      simp [Init_subbase] at HV
+      rcases HV with ⟨l, i, U, HU, rfl⟩
+      apply GenedOpen.base
+      simp [Init_subbase, Init.to, Set.preimage_comp]
+      use l, g l i ⁻¹' U; simp
+      have := Init.to_continuous (f := g l) i
+      rw [@IsContinuous_iff_IsOpen_preimage] at this
+      specialize this U HU
+      exact this
+    | univ =>
+      apply GenedOpen.univ
+    | inter S T HS HT IHS IHT =>
+      apply GenedOpen.inter S T IHS IHT
+    | union S HS IHS =>
+      apply GenedOpen.union S IHS
+  · apply le_Init
+    intro l
+    rw [IsContinuous_iff_IsOpen_preimage]
+    intro U HU
+    induction HU with
+    | base V HV =>
+      simp [Init_subbase] at HV
+      rcases HV with ⟨i, Hi, W, HW, rfl⟩
+      apply GenedOpen.base
+      simp [Init_subbase, Init.to, Set.preimage_comp]
+      use l, i, Hi, W
+    | univ =>
+      apply GenedOpen.univ
+    | inter S T HS HT IHS IHT =>
+      simp
+      apply GenedOpen.inter _ _ IHS IHT
+    | union S HS IHS =>
+      simp
+      have : (⋃ t ∈ S, h l ⁻¹' t) = ⋃₀ { x | ∃ s ∈ S, x = h l ⁻¹' s } := by ext x; simp
+      rw [this]; clear this
+      apply GenedOpen.union
+      intro x ⟨s, Hs, E⟩; rw [E]
+      apply IHS s Hs
+
+end Trans
 
 end Bourbaki
