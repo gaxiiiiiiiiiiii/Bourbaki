@@ -349,158 +349,155 @@ lemma cod_le_continuous [Topology X] (HY HY' : Topology Y)  (f : X → Y)
   apply Hf _ H
 
 
-def inverse  {Y : ι → Type _} [HY : ∀ i, Topology (Y i)]  (f : ∀ i, X → Y i) :
-  Topology X
-:= by classical
-  let 𝓖 := {V | ∃ i U, V = (f i) ⁻¹' U ∧ (HY i).isOpen U}
-  let 𝓑 := {V : Set X | ∃ B : (Finset (Set X)), (B : Set (Set X)) ⊆  𝓖 ∧ V = ⋂₀ B}
-  let 𝓓 := {V | ∃ B ⊆ 𝓑, V = ⋃₀ B}
-  refine {
-    isOpen U := U ∈ 𝓓
-    isOpen_univ := by
-      simp [𝓓, 𝓑, 𝓖]
-      use {Set.univ}; simp
-      use ∅; simp
-    isOpen_inter := by
-      intro x y Hx Hy
-      simp [𝓓, 𝓑, 𝓖] at *
-      rcases Hx with ⟨x', Hx', rfl⟩
-      rcases Hy with ⟨y', Hy', rfl⟩
-      have := Set.sUnion_inter_sUnion (s := x') (t := y')
-      rw [<- Set.sUnion_image] at this
-      use ((fun p ↦ p.1 ∩ p.2) '' x' ×ˢ y')
-      constructor; swap; rw [this]
-      intro S; simp
-      intro a Ha b Hb E; subst S
-      apply Hx' at Ha; simp at Ha
-      apply Hy' at Hb; simp at Hb
-      rcases Ha with ⟨a', Ha', rfl⟩
-      rcases Hb with ⟨b', Hb', rfl⟩
-      rw [<- Set.sInter_union]
-      use a' ∪ b'; simp; constructor<;> assumption
-    isOpen_union := by
-      intro S H
-      simp [𝓓] at *
-      choose! g Hg using H
-      use ⋃ s ∈ S, g s
-      constructor
-      · intro x Hx; simp at Hx
-        rcases Hx with ⟨s, Hs, Hx⟩
-        rcases Hg s Hs with ⟨Hgs, E⟩
-        apply Hgs Hx
-      · ext x; simp
-        constructor<;> intro Hx
-        · rcases Hx with ⟨s, Hs, xs⟩
-          specialize Hg s Hs
-          rcases Hg with ⟨Hgs, E⟩
-          rw [E] at xs; simp at xs
-          rcases xs with ⟨i, Hi, xi⟩
-          use i, ?_, xi
-          use s
-        · rcases Hx with ⟨t, Ht, xt⟩
-          rcases Ht with ⟨s, Hs, Ht⟩
-          specialize Hg s Hs
-          rcases Hg with ⟨Hgs, E⟩
-          use s, Hs; rw [E]; simp
-          use t, Ht, xt
-  }
+-- def inverse  {Y : ι → Type _} [HY : ∀ i, Topology (Y i)]  (f : ∀ i, X → Y i) :
+--   Topology X
+-- := by classical
+--   let 𝓖 := {V | ∃ i U, V = (f i) ⁻¹' U ∧ (HY i).isOpen U}
+--   let 𝓑 := {V : Set X | ∃ B : (Finset (Set X)), (B : Set (Set X)) ⊆  𝓖 ∧ V = ⋂₀ B}
+--   let 𝓓 := {V | ∃ B ⊆ 𝓑, V = ⋃₀ B}
+--   refine {
+--     isOpen U := U ∈ 𝓓
+--     isOpen_univ := by
+--       simp [𝓓, 𝓑, 𝓖]
+--       use {Set.univ}; simp
+--       use ∅; simp
+--     isOpen_inter := by
+--       intro x y Hx Hy
+--       simp [𝓓, 𝓑, 𝓖] at *
+--       rcases Hx with ⟨x', Hx', rfl⟩
+--       rcases Hy with ⟨y', Hy', rfl⟩
+--       have := Set.sUnion_inter_sUnion (s := x') (t := y')
+--       rw [<- Set.sUnion_image] at this
+--       use ((fun p ↦ p.1 ∩ p.2) '' x' ×ˢ y')
+--       constructor; swap; rw [this]
+--       intro S; simp
+--       intro a Ha b Hb E; subst S
+--       apply Hx' at Ha; simp at Ha
+--       apply Hy' at Hb; simp at Hb
+--       rcases Ha with ⟨a', Ha', rfl⟩
+--       rcases Hb with ⟨b', Hb', rfl⟩
+--       rw [<- Set.sInter_union]
+--       use a' ∪ b'; simp; constructor<;> assumption
+--     isOpen_union := by
+--       intro S H
+--       simp [𝓓] at *
+--       choose! g Hg using H
+--       use ⋃ s ∈ S, g s
+--       constructor
+--       · intro x Hx; simp at Hx
+--         rcases Hx with ⟨s, Hs, Hx⟩
+--         rcases Hg s Hs with ⟨Hgs, E⟩
+--         apply Hgs Hx
+--       · ext x; simp
+--         constructor<;> intro Hx
+--         · rcases Hx with ⟨s, Hs, xs⟩
+--           specialize Hg s Hs
+--           rcases Hg with ⟨Hgs, E⟩
+--           rw [E] at xs; simp at xs
+--           rcases xs with ⟨i, Hi, xi⟩
+--           use i, ?_, xi
+--           use s
+--         · rcases Hx with ⟨t, Ht, xt⟩
+--           rcases Ht with ⟨s, Hs, Ht⟩
+--           specialize Hg s Hs
+--           rcases Hg with ⟨Hgs, E⟩
+--           use s, Hs; rw [E]; simp
+--           use t, Ht, xt
+--   }
 
 
-def inverseBase {Y : ι → Type _} [HY : ∀ i, Topology (Y i)] (f : ∀ i, X → Y i) :
-  @TopologicalBase X (inverse f)
-:= by
-  apply @TopologicalBase.mk X (inverse f)
-  case base => exact {V : Set X | ∃ B : (Finset (Set X)), (B : Set (Set X)) ⊆  {V | ∃ i U, V = (f i) ⁻¹' U ∧ (HY i).isOpen U} ∧ V = ⋂₀ B}
-  case base_isOpen =>
-    intro x Hx; simp at Hx
-    unfold Topology.isOpen inverse; simp
-    rcases Hx with ⟨B, HB, rfl⟩
-    use {⋂₀ B}; simp
-    use B
-  case covered =>
-    intro U HU
-    unfold Topology.isOpen inverse at HU; simp at HU
-    rcases HU with ⟨B, HB, rfl⟩
-    use B
+-- def inverseBase {Y : ι → Type _} [HY : ∀ i, Topology (Y i)] (f : ∀ i, X → Y i) :
+--   @TopologicalBase X (inverse f)
+-- := by
+--   apply @TopologicalBase.mk X (inverse f)
+--   case base => exact {V : Set X | ∃ B : (Finset (Set X)), (B : Set (Set X)) ⊆  {V | ∃ i U, V = (f i) ⁻¹' U ∧ (HY i).isOpen U} ∧ V = ⋂₀ B}
+--   case base_isOpen =>
+--     intro x Hx; simp at Hx
+--     unfold Topology.isOpen inverse; simp
+--     rcases Hx with ⟨B, HB, rfl⟩
+--     use {⋂₀ B}; simp
+--     use B
+--   case covered =>
+--     intro U HU
+--     unfold Topology.isOpen inverse at HU; simp at HU
+--     rcases HU with ⟨B, HB, rfl⟩
+--     use B
 
-lemma le_inverse {Y : ι → Type _} [HY : ∀ i, Topology (Y i)]  (f : ∀ i, X → Y i) (HX : Topology X) :
-  (∀ i, IsContinuous (f i)) → HX ≤ inverse f
-:= by
-  intro H; simp [LE.le]
-  intro U HU
-  simp [inverse] at HU
-  rcases HU with ⟨B, HB, rfl⟩
-  apply HX.isOpen_union
-  intro b Hb
-  apply HB at Hb; simp at Hb
-  rcases Hb with ⟨C, HC, rfl⟩
-  apply isOpen_sInter
-  intro c Hc; apply HC at Hc; simp at Hc
-  rcases Hc with ⟨i, U, rfl, HU⟩
-  specialize H i
-  rw [@IsContinuous_iff_IsOpen_preimage] at H
-  apply H _ HU
+-- lemma le_inverse {Y : ι → Type _} [HY : ∀ i, Topology (Y i)]  (f : ∀ i, X → Y i) (HX : Topology X) :
+--   (∀ i, IsContinuous (f i)) → HX ≤ inverse f
+-- := by
+--   intro H; simp [LE.le]
+--   intro U HU
+--   simp [inverse] at HU
+--   rcases HU with ⟨B, HB, rfl⟩
+--   apply HX.isOpen_union
+--   intro b Hb
+--   apply HB at Hb; simp at Hb
+--   rcases Hb with ⟨C, HC, rfl⟩
+--   apply isOpen_sInter
+--   intro c Hc; apply HC at Hc; simp at Hc
+--   rcases Hc with ⟨i, U, rfl, HU⟩
+--   specialize H i
+--   rw [@IsContinuous_iff_IsOpen_preimage] at H
+--   apply H _ HU
 
-lemma IsContinuous_inverse {Y : ι → Type _} [HY : ∀ i, Topology (Y i)]  (f : ∀ i, X → Y i) (i : ι):
-  @IsContinuous _ _ (inverse f) _ (f i)
-:= by
-  rw [@IsContinuous_iff_IsOpen_preimage]
-  intro U HU; simp [inverse]
-  use {f i ⁻¹' U}; simp
-  use {f i ⁻¹' U}; simp
-  use i, U
-
-
-lemma IsContinuous_inverse_iff [DecidableEq (Set Z)] {Y : ι → Type _} [HY : ∀ i, Topology (Y i)] [Topology Z]  (f : ∀ i, X → Y i) (g : Z → X) :
-  ( @IsContinuous Z X _ (inverse f) g) ↔ ∀ i, IsContinuous (f i ∘ g)
-:= by
-  constructor<;> intro H
-  · intro i z S HS; simp at HS
-    rw [Set.preimage_comp]; apply H
-    let B := inverseBase f
-    simp [neighborOf, NeighborOf] at *
-    rcases HS with ⟨U, HU, Hfg, US⟩
-    use f i ⁻¹' U; constructor; swap
-    · simp; use Hfg
-      apply Set.preimage_mono US
-    · simp [inverse]
-      use {f i ⁻¹' U}; simp
-      use {f i ⁻¹' U}; simp
-      use i, U
-  · intro z S HS
-    simp [neighborOf, NeighborOf] at HS
-    rcases HS with ⟨U, HU, Hfg, US⟩
-    simp [inverse] at HU
-    rcases HU with ⟨B, HB, rfl⟩
-    simp at *
-    rcases Hfg with ⟨b, Hb, Hgb⟩
-    have bS := US b Hb
-    apply HB at Hb; simp at Hb
-    rcases Hb with ⟨C, HC, rfl⟩
-    simp at *
-
-    clear HB US
-
-    use (g ⁻¹' ⋂₀ ↑C); constructor; swap; constructor
-    · simp; assumption
-    · apply Set.preimage_mono bS
-    · have :  (g ⁻¹' ⋂₀ ↑C) = ⋂₀ (Finset.image (fun c => g ⁻¹' c) C) := by simp
-      rw [this]; clear this
-      apply isOpen_sInter
-      intro z' Hz'; simp at Hz'
-      rcases Hz' with ⟨c, Hc, rfl⟩
-      specialize Hgb c Hc
-      specialize HC Hc; simp at HC
-      rcases HC with ⟨i, U, rfl, HU⟩; simp at *
-
-      rw [<- mem_neighbor_iff_isOpen]
-      intro x Hx; simp at Hx
-      rw [<- mem_neighbor_iff_isOpen] at HU
-      apply HU at Hx
-      specialize H i x U Hx
-      exact H
+-- lemma IsContinuous_inverse {Y : ι → Type _} [HY : ∀ i, Topology (Y i)]  (f : ∀ i, X → Y i) (i : ι):
+--   @IsContinuous _ _ (inverse f) _ (f i)
+-- := by
+--   rw [@IsContinuous_iff_IsOpen_preimage]
+--   intro U HU; simp [inverse]
+--   use {f i ⁻¹' U}; simp
+--   use {f i ⁻¹' U}; simp
+--   use i, U
 
 
+-- lemma IsContinuous_inverse_iff [DecidableEq (Set Z)] {Y : ι → Type _} [HY : ∀ i, Topology (Y i)] [Topology Z]  (f : ∀ i, X → Y i) (g : Z → X) :
+--   ( @IsContinuous Z X _ (inverse f) g) ↔ ∀ i, IsContinuous (f i ∘ g)
+-- := by
+--   constructor<;> intro H
+--   · intro i z S HS; simp at HS
+--     rw [Set.preimage_comp]; apply H
+--     let B := inverseBase f
+--     simp [neighborOf, NeighborOf] at *
+--     rcases HS with ⟨U, HU, Hfg, US⟩
+--     use f i ⁻¹' U; constructor; swap
+--     · simp; use Hfg
+--       apply Set.preimage_mono US
+--     · simp [inverse]
+--       use {f i ⁻¹' U}; simp
+--       use {f i ⁻¹' U}; simp
+--       use i, U
+--   · intro z S HS
+--     simp [neighborOf, NeighborOf] at HS
+--     rcases HS with ⟨U, HU, Hfg, US⟩
+--     simp [inverse] at HU
+--     rcases HU with ⟨B, HB, rfl⟩
+--     simp at *
+--     rcases Hfg with ⟨b, Hb, Hgb⟩
+--     have bS := US b Hb
+--     apply HB at Hb; simp at Hb
+--     rcases Hb with ⟨C, HC, rfl⟩
+--     simp at *
 
+--     clear HB US
+
+--     use (g ⁻¹' ⋂₀ ↑C); constructor; swap; constructor
+--     · simp; assumption
+--     · apply Set.preimage_mono bS
+--     · have :  (g ⁻¹' ⋂₀ ↑C) = ⋂₀ (Finset.image (fun c => g ⁻¹' c) C) := by simp
+--       rw [this]; clear this
+--       apply isOpen_sInter
+--       intro z' Hz'; simp at Hz'
+--       rcases Hz' with ⟨c, Hc, rfl⟩
+--       specialize Hgb c Hc
+--       specialize HC Hc; simp at HC
+--       rcases HC with ⟨i, U, rfl, HU⟩; simp at *
+
+--       rw [<- mem_neighbor_iff_isOpen]
+--       intro x Hx; simp at Hx
+--       rw [<- mem_neighbor_iff_isOpen] at HU
+--       apply HU at Hx
+--       specialize H i x U Hx
+--       exact H
 
 end Bourbaki
