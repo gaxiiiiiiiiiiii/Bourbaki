@@ -69,7 +69,7 @@ inductive GenedOpen (B : Set (Set X)) : (Set X) → Prop
   | inter S T : GenedOpen B S → GenedOpen B T → GenedOpen B (S ∩ T)
   | union S : (∀ s ∈ S, GenedOpen B s) → GenedOpen B (⋃₀ S)
 
-lemma GenedOpen.sInter [Topology X] {B : Set (Set X)} {U : Finset (Set X)}
+lemma GenedOpen.sInter  {B : Set (Set X)} {U : Finset (Set X)}
   (HB : ∀ V ∈ U, V ∈ B) : GenedOpen B (⋂₀ U)
 := by
   induction U using Finset.cons_induction_on with
