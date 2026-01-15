@@ -393,8 +393,51 @@ def Init.gen {X : Type _} (𝓖 : Set (Set X)) : 𝓖 → Topology X
 
 def Gen {X : Type _} (𝓖 : Set (Set X)) : Topology X :=  Init.inf (Init.gen 𝓖)
 
+lemma Gen_eq_GenedTopology {X : Type _} (𝓖 : Set (Set X)) :
+  Gen 𝓖 = GenedTopology {V | ∃ U : Finset (Set X), ↑U ⊆ 𝓖 ∧ V = ⋂₀ ↑U}
+:= by
+  ext U
+  unfold Topology.isOpen GenedTopology; simp
+  unfold Gen Init.inf Init.topology Init_subbase GenedTopology; simp [Init.to]
+  conv => arg 2; change GenedOpen _ U
+  conv => arg 1; change GenedOpen {V | ∃ a, ∃ (b : a ∈ 𝓖), ∃ U ∈ ((Init.gen 𝓖 ⟨a, b⟩)).isOpen, V = (fun x ↦ x) ⁻¹' U} U
+  constructor<;> intro H; swap
+  · induction H with
+    | base V HV =>
+      simp at HV
+      rcases HV with ⟨W, HW, rfl⟩
+      apply GenedOpen.sInter
+      intro w Hw; simp
+      use w, HW Hw
+      right; right; simp
+    | univ =>
+      simp; apply GenedOpen.univ
+    | inter S T HS HT IHS IHT =>
+      apply GenedOpen.inter S T IHS IHT
+    | union S HS IHS =>
+      apply GenedOpen.union S IHS
+  · induction H with
+    | base V HV =>
+      simp at HV
+      rcases HV with ⟨G, HG, HV⟩
+      rcases HV with rfl | rfl | rfl
+      · rw [<- Set.sUnion_empty]
+        apply GenedOpen.union
+        intro x Hx; contradiction
+      · apply GenedOpen.univ
+      · apply GenedOpen.base; simp
+        use {V}; simp; assumption
+    | univ =>
+      apply GenedOpen.univ
+    | inter S T HS HT IHS IHT =>
+      apply GenedOpen.inter S T IHS IHT
+    | union S HS IHS =>
+      apply GenedOpen.union S IHS
+
 end Gen
 
-
+def prod {I : Type _} (f : I → Type _) [HY : ∀ i, Topology (f i)] :
+  Topology (Π i, f i)
+:= Init.topology (fun i (X : Π i, f i) => X i)
 
 end Bourbaki
