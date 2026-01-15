@@ -326,6 +326,7 @@ lemma IsContinuous_iff_le_inverse [HX : Topology X] [HX' : Topology X'] (f : X �
 
 end inverse
 
+section Inf
 
 def Init.inf {X I : Type _} (HX : I →  Topology X) :
   Topology X
@@ -356,5 +357,44 @@ lemma Init.inf_le {X I : Type _} (HX : I →  Topology X) :
   use {U}; simp
   simp [Init_subbase, Init.to]
   use i, U, HU; rfl
+
+end Inf
+
+
+section Gen
+
+def Init.gen {X : Type _} (𝓖 : Set (Set X)) : 𝓖 → Topology X
+:= λ U => {
+  isOpen V := V = ∅ ∨ V = Set.univ ∨ V = U
+  isOpen_univ := by simp
+  isOpen_inter S T HS HT := by
+    rcases HS with rfl | rfl | rfl<;>
+    rcases HT with rfl | rfl | rfl<;>
+    simp
+  isOpen_union S HS := by
+    by_contra F
+    simp at F
+    rcases F with ⟨⟨s, Hs, Fs⟩, F1, F2⟩
+    rcases HS s Hs with H | H | H; contradiction
+    · apply F1; ext x; simp
+      use s; subst s; grind
+    · subst s
+      apply F2; ext x; simp
+      constructor<;> intro Hx; swap
+      · use U, Hs, Hx
+      · rcases Hx with ⟨V, HV, Vx⟩
+        rcases HS V HV with rfl | rfl | rfl; contradiction
+        · by_contra F
+          apply F1; ext y; simp
+          use Set.univ; grind
+        · exact Vx
+}
+
+
+def Gen {X : Type _} (𝓖 : Set (Set X)) : Topology X :=  Init.inf (Init.gen 𝓖)
+
+end Gen
+
+
 
 end Bourbaki
