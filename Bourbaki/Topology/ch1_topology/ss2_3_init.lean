@@ -248,24 +248,16 @@ lemma Init.trans {X I L : Type _} {Z : I →  Type _} {Y : L → Type _} [∀ ι
 := by
   intro HY
   apply le_antisymm; swap
-  · intro U HU
-    induction HU with
-    | base V HV =>
-      simp [Init.subbase] at HV
-      rcases HV with ⟨l, i, U, HU, rfl⟩
-      apply GenedOpen.base
-      simp [Init.subbase, Init.to, Set.preimage_comp]
-      use l, g l i ⁻¹' U; simp
-      have := Init.isContinuous (f := g l) i
-      rw [@IsContinuous_iff_IsOpen_preimage] at this
-      specialize this U HU
-      exact this
-    | univ =>
-      apply GenedOpen.univ
-    | inter S T HS HT IHS IHT =>
-      apply GenedOpen.inter S T IHS IHT
-    | union S HS IHS =>
-      apply GenedOpen.union S IHS
+  · apply le_init
+    intro ⟨l, i⟩; simp
+    rw [IsContinuous_iff_IsOpen_preimage]
+    intro U HU
+    have Hg := Init.isContinuous (g l) i
+    have Hh := Init.isContinuous h l
+    rw [@IsContinuous_iff_IsOpen_preimage, Init.to] at Hg Hh
+    specialize Hg U HU
+    specialize Hh _ Hg
+    exact Hh
   · apply Init.le_init
     intro l
     rw [IsContinuous_iff_IsOpen_preimage]
