@@ -85,7 +85,7 @@ lemma Init.isOpen_iff [HY : ∀ i, Topology (Y i)] {f : ∀ i, X → Y i} U :
   U ∈ (Init.topology f).isOpen ↔ U ∈ {U | ∃ B ⊆ {V | ∃ U : Finset (Set (Init f)), ↑U ⊆ Init.subbase f ∧ V = ⋂₀ ↑U}, U = ⋃₀ B}
 := by
   conv => arg 1; change Topology.isOpen U
-  rw [<- GenedTopology_eq (Init.subbase_isSubbase f)]; rfl
+  rw [<- GenedTopology_eq (Init.subbase_isTopologicalSubbase f)]; rfl
 
 
 section Continuous
