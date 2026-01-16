@@ -93,7 +93,7 @@ section Continuous
 variable [HY : ∀ i, Topology (Y i)] (f : ∀ i, X → Y i)
 
 
-lemma Init.to_continuous (i : ι) :
+lemma Init.isContinuous (i : ι) :
   IsContinuous (Init.to f i)
 := by
   rw [@IsContinuous_iff_IsOpen_preimage]
@@ -126,7 +126,7 @@ lemma Init.IsContinuousAt_iff [HZ : Topology Z] (g : Z → Init f) (z : Z) :
 := by
   constructor<;> intro H
   · intro i U HU
-    have Hf := to_continuous f i (g z) U HU
+    have Hf := isContinuous f i (g z) U HU
     have := H _ Hf
     simp [Init.to] at this ⊢
     rw [Set.preimage_comp]; assumption
@@ -256,7 +256,7 @@ lemma Init.trans {X I L : Type _} {Z : I →  Type _} {Y : L → Type _} [∀ ι
       apply GenedOpen.base
       simp [Init.subbase, Init.to, Set.preimage_comp]
       use l, g l i ⁻¹' U; simp
-      have := Init.to_continuous (f := g l) i
+      have := Init.isContinuous (f := g l) i
       rw [@IsContinuous_iff_IsOpen_preimage] at this
       specialize this U HU
       exact this
