@@ -21,7 +21,7 @@ lemma Init.to_apply (f : ∀ i, X → Y i) (i : ι) (x : Init f) :
 def Init.subbase [HY : ∀ i, Topology (Y i)] (f : ∀ i, X → Y i) :=
   {V | ∃ i U, U ∈ (HY i).isOpen ∧ V = Init.to f i ⁻¹' U}
 
-lemma Init.subbase_isSubbase [HY : ∀ i, Topology (Y i)] (f : ∀ i, X → Y i) :
+lemma Init.subbase_isTopologicalSubbase [HY : ∀ i, Topology (Y i)] (f : ∀ i, X → Y i) :
   let _Hf := GenedTopology (Init.subbase f)
   IsTopologicalSubbase (Init.subbase f)
 := by classical
