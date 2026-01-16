@@ -18,16 +18,16 @@ def Init.to (f : ∀ i, X → Y i) (i : ι) : Init f → Y i := f i
 lemma Init.to_apply (f : ∀ i, X → Y i) (i : ι) (x : Init f) :
   Init.to f i x = f i x := rfl
 
-def Init_subbase [HY : ∀ i, Topology (Y i)] (f : ∀ i, X → Y i) :=
+def Init.subbase [HY : ∀ i, Topology (Y i)] (f : ∀ i, X → Y i) :=
   {V | ∃ i U, U ∈ (HY i).isOpen ∧ V = Init.to f i ⁻¹' U}
 
-lemma Init_subbase_isSubbase [HY : ∀ i, Topology (Y i)] (f : ∀ i, X → Y i) :
-  let _Hf := GenedTopology (Init_subbase f)
-  IsTopologicalSubbase (Init_subbase f)
+lemma Init.subbase_isSubbase [HY : ∀ i, Topology (Y i)] (f : ∀ i, X → Y i) :
+  let _Hf := GenedTopology (Init.subbase f)
+  IsTopologicalSubbase (Init.subbase f)
 := by classical
   intro Hf x
   let G : @NeighborBase (Init f) Hf x Set.univ  := {
-    base := {V | x ∈ V ∧ V ∈ {V | ∃ U : Finset (Set (Init f)), ↑U ⊆ Init_subbase f ∧ V = ⋂₀ ↑U}}
+    base := {V | x ∈ V ∧ V ∈ {V | ∃ U : Finset (Set (Init f)), ↑U ⊆ Init.subbase f ∧ V = ⋂₀ ↑U}}
     base_isNeighbor := by
       intro S; simp
       intro Hx T HT rfl
@@ -37,11 +37,11 @@ lemma Init_subbase_isSubbase [HY : ∀ i, Topology (Y i)] (f : ∀ i, X → Y i)
       apply isOpen_sInter (HX := Hf)
       intro t Ht
       apply HT at Ht
-      simp [Init_subbase] at Ht
+      simp [Init.subbase] at Ht
       change t ∈ Hf.isOpen
       rcases Ht with ⟨i, U, HU, rfl⟩
       apply GenedOpen.base
-      simp [Init_subbase]
+      simp [Init.subbase]
       use i, U
     cofinal := by
       intro S HS
@@ -79,13 +79,13 @@ lemma Init_subbase_isSubbase [HY : ∀ i, Topology (Y i)] (f : ∀ i, X → Y i)
 
 instance Init.topology [HY : ∀ i, Topology (Y i)] (f : ∀ i, X → Y i) :
   Topology (Init f)
-:= GenedTopology (Init_subbase f)
+:= GenedTopology (Init.subbase f)
 
 lemma Init.isOpen_iff [HY : ∀ i, Topology (Y i)] {f : ∀ i, X → Y i} U :
-  U ∈ (Init.topology f).isOpen ↔ U ∈ {U | ∃ B ⊆ {V | ∃ U : Finset (Set (Init f)), ↑U ⊆ Init_subbase f ∧ V = ⋂₀ ↑U}, U = ⋃₀ B}
+  U ∈ (Init.topology f).isOpen ↔ U ∈ {U | ∃ B ⊆ {V | ∃ U : Finset (Set (Init f)), ↑U ⊆ Init.subbase f ∧ V = ⋂₀ ↑U}, U = ⋃₀ B}
 := by
   conv => arg 1; change Topology.isOpen U
-  rw [<- GenedTopology_eq (Init_subbase_isSubbase f)]; rfl
+  rw [<- GenedTopology_eq (Init.subbase_isSubbase f)]; rfl
 
 
 section Continuous
@@ -99,17 +99,17 @@ lemma Init.to_continuous (i : ι) :
   rw [@IsContinuous_iff_IsOpen_preimage]
   intro U HU
   apply GenedOpen.base
-  simp [Init_subbase]
+  simp [Init.subbase]
   use i, U, HU
 
 
-lemma le_Init [HX : Topology X] :
+lemma Init.le_init [HX : Topology X] :
   (∀ i, IsContinuous (f i)) → HX ≤ Init.topology f
 := by
   intro Hf U HU
   induction HU with
   | base U HU =>
-    simp [Init_subbase] at HU
+    simp [Init.subbase] at HU
     rcases HU with ⟨i, V, HV, rfl⟩
     specialize Hf i
     rw [@IsContinuous_iff_IsOpen_preimage] at Hf
@@ -137,7 +137,7 @@ lemma Init.IsContinuousAt_iff [HZ : Topology Z] (g : Z → Init f) (z : Z) :
     induction HV with
     | base V HV =>
       intro U VU
-      simp [Init_subbase] at HV
+      simp [Init.subbase] at HV
       rcases HV with ⟨i, W, HW, rfl⟩
       simp [Init.to] at *
       specialize H i W
@@ -190,7 +190,7 @@ example (𝓑 : ∀ i, TopologicalBase (Y i)) :
       intro v Hv; apply HV at Hv; simp at Hv
       rcases Hv with ⟨i, W, HW, rfl⟩
       apply GenedOpen.base
-      simp [Init_subbase]; use i, W; simp
+      simp [Init.subbase]; use i, W; simp
       apply (𝓑 i).base_isOpen HW
     cofinal := by
       intro V HV
@@ -200,7 +200,7 @@ example (𝓑 : ∀ i, TopologicalBase (Y i)) :
       induction HU with
       | base U HU =>
         intro x V Hx UV; simp
-        simp [Init_subbase] at HU
+        simp [Init.subbase] at HU
         rcases HU with ⟨i, W, HW, rfl⟩
         have ⟨B, HB, E⟩ := (𝓑 i).covered _ HW
         subst W; simp at *
@@ -251,10 +251,10 @@ lemma Init.trans {X I L : Type _} {Z : I →  Type _} {Y : L → Type _} [∀ ι
   · intro U HU
     induction HU with
     | base V HV =>
-      simp [Init_subbase] at HV
+      simp [Init.subbase] at HV
       rcases HV with ⟨l, i, U, HU, rfl⟩
       apply GenedOpen.base
-      simp [Init_subbase, Init.to, Set.preimage_comp]
+      simp [Init.subbase, Init.to, Set.preimage_comp]
       use l, g l i ⁻¹' U; simp
       have := Init.to_continuous (f := g l) i
       rw [@IsContinuous_iff_IsOpen_preimage] at this
@@ -266,16 +266,16 @@ lemma Init.trans {X I L : Type _} {Z : I →  Type _} {Y : L → Type _} [∀ ι
       apply GenedOpen.inter S T IHS IHT
     | union S HS IHS =>
       apply GenedOpen.union S IHS
-  · apply le_Init
+  · apply Init.le_init
     intro l
     rw [IsContinuous_iff_IsOpen_preimage]
     intro U HU
     induction HU with
     | base V HV =>
-      simp [Init_subbase] at HV
+      simp [Init.subbase] at HV
       rcases HV with ⟨i, Hi, W, HW, rfl⟩
       apply GenedOpen.base
-      simp [Init_subbase, Init.to, Set.preimage_comp]
+      simp [Init.subbase, Init.to, Set.preimage_comp]
       use l, i, Hi, W
     | univ =>
       apply GenedOpen.univ
@@ -314,14 +314,14 @@ lemma IsContinuous_iff_le_inverse [HX : Topology X] [HX' : Topology X'] (f : X �
 := by
   constructor<;> intro H
   · simp [inverse]
-    apply le_Init; simp
+    apply Init.le_init; simp
     assumption
   · simp [LE.le] at H
     rw [@IsContinuous_iff_IsOpen_preimage]
     intro U HU
     apply H
     apply GenedOpen.base
-    simp [Init_subbase, Init.to]
+    simp [Init.subbase, Init.to]
     use U, HU
 
 end inverse
@@ -337,7 +337,7 @@ lemma Init.le_inf {X I : Type _} (HX : I →  Topology X) :
 := by
   intro H HH
   simp [inf]
-  apply le_Init (HY := HX) (f := fun (_ : I) (x : X) => x)
+  apply Init.le_init (HY := HX) (f := fun (_ : I) (x : X) => x)
   intro i
   specialize HH i; simp [LE.le] at HH
   rw [@IsContinuous_iff_IsOpen_preimage]
@@ -355,7 +355,7 @@ lemma Init.inf_le {X I : Type _} (HX : I →  Topology X) :
   simp
   use {U}; simp
   use {U}; simp
-  simp [Init_subbase, Init.to]
+  simp [Init.subbase, Init.to]
   use i, U, HU; rfl
 
 end Inf
@@ -363,7 +363,7 @@ end Inf
 
 section Gen
 
-def Init.gen {X : Type _} (𝓖 : Set (Set X)) : 𝓖 → Topology X
+def Init.single {X : Type _} (𝓖 : Set (Set X)) : 𝓖 → Topology X
 := λ U => {
   isOpen V := V = ∅ ∨ V = Set.univ ∨ V = U
   isOpen_univ := by simp
@@ -391,16 +391,16 @@ def Init.gen {X : Type _} (𝓖 : Set (Set X)) : 𝓖 → Topology X
 }
 
 
-def Gen {X : Type _} (𝓖 : Set (Set X)) : Topology X :=  Init.inf (Init.gen 𝓖)
+def gen {X : Type _} (𝓖 : Set (Set X)) : Topology X :=  Init.inf (Init.single 𝓖)
 
-lemma Gen_eq_GenedTopology {X : Type _} (𝓖 : Set (Set X)) :
-  Gen 𝓖 = GenedTopology {V | ∃ U : Finset (Set X), ↑U ⊆ 𝓖 ∧ V = ⋂₀ ↑U}
+lemma gen_eq_GenedTopology {X : Type _} (𝓖 : Set (Set X)) :
+  gen 𝓖 = GenedTopology {V | ∃ U : Finset (Set X), ↑U ⊆ 𝓖 ∧ V = ⋂₀ ↑U}
 := by
   ext U
   unfold Topology.isOpen GenedTopology; simp
-  unfold Gen Init.inf Init.topology Init_subbase GenedTopology; simp [Init.to]
+  unfold gen Init.inf Init.topology Init.subbase GenedTopology; simp [Init.to]
   conv => arg 2; change GenedOpen _ U
-  conv => arg 1; change GenedOpen {V | ∃ a, ∃ (b : a ∈ 𝓖), ∃ U ∈ ((Init.gen 𝓖 ⟨a, b⟩)).isOpen, V = (fun x ↦ x) ⁻¹' U} U
+  conv => arg 1; change GenedOpen {V | ∃ a, ∃ (b : a ∈ 𝓖), ∃ U ∈ ((Init.single 𝓖 ⟨a, b⟩)).isOpen, V = (fun x ↦ x) ⁻¹' U} U
   constructor<;> intro H; swap
   · induction H with
     | base V HV =>
