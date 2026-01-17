@@ -284,11 +284,11 @@ lemma Init.trans {X I L : Type _} {Z : I →  Type _} {Y : L → Type _} [∀ ι
 
 section inverse
 
-def inverse {X : Type _}  {Y : Type _}  [HY : Topology Y] (f : X → Y) :
+def Init.inverse {X : Type _}  {Y : Type _}  [HY : Topology Y] (f : X → Y) :
   Topology X
 := Init.topology (fun _ : PUnit.{1} => f)
 
-def induced {X : Type} [Topology Y] (f : X ↪  Y) :
+def Init.induced {X : Type} [Topology Y] (f : X ↪  Y) :
   Topology X
 := inverse (f : X → Y)
 
