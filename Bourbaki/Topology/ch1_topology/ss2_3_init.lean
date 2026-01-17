@@ -428,7 +428,7 @@ lemma gen_eq_GenedTopology {X : Type _} (𝓖 : Set (Set X)) :
 
 end Gen
 
-def prod {I : Type _} (f : I → Type _) [HY : ∀ i, Topology (f i)] :
+def Init.prod {I : Type _} (f : I → Type _) [HY : ∀ i, Topology (f i)] :
   Topology (Π i, f i)
 := Init.topology (fun i (X : Π i, f i) => X i)
 
