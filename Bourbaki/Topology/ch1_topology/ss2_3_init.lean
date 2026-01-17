@@ -296,12 +296,12 @@ structure Subtopology (Y : Type _) [HY : Topology Y] where
   carrier : Type _
   inclusion : carrier ↪ Y
 
-instance Subtopology.topology {Y : Type _} [HY : Topology Y] (S : Subtopology Y) :
+instance Init.Subtopology_topology {Y : Type _} [HY : Topology Y] (S : Subtopology Y) :
   Topology S.carrier
 := induced S.inclusion
 
 
-lemma IsContinuous_iff_le_inverse [HX : Topology X] [HX' : Topology X'] (f : X → X') :
+lemma Init.IsContinuous_iff_le_inverse [HX : Topology X] [HX' : Topology X'] (f : X → X') :
   IsContinuous f ↔ HX ≤ inverse f
 := by
   constructor<;> intro H
