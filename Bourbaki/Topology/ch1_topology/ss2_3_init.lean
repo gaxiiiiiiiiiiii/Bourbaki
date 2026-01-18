@@ -294,11 +294,11 @@ def Init.induced {X : Type} [Topology Y] (f : X ↪  Y) :
 
 structure Subtopology (Y : Type _) [HY : Topology Y] where
   carrier : Type _
-  inclusion : carrier ↪ Y
+  embedding : carrier ↪ Y
 
 instance Init.Subtopology_topology {Y : Type _} [HY : Topology Y] (S : Subtopology Y) :
   Topology S.carrier
-:= induced S.inclusion
+:= induced S.embedding
 
 
 lemma Init.IsContinuous_iff_le_inverse [HX : Topology X] [HX' : Topology X'] (f : X → X') :
