@@ -147,6 +147,16 @@ def Glue.quotient (G : Glue) := Quotient (G.setoid)
 
 def Glue.quotient_mk (G : Glue) : (Σ l, G.f l) → G.quotient := Quotient.mk (G.setoid)
 
+lemma Glue.inj (G : Glue) (l : G.L):
+  (G.quotient_mk ∘ Sigma.mk l).Injective
+:= by
+  intro x y E
+  simp [Glue.quotient_mk] at E
+  rw [Quotient.eq, Glue.setoid] at E; simp at E
+  rcases E with ⟨Hy, Hx, E⟩
+  rw [G.h_idem l] at E; simp at E
+  rw [E]
+
 instance Glue.topology (G : Glue) [∀ l : G.L, Topology (G.f l)] : Topology (G.quotient) :=
   Finale.topology (fun l => G.quotient_mk ∘ Sigma.mk l)
 
