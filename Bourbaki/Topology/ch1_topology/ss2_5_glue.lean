@@ -145,20 +145,26 @@ where
 
 def Glue.quotient (G : Glue) := Quotient (G.setoid)
 
-def Glue.quotient_mk (G : Glue) : (Σ l, G.f l) → G.quotient := Quotient.mk (G.setoid)
+def Glue.φ (G : Glue) : (Σ l, G.f l) → G.quotient := Quotient.mk (G.setoid)
 
-lemma Glue.inj (G : Glue) (l : G.L):
-  (G.quotient_mk ∘ Sigma.mk l).Injective
+def Glue.ι (G : Glue) (l : G.L) : G.f l → G.quotient :=  Quotient.mk (G.setoid) ∘ Sigma.mk l
+
+lemma Glue.ι_injective (G : Glue) (l : G.L):
+  (G.ι l).Injective
 := by
   intro x y E
-  simp [Glue.quotient_mk] at E
+  simp [Glue.ι] at E
   rw [Quotient.eq, Glue.setoid] at E; simp at E
   rcases E with ⟨Hy, Hx, E⟩
   rw [G.h_idem l] at E; simp at E
   rw [E]
 
+noncomputable def Glue.ι_equiv (G : Glue) (l : G.L) :
+  G.f l ≃ ↑(Set.range (G.ι l))
+:= Equiv.ofInjective _ (G.ι_injective l)
+
 instance Glue.topology (G : Glue) [∀ l : G.L, Topology (G.f l)] : Topology (G.quotient) :=
-  Finale.topology (fun l => G.quotient_mk ∘ Sigma.mk l)
+  Finale.topology (fun l => G.φ ∘ Sigma.mk l)
 
 instance Glue.sum (G : Glue) [∀ l : G.L, Topology (G.f l)] : Topology (Σ i, G.f i) := Finale.sum G.f
 
@@ -209,3 +215,7 @@ lemma Glue.topology_eq_topology' (G : Glue) [∀ l : G.L, Topology (G.f l)] :
       intro T HT; simp at HT
       rcases HT with ⟨SV, rfl⟩
       apply IH _ SV
+
+
+variable (G : Glue) (U : Set (G.quotient))
+#check U
