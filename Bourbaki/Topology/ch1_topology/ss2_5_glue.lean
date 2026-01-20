@@ -217,5 +217,101 @@ lemma Glue.topology_eq_topology' (G : Glue) [∀ l : G.L, Topology (G.f l)] :
       apply IH _ SV
 
 
-variable (G : Glue) (U : Set (G.quotient))
-#check U
+instance (G : Glue) [Hf : ∀ l : G.L, Topology (G.f l)] :
+  ∀ l, Topology (Set.range (G.ι l))
+:= fun l => {
+  isOpen U := U ∈ (fun u => (G.ι_equiv l) '' u) '' (Hf l).isOpen
+  isOpen_univ := by
+    simp
+    use Set.univ; simp
+    apply Topology.isOpen_univ
+  isOpen_inter := by
+    intro S T HS HT; simp at *
+    rcases HS with ⟨s, Hs, rfl⟩
+    rcases HT with ⟨t, Ht, rfl⟩
+    use s ∩ t; constructor
+    · apply Topology.isOpen_inter _ _ Hs Ht
+    · ext x; simp
+  isOpen_union := by
+    intro S HS; simp at *
+    choose f Hf1 Hf2 using HS
+    let U := ⋃ s : S , f s.val s.prop
+    use U; constructor
+    · simp [U]
+      apply Topology.isOpen_union
+      intro s Hs; simp at Hs
+      rcases Hs with ⟨V, HV, rfl⟩
+      apply Topology.isOpen_union
+      intro W HW; simp at HW
+      rcases HW with ⟨VS, rfl⟩
+      apply Hf1
+    ·
+      ext x; simp only [U]
+      rw [Set.image_iUnion]
+      simp only [Set.mem_iUnion]
+      conv => arg 2; simp
+      constructor<;> intro Hx
+      · grind
+      · rcases Hx with ⟨s, Hs, xs⟩
+        use ⟨s, Hs⟩
+        rw [Hf2]; simp; grind
+}
+
+def Glue.topology'' (G : Glue)[(l : G.L) → Topology (G.f l)] :
+  Topology (G.quotient)
+:=  Finale.topology (fun l => (G.ι l ∘ (G.ι_equiv l).symm))
+
+lemma Glue.topology_eq_topology'' (G : Glue) [∀ l : G.L, Topology (G.f l)] :
+  G.topology = G.topology''
+:= by
+  unfold Glue.topology Glue.topology''
+  apply le_antisymm<;> apply Finale.finale_le<;>
+  intro l<;> rw [@IsContinuous_iff_IsOpen_preimage]<;> intro U HU
+  · conv => arg 1; arg 1; change G.ι l
+    induction HU with
+    | base U HU =>
+      simp [Finale.base, Finale.to] at HU
+      specialize HU l
+      unfold Topology.isOpen instTopologyElemQuotientRangeFι at HU
+      simp at HU
+      rcases HU with ⟨S, HS, E⟩
+      rw [Set.preimage_comp] at E
+      symm at E; rw [Set.preimage_eq_iff_eq_image] at E; simp at E
+      rw [E]; assumption
+      apply Equiv.bijective
+    | univ =>
+      simp; apply Topology.isOpen_univ
+    | inter S T HS HT IHS IHT =>
+      simp; apply Topology.isOpen_inter _ _ IHS IHT
+    | union S HS IH =>
+      simp; apply Topology.isOpen_union
+      intro s Hs; simp at *
+      rcases Hs with ⟨V, rfl⟩
+      apply Topology.isOpen_union
+      intro s Hs; simp at Hs
+      rcases Hs with ⟨SV, rfl⟩
+      apply IH V SV
+  · induction HU with
+    | base U HU =>
+      simp [Finale.base, Finale.to] at HU
+      specialize HU l
+      use (G.ι l)⁻¹' U, HU
+      ext x; simp
+    | univ =>
+      simp; use Set.univ; simp
+      apply Topology.isOpen_univ
+    | inter S T HS HT IHS IHT =>
+      rcases IHS with ⟨S', HS', ES⟩
+      rcases IHT with ⟨T', HT', ET⟩
+      simp at *
+      rw [<- ES, <- ET]
+      apply Topology.isOpen_inter<;>
+      unfold Topology.isOpen instTopologyElemQuotientRangeFι<;>simp<;> assumption
+    | union S HS IH =>
+      simp; apply Topology.isOpen_union
+      intro s Hs; simp at Hs
+      rcases Hs with ⟨V, rfl⟩
+      apply Topology.isOpen_union
+      intro s Hs; simp at Hs
+      rcases Hs with ⟨SV, rfl⟩
+      apply IH V SV

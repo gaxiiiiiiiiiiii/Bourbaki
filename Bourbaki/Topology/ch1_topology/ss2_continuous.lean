@@ -193,6 +193,7 @@ noncomputable def IsTopologyHom.topologyHom [Topology X] [Topology X'] {f : X â†
     change g (f y) = y at H
     rw [H]
     exact Hy
+    
 def TopologyHom.isTopologyHom [Topology X] [Topology X'] (E : TopologyHom X X') :
   IsTopologyHom E.toFun
 := by
