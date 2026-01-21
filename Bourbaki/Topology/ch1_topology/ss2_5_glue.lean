@@ -7,7 +7,7 @@ import Bourbaki.Topology.ch1_topology.ss2_4_finale
 
 namespace Bourbaki
 
-structure Glue where
+structure GlueData where
   L : Type _
   f : L → Type _
   A : ∀ (l n : L), Set (f l)
@@ -19,7 +19,7 @@ structure Glue where
     (h m l ⟨x.1, Hx⟩).1 = (h m n ⟨h n l x, h_mem l n m x Hx⟩).1
 
 
-def Glue.equiv (G : Glue) (l n : G.L) : G.A l n ≃ G.A n l
+def GlueData.equiv (G : GlueData) (l n : G.L) : G.A l n ≃ G.A n l
 where
   toFun := G.h n l
   invFun := G.h l n
@@ -36,7 +36,7 @@ where
     have := G.h_idem n ⟨x, Hxn⟩
     grind
 
-def Glue.setoid (G : Glue) : Setoid (Σ i, G.f i)
+def GlueData.setoid (G : GlueData) : Setoid (Σ i, G.f i)
 where
   -- r ⟨l, x⟩ ⟨n, y⟩ := y ∈ A n l ∧ x ∈ A l n ∧ h n l ⟨x, _⟩ = y
   r x y := y.snd ∈ G.A y.fst x.fst ∧ ∃ (Hx : x.snd ∈ G.A x.fst y.fst), (G.h y.fst x.fst ⟨x.snd, Hx⟩).1 = y.snd
@@ -53,7 +53,7 @@ where
       have := congr_arg Subtype.val this
       conv at this => arg 2; simp
       rw [<- this]
-      simp only [Glue.equiv]
+      simp only [GlueData.equiv]
       have : G.h n l ⟨x, Hx⟩ = ⟨y, Hy⟩ := by ext; rw [E]
       rw [this]
     trans := by
@@ -65,8 +65,8 @@ where
       have Hhx : ↑(G.h n l ⟨x, Hx⟩) ∈ G.A n l := by rw [Ey]; grind
       have E : (⟨y, Hy⟩ : { x // x ∈ G.A n l }) = ⟨↑(G.h n l ⟨x, Hx⟩), Hhx⟩ := by ext; simp; rw [Ey]
       rw [E] at this; clear E
-      have E := (Glue.equiv G l n).left_inv ⟨x, Hx⟩
-      simp only [Glue.equiv] at E
+      have E := (GlueData.equiv G l n).left_inv ⟨x, Hx⟩
+      simp only [GlueData.equiv] at E
       have Ex := congr_arg Subtype.val E; simp at Ex
       have E' : ↑(G.h l n ⟨↑(G.h n l ⟨x, Hx⟩), Hhx⟩) = ↑(G.h l n (G.h n l ⟨x, Hx⟩)) := by ext; simp
       rw [E', Ex] at this
@@ -78,7 +78,7 @@ where
       rw [this, <- Ez]
   }
 
-lemma Glue.classes_singleton (G : Glue) :
+lemma GlueData.classes_singleton (G : GlueData) :
   ∀ S ∈ (G.setoid).classes, ∀ l, (Sigma.mk l ⁻¹' S).Subsingleton
 := by
   intro S HS l x Hx y Hy
@@ -87,12 +87,12 @@ lemma Glue.classes_singleton (G : Glue) :
   rcases HS with ⟨n, z, rfl⟩
   simp at *
   have := (G.setoid).trans Hx ((G.setoid).symm Hy)
-  simp [HasEquiv.Equiv, Glue.setoid] at this
+  simp [HasEquiv.Equiv, GlueData.setoid] at this
   rcases this with ⟨Ay, Ax, E⟩
   rw [G.h_idem l] at E; simp at E
   exact E
 
-lemma Glue.ext (G : Glue) {l : G.L} (x y : G.f l) :
+lemma GlueData.ext (G : GlueData) {l : G.L} (x y : G.f l) :
   (⟦⟨l, x⟩⟧ : Quotient G.setoid )= ⟦⟨l, y⟩⟧ →  x = y
 := by
   intro H;
@@ -103,21 +103,21 @@ lemma Glue.ext (G : Glue) {l : G.L} (x y : G.f l) :
     rw [Quotient.eq] at H
     apply G.setoid.symm H
 
-lemma Glue.A_eq (G : Glue) (l n : G.L) :
+lemma GlueData.A_eq (G : GlueData) (l n : G.L) :
   G.A l n = {x : G.f l | ∃ y : G.f n , G.setoid.r ⟨l, x⟩ ⟨n, y⟩}
 := by
-  ext x; simp [Glue.setoid]
+  ext x; simp [GlueData.setoid]
   constructor; swap; grind
   intro Hx
   have := G.h_mem l n l ⟨x, Hx⟩ (G.A_mem l x)
   use G.h n l ⟨x, Hx⟩, this; simp; assumption
 
-lemma Glue.A_eq' (G : Glue) (l n : G.L) :
+lemma GlueData.A_eq' (G : GlueData) (l n : G.L) :
   G.A l n = ⋃ y : G.f n, (Sigma.mk l) ⁻¹' {x | G.setoid.r x ⟨n, y⟩}
 := by rw [G.A_eq]; ext x; simp
 
-noncomputable def Glue.mk' {L : Type _} (f : L → Type _)(R : Setoid (Σ i, f i)) (HR : ∀ S ∈ R.classes, ∀ l, (Sigma.mk l ⁻¹' S).Subsingleton) :
-  Glue
+noncomputable def GlueData.mk' {L : Type _} (f : L → Type _)(R : Setoid (Σ i, f i)) (HR : ∀ S ∈ R.classes, ∀ l, (Sigma.mk l ⁻¹' S).Subsingleton) :
+  GlueData
 where
   L := L
   f := f
@@ -156,16 +156,16 @@ where
       apply R.trans (R.symm Hy) Hz
 
 
-def Glue.quotient (G : Glue) := Quotient (G.setoid)
+def GlueData.quotient (G : GlueData) := Quotient (G.setoid)
 
-def Glue.φ (G : Glue) : (Σ l, G.f l) → G.quotient := Quotient.mk (G.setoid)
+def GlueData.φ (G : GlueData) : (Σ l, G.f l) → G.quotient := Quotient.mk (G.setoid)
 
-def Glue.ι (G : Glue) (l : G.L) : G.f l → G.quotient :=  Quotient.mk (G.setoid) ∘ Sigma.mk l
+def GlueData.ι (G : GlueData) (l : G.L) : G.f l → G.quotient :=  Quotient.mk (G.setoid) ∘ Sigma.mk l
 
-lemma Glue.range_eq (G : Glue) (l : G.L) :
+lemma GlueData.range_eq (G : GlueData) (l : G.L) :
   Set.range (G.ι l) = ⋃ y : G.f l, Quotient.out ⁻¹' {x | G.setoid ⟨l, y⟩ x}
 := by
-  ext x; simp [Glue.ι]
+  ext x; simp [GlueData.ι]
   constructor<;> intro Hx
   · rcases Hx with ⟨y, Hy⟩
     use y
@@ -178,33 +178,33 @@ lemma Glue.range_eq (G : Glue) (l : G.L) :
     rw [<- Quotient.out_eq x, Hy]
 
 
-lemma Glue.ι_injective (G : Glue) (l : G.L):
+lemma GlueData.ι_injective (G : GlueData) (l : G.L):
   (G.ι l).Injective
 := by
   intro x y E
-  simp [Glue.ι] at E
+  simp [GlueData.ι] at E
   apply G.ext x y E
 
-noncomputable def Glue.ι_equiv (G : Glue) (l : G.L) :
+noncomputable def GlueData.ι_equiv (G : GlueData) (l : G.L) :
   G.f l ≃ ↑(Set.range (G.ι l))
 := Equiv.ofInjective _ (G.ι_injective l)
 
-instance Glue.topology (G : Glue) [∀ l : G.L, Topology (G.f l)] : Topology (G.quotient) :=
+instance GlueData.topology (G : GlueData) [∀ l : G.L, Topology (G.f l)] : Topology (G.quotient) :=
   Finale.topology G.ι
 
-lemma Glue.isContinuous (G : Glue) [∀ l : G.L, Topology (G.f l)] :
+lemma GlueData.isContinuous (G : GlueData) [∀ l : G.L, Topology (G.f l)] :
   ∀ l, IsContinuous (G.ι l)
 := Finale.isContinuous G.ι
 
-instance Glue.sum (G : Glue) [∀ l : G.L, Topology (G.f l)] : Topology (Σ i, G.f i) := Finale.sum G.f
+instance GlueData.sum (G : GlueData) [∀ l : G.L, Topology (G.f l)] : Topology (Σ i, G.f i) := Finale.sum G.f
 
-def Glue.topology' (G : Glue) [∀ l : G.L, Topology (G.f l)] : Topology (G.quotient) :=
+def GlueData.topology' (G : GlueData) [∀ l : G.L, Topology (G.f l)] : Topology (G.quotient) :=
   Finale.quotient G.setoid
 
-lemma Glue.topology_eq_topology' (G : Glue) [∀ l : G.L, Topology (G.f l)] :
+lemma GlueData.topology_eq_topology' (G : GlueData) [∀ l : G.L, Topology (G.f l)] :
   G.topology = G.topology'
 := by
-  unfold Glue.topology Glue.topology' Finale.quotient
+  unfold GlueData.topology GlueData.topology' Finale.quotient
   apply le_antisymm<;> apply Finale.finale_le<;>
   intro i<;> rw [@IsContinuous_iff_IsOpen_preimage]<;>
   intro U HU
@@ -213,7 +213,7 @@ lemma Glue.topology_eq_topology' (G : Glue) [∀ l : G.L, Topology (G.f l)] :
       simp [Finale.base, Finale.to] at HV
       change  G.sum.isOpen _ at HV
       rw [Finale.sum.isOpen_iff] at HV
-      simp [Glue.ι, Set.preimage_comp]
+      simp [GlueData.ι, Set.preimage_comp]
       exact HV i
     | univ =>
       simp; apply Topology.isOpen_univ
@@ -247,7 +247,7 @@ lemma Glue.topology_eq_topology' (G : Glue) [∀ l : G.L, Topology (G.f l)] :
       apply IH _ SV
 
 
-instance (G : Glue) [Hf : ∀ l : G.L, Topology (G.f l)] :
+instance (G : GlueData) [Hf : ∀ l : G.L, Topology (G.f l)] :
   ∀ l, Topology (Set.range (G.ι l))
 := fun l => {
   isOpen U := U ∈ (fun u => (G.ι_equiv l) '' u) '' (Hf l).isOpen
@@ -287,14 +287,14 @@ instance (G : Glue) [Hf : ∀ l : G.L, Topology (G.f l)] :
         rw [Hf2]; simp; grind
 }
 
-def Glue.topology'' (G : Glue)[(l : G.L) → Topology (G.f l)] :
+def GlueData.topology'' (G : GlueData)[(l : G.L) → Topology (G.f l)] :
   Topology (G.quotient)
 :=  Finale.topology (fun l => (G.ι l ∘ (G.ι_equiv l).symm))
 
-lemma Glue.topology_eq_topology'' (G : Glue) [∀ l : G.L, Topology (G.f l)] :
+lemma GlueData.topology_eq_topology'' (G : GlueData) [∀ l : G.L, Topology (G.f l)] :
   G.topology = G.topology''
 := by
-  unfold Glue.topology Glue.topology''
+  unfold GlueData.topology GlueData.topology''
   apply le_antisymm<;> apply Finale.finale_le<;>
   intro l<;> rw [@IsContinuous_iff_IsOpen_preimage]<;> intro U HU
   · conv => arg 1; arg 1; change G.ι l
@@ -347,19 +347,19 @@ lemma Glue.topology_eq_topology'' (G : Glue) [∀ l : G.L, Topology (G.f l)] :
       apply IH V SV
 
 
-instance (G : Glue) [Hf : ∀ l, Topology (G.f l)] (l n : G.L) :
+instance (G : GlueData) [Hf : ∀ l, Topology (G.f l)] (l n : G.L) :
   Topology (G.A l n)
 := Init.induced (Function.Embedding.subtype (G.A l n))
 
 
-lemma Glue.range_mem (G : Glue) [Hf : ∀ l, Topology (G.f l)] (HA : ∀ l n, G.A l n ∈ (Hf l).isOpen):
+lemma GlueData.range_mem (G : GlueData) [Hf : ∀ l, Topology (G.f l)] (HA : ∀ l n, G.A l n ∈ (Hf l).isOpen):
   ∀ l, Set.range (G.ι l) ∈ G.topology.isOpen
 := by
   intro l
-  unfold Topology.isOpen Glue.topology
+  unfold Topology.isOpen GlueData.topology
   apply GenedOpen.base; simp only [Finale.base, Finale.to]
   intro i
-  simp [Glue.ι]
+  simp [GlueData.ι]
   rw [Set.range_comp, Set.preimage_comp]
   have : Sigma.mk i ⁻¹' (Quotient.mk G.setoid ⁻¹' (Quotient.mk G.setoid '' Set.range (Sigma.mk l))) = G.A i l := by {
     ext x; simp
@@ -373,7 +373,7 @@ lemma Glue.range_mem (G : Glue) [Hf : ∀ l, Topology (G.f l)] (HA : ∀ l n, G.
   rw [this]
   apply HA
 
-noncomputable def Glue.topologyHom (G : Glue) [Hf : ∀ l, Topology (G.f l)]  l :
+noncomputable def GlueData.topologyHom (G : GlueData) [Hf : ∀ l, Topology (G.f l)]  l :
  TopologyHom  (G.f l) (Set.range (G.ι l))
 where
   toFun := G.ι_equiv l
