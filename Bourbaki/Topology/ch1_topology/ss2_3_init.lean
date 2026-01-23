@@ -288,7 +288,7 @@ def Init.inverse {X : Type _}  {Y : Type _}  [HY : Topology Y] (f : X → Y) :
   Topology X
 := Init.topology (fun _ : PUnit.{1} => f)
 
-def Init.induced {X : Type} [Topology Y] (f : X ↪  Y) :
+def Init.induced {X : Type _} [Topology Y] (f : X ↪  Y) :
   Topology X
 := inverse (f : X → Y)
 
