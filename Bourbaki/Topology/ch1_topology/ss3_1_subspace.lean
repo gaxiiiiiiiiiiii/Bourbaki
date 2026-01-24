@@ -50,19 +50,6 @@ where
   left_inv x := by simp
   right_inv y := by simp
 
-example {A B : Type} (S : Set (Set A)) (HS : S.Nonempty) (f : A → B) (Hf : f.Injective) :
-  ⋂ s ∈ S, (f '' s) ⊆ f '' (⋂₀ S)
-:= by
-  intro x Hx; simp at Hx; simp
-  rcases HS with ⟨s, Hs⟩
-  apply Hx at Hs
-  rcases Hs with ⟨a, Ha, rfl⟩
-  use a; simp
-  intro t Ht
-  apply Hx at Ht
-  rcases Ht with ⟨b, Hb, E⟩
-  apply Hf at E; subst b; assumption
-
 lemma Subtopology.trans' [HX : Topology X] (A B : Set X) (BA : B ⊆ A):
   let _HA := Subtopology A
   ∀ U , U ∈ (Init.induced (Function.Embedding.subtype {x : A | x.val ∈ B})).isOpen
