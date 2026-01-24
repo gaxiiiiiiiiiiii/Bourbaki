@@ -22,6 +22,10 @@ where
       rcases HV with ⟨s, Hs, rfl⟩
       apply Hf s Hs
 
+lemma Subtopology.isOpen_iff {X : Type _} [HX : Topology X] {A : Set X} :
+  ∀ U, U ∈ (Subtopology A).isOpen ↔ ∃ V ∈ HX.isOpen, U = Subtype.val ⁻¹' V
+:= by intro U; rfl
+
 lemma Subtopology_eq_induced {X : Type _} [HX : Topology X] (A : Set X) :
   Subtopology A = Init.induced (Function.Embedding.subtype A)
 := by
@@ -134,5 +138,31 @@ lemma Subtopology.trans [HX : Topology X] (A B : Set X) (BA : B ⊆ A):
   unfold Topology.isOpen at E
   rw [E]
 
+
+lemma Subtopology.isOpen_iff_all [HX : Topology X] (A : Set X) :
+  A ∈ HX.isOpen ↔ (∀ U ∈ (Subtopology A).isOpen, Subtype.val '' U ∈ HX.isOpen)
+:= by
+  conv => arg 2; arg 2; arg 1; unfold Topology.isOpen Subtopology; simp
+  constructor<;> intro H; swap
+  · specialize H Set.univ; simp at H
+    apply H; use Set.univ; simp
+    apply HX.isOpen_univ
+  · intro B ⟨V, HV, E⟩
+    rw [E]; simp
+    apply HX.isOpen_inter _ _ H HV
+
+lemma Subtopology.isClosed_iff [HX : Topology X] (A : Set X) :
+  ∀ U, (Subtopology A).isClosed U ↔ ∃ V, HX.isClosed V ∧ U = Subtype.val ⁻¹' V
+:= by
+  intro U
+  unfold Topology.isClosed Subtopology; simp
+
+  constructor<;> intro ⟨V, HV, E⟩
+  · use Vᶜ
+    rw [compl_compl]
+    use HV
+    rw [<- compl_compl U, E]; simp
+  · use Vᶜ, HV
+    rw [E]; simp
 
 end Bourbaki
