@@ -38,6 +38,9 @@ lemma Subtopology_eq_induced {X : Type _} [HX : Topology X] (A : Set X) :
     simp [Init.subbase, Init.to]
     use V, HV,E
 
+def _root_.Set.subtopologyOf {X : Type _} [HX : Topology X] (B A : Set X) :
+  Topology {x : A | x.val ∈ B}
+:= haveI := Subtopology A; Subtopology {x : A | x.val ∈ B}
 
 def subequiv {X : Type _} {A B  : Set X} (BA : B ⊆ A) :
   {x : A | x.val ∈ B} ≃  B
@@ -46,8 +49,6 @@ where
   invFun y := ⟨⟨y.val, BA y.prop⟩, y.prop⟩
   left_inv x := by simp
   right_inv y := by simp
-
-#check Set.image_sInter_subset
 
 example {A B : Type} (S : Set (Set A)) (HS : S.Nonempty) (f : A → B) (Hf : f.Injective) :
   ⋂ s ∈ S, (f '' s) ⊆ f '' (⋂₀ S)
@@ -61,9 +62,6 @@ example {A B : Type} (S : Set (Set A)) (HS : S.Nonempty) (f : A → B) (Hf : f.I
   apply Hx at Ht
   rcases Ht with ⟨b, Hb, E⟩
   apply Hf at E; subst b; assumption
-
-
-
 
 lemma Subtopology.trans' [HX : Topology X] (A B : Set X) (BA : B ⊆ A):
   let _HA := Subtopology A
@@ -135,14 +133,17 @@ lemma Subtopology.trans' [HX : Topology X] (A B : Set X) (BA : B ⊆ A):
       intro t Ht; simp at Ht
       rcases Ht with ⟨s, Ss, rfl⟩
       apply IH s Ss
-      
+
 lemma Subtopology.trans [HX : Topology X] (A B : Set X) (BA : B ⊆ A):
   let _HA := Subtopology A
-  ∀ U , U ∈ (Subtopology {x : A | x.val ∈ B}).isOpen ↔ (subequiv BA '' U) ∈ (Subtopology B).isOpen
+  ∀ U , U ∈ (B.subtopologyOf A).isOpen ↔ (subequiv BA '' U) ∈ (Subtopology B).isOpen
 := by
   intro HA U
-  unfold Topology.isOpen
+  unfold Topology.isOpen Set.subtopologyOf
   rw [Subtopology_eq_induced {x : A | ↑x ∈ B}, Subtopology_eq_induced B ]
   have E := Subtopology.trans' A B BA U
   unfold Topology.isOpen at E
   rw [E]
+
+
+end Bourbaki
