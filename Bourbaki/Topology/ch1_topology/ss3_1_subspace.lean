@@ -42,7 +42,9 @@ def _root_.Set.subtopologyOf {X : Type _} [HX : Topology X] (B A : Set X) :
   Topology {x : A | x.val ∈ B}
 := haveI := Subtopology A; Subtopology {x : A | x.val ∈ B}
 
-def subequiv {X : Type _} {A B  : Set X} (BA : B ⊆ A) :
+
+
+def _root_.Set.Subset.equiv {X : Type _} {A B  : Set X} (BA : B ⊆ A) :
   {x : A | x.val ∈ B} ≃  B
 where
   toFun x := ⟨x.val.val, x.prop⟩
@@ -53,7 +55,7 @@ where
 lemma Subtopology.trans' [HX : Topology X] (A B : Set X) (BA : B ⊆ A):
   let _HA := Subtopology A
   ∀ U , U ∈ (Init.induced (Function.Embedding.subtype {x : A | x.val ∈ B})).isOpen
-  ↔ (subequiv BA '' U) ∈ (Init.induced (Function.Embedding.subtype B)).isOpen
+  ↔ (BA.equiv '' U) ∈ (Init.induced (Function.Embedding.subtype B)).isOpen
 := by classical
   intro HA U
   unfold Topology.isOpen Init.induced Init.inverse; simp
@@ -66,18 +68,18 @@ lemma Subtopology.trans' [HX : Topology X] (A B : Set X) (BA : B ⊆ A):
   have EA : (fun _ => HA) = HA' := by simp [HA', HA]; rw[Subtopology_eq_induced]; rfl
   rw [EA, <- E]; clear E EA HA'
   set gh := fun p : (PUnit.{1} × PUnit.{1}) ↦ g p.1 p.2 ∘ h p.1
-  change U ∈ (Init.topology gh).isOpen ↔ (subequiv BA '' U) ∈ (Init.topology f).isOpen
+  change U ∈ (Init.topology gh).isOpen ↔ (BA.equiv '' U) ∈ (Init.topology f).isOpen
   constructor<;> intro H
   · rw [@Init.isOpen_iff] at H ⊢; simp at ⊢ H
     rcases H with ⟨V, HV, rfl⟩
-    use (fun u => (subequiv BA) '' u) '' V
+    use (fun u => (BA.equiv) '' u) '' V
     constructor;swap
     · ext b; simp
     · intro s Hs; simp at *
       rcases Hs with ⟨v, Hv, rfl⟩
       apply HV at Hv; simp at Hv
       rcases Hv with ⟨W, HW, rfl⟩
-      use Finset.image (fun u => (subequiv BA) '' u) W
+      use Finset.image (fun u => (BA.equiv) '' u) W
       constructor
       · intro s Hs; simp at Hs
         simp [Init.subbase, f, Init.to]
@@ -86,15 +88,15 @@ lemma Subtopology.trans' [HX : Topology X] (A B : Set X) (BA : B ⊆ A):
         simp [Init.subbase, gh, Init.to, g, h] at Hw
         rcases Hw with ⟨U, HU, rfl⟩
         use U, HU
-        ext x; simp [subequiv]
+        ext x; simp [Set.Subset.equiv]
         intro _; apply BA; simp
       · ext x
         rcases x with ⟨x, Bx⟩
-        simp [subequiv]
+        simp [Set.Subset.equiv]
         constructor<;> intro Hx; grind
         · use x, (BA Bx), Bx; grind
-  · suffices : ∀ V , V ∈ (Init.topology f).isOpen → (subequiv BA).symm '' V ∈ (Init.topology gh).isOpen
-    rw [<- Equiv.symm_image_image (subequiv BA) U]
+  · suffices : ∀ V , V ∈ (Init.topology f).isOpen → (BA.equiv).symm '' V ∈ (Init.topology gh).isOpen
+    rw [<- Equiv.symm_image_image (BA.equiv) U]
     apply this _ H
     intro V HV
     induction HV with
@@ -106,11 +108,11 @@ lemma Subtopology.trans' [HX : Topology X] (A B : Set X) (BA : B ⊆ A):
       use W, HW
       ext x; simp
       rcases x with ⟨⟨a, Aa⟩, Ba⟩; simp at Ba
-      simp [subequiv]
+      simp [Set.Subset.equiv]
     | univ =>
       simp; apply GenedOpen.univ
     | inter S T HS HT IHS IHT =>
-      simp [subequiv]
+      simp [Set.Subset.equiv]
       rw [Set.image_inter]
       apply (Init.topology gh).isOpen_inter _ _ IHS IHT
       intro i j; grind
@@ -123,7 +125,7 @@ lemma Subtopology.trans' [HX : Topology X] (A B : Set X) (BA : B ⊆ A):
 
 lemma Subtopology.trans [HX : Topology X] (A B : Set X) (BA : B ⊆ A):
   let _HA := Subtopology A
-  ∀ U , U ∈ (B.subtopologyOf A).isOpen ↔ (subequiv BA '' U) ∈ (Subtopology B).isOpen
+  ∀ U , U ∈ (B.subtopologyOf A).isOpen ↔ (BA.equiv '' U) ∈ (Subtopology B).isOpen
 := by
   intro HA U
   unfold Topology.isOpen Set.subtopologyOf
