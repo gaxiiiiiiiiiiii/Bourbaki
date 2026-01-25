@@ -281,9 +281,9 @@ example [HX : Topology X]  (A B : Set X) (HA : HX.isOpen A) (HB : HX.isOpen B) :
 -- ex1.6
 
 example [HX : Topology X] (A : Set X) :
-  (∀ U, Dense U → A ∩ U ≠ ∅) ↔ interior A ≠ ∅
+  (∀ U, IsDense U → A ∩ U ≠ ∅) ↔ interior A ≠ ∅
 := by
-  unfold Dense
+  unfold IsDense
   constructor<;> intro H
   · intro F
     apply H Aᶜ; swap; simp

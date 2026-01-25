@@ -680,7 +680,7 @@ lemma frontier_compl_eq [HX : Topology X] (A : Set X) :
 
 
 -- 密
-def Dense [HX : Topology X] (A : Set X) :=
+def IsDense [HX : Topology X] (A : Set X) :=
   ∀ x, x ∈ closure A
 
 end Bourbaki
