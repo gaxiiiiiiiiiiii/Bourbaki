@@ -229,26 +229,17 @@ lemma Subtopology.closure_eq [HX : Topology X] (A B : Set X) (BA : B ⊆ A) :
     }
     grind
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+lemma Dense_iff_subset_closure [HX : Topology X] (A B : Set X) (BA : B ⊆ A) :
+  Dense (HX := Subtopology A) {x : A | x.val ∈ B} ↔ A ⊆ closure B
+:= by
+  simp [Dense]
+  constructor<;> intro H
+  · intro x Hx
+    specialize H x Hx
+    rw [Subtopology.closure_eq A B BA] at H; simp at H
+    apply H
+  · intro x Hx; rw [Subtopology.closure_eq A B BA]; simp
+    apply H Hx
 
 
 
