@@ -241,9 +241,17 @@ lemma IsDense_iff_subset_closure [HX : Topology X] (A B : Set X) (BA : B ⊆ A) 
   · intro x Hx; rw [Subtopology.closure_eq A B BA]; simp
     apply H Hx
 
-
-
-
+lemma IsDence_trans [HX : Topology X] (A B C : Set X) (BA : B ⊆ A) (CB : C ⊆ B)
+  (HB : IsDense (HX := Subtopology A) {x : A | x.val ∈ B})
+  (HC : IsDense (HX := Subtopology B) {x : B | x.val ∈ C}) :
+  IsDense (HX := Subtopology A) {x : A | x.val ∈ C}
+:= by
+  have CA := CB.trans BA
+  rw [IsDense_iff_subset_closure] at HB HC ⊢
+  all_goals try assumption
+  apply closure_mono at HC
+  rw [closure_idem] at HC
+  apply HB.trans HC
 
 
 end Bourbaki
