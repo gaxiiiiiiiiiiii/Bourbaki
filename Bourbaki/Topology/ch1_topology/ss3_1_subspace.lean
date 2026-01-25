@@ -253,5 +253,22 @@ lemma IsDence_trans [HX : Topology X] (A B C : Set X) (BA : B ⊆ A) (CB : C ⊆
   rw [closure_idem] at HC
   apply HB.trans HC
 
+lemma Subtopology.closure_mem_nenighborOf [HX : Topology X]
+  (A : Set X) (HA : IsDense A) (x : A) (V : Set A)
+  (HV : V ∈ neighborOf (HX := Subtopology A) x) :
+  closure (Subtype.val '' V) ∈ neighborOf x.val
+:= by
+  rw [neighborOf_iff] at HV
+  rcases HV with ⟨U, HU, UV⟩
+  unfold neighborOf NeighborOf at ⊢ HU; simp at *
+  rcases HU with ⟨W, HW, Wx, WU⟩
+  use W, HW, Wx
+  have E : W ∩ closure A = W := by ext i; simp; intro; apply HA
+  rw [<- E]; clear E
+  apply (inter_closure_le_closure_inter W A HW).trans
+  apply closure_mono
+  intro i ⟨Wi, Ai⟩; simp
+  use Ai; apply UV; simp
+  apply WU Wi
 
 end Bourbaki
