@@ -16,7 +16,7 @@ lemma Topology.isOpen_empty [Topology X] : isOpen (∅ : Set X)
   have := isOpen_sUnion (∅ : Set (Set X)); simp at this
   exact this
 
-lemma isOpen_sInter [HX : Topology X] (S : Finset (Set X)) :
+lemma Topology.isOpen_sInter [HX : Topology X] (S : Finset (Set X)) :
   (∀ s ∈ S, HX.isOpen s) → HX.isOpen (⋂₀ S)
 := by
   intro H

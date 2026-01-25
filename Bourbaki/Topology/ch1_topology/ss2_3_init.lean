@@ -34,7 +34,7 @@ lemma Init.subbase_isTopologicalSubbase [HY : ∀ i, Topology (Y i)] (f : ∀ i,
       simp [neighborWithin]
       use ⋂₀ T
       use ?_, Hx, by grind
-      apply isOpen_sInter (HX := Hf)
+      apply Hf.isOpen_sInter
       intro t Ht
       apply HT at Ht
       simp [Init.subbase] at Ht
@@ -186,7 +186,7 @@ example (𝓑 : ∀ i, TopologicalBase (Y i)) :
       rcases HU with ⟨Ux, V, HV, rfl⟩
       simp [neighborWithin]
       use ⋂₀ V, ?_, by grind, by grind
-      apply isOpen_sInter
+      apply Topology.isOpen_sInter
       intro v Hv; apply HV at Hv; simp at Hv
       rcases Hv with ⟨i, W, HW, rfl⟩
       apply GenedOpen.base
