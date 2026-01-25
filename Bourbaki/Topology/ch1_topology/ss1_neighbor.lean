@@ -29,6 +29,13 @@ lemma Topology.isOpen_sInter [HX : Topology X] (S : Finset (Set X)) :
     apply HX.isOpen_inter _ _ HA
     apply IH HT
 
+lemma Topology.isOpen_union [HX : Topology X] (s t : Set X) :
+  HX.isOpen s → HX.isOpen t → HX.isOpen (s ∪ t)
+:= by
+  intro Hs Ht
+  rw [<- Set.sUnion_pair]
+  apply HX.isOpen_sUnion; simp
+  grind
 
 -- 被覆
 @[ext]
