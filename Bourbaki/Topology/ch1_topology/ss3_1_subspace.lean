@@ -26,7 +26,7 @@ where
       rcases HV with ⟨s, Hs, rfl⟩
       apply Hf s Hs
 
-lemma Subtopology_eq_induced {X : Type _} [HX : Topology X] (A : Set X) :
+lemma Subtopology.isOpen_iff {X : Type _} [HX : Topology X] (A : Set X) :
   (Subtopology A).isOpen = {U | ∃ V ∈ HX.isOpen, U = {x : A | x.val ∈ V}}
 := by
   ext U
@@ -86,7 +86,7 @@ lemma Subtopology.trans' [HX : Topology X] (A B : Set X) (BA : B ⊆ A):
   have E := Init.trans (h := h) (g := g)
   simp at E
   set HA' : _ → Topology ↑A := fun l : PUnit.{1} ↦ Init.topology fun ι : PUnit.{1} ↦ @Subtype.val X A
-  have EA : (fun _ => HA) = HA' := by simp [HA', HA]; ext _ U; rw[Subtopology_eq_induced]
+  have EA : (fun _ => HA) = HA' := by simp [HA', HA]; ext _ U; rw[Subtopology.isOpen_iff]
 
   rw [EA, <- E]; clear E EA HA'
   set gh := fun p : (PUnit.{1} × PUnit.{1}) ↦ g p.1 p.2 ∘ h p.1
@@ -159,7 +159,7 @@ lemma Subtopology.trans [HX : Topology X] (A B : Set X) (BA : B ⊆ A):
 lemma Subtopology.isOpen_iff_all [HX : Topology X] (A : Set X) :
   A ∈ HX.isOpen ↔ (∀ U ∈ (Subtopology A).isOpen, Subtype.val '' U ∈ HX.isOpen)
 := by
-  rw [Subtopology_eq_induced]
+  rw [Subtopology.isOpen_iff]
   constructor<;> intro H; swap
   · specialize H Set.univ; simp at H
     specialize H Set.univ; simp at H
@@ -174,7 +174,7 @@ lemma Subtopology.isClosed_iff [HX : Topology X] (A : Set X) :
 := by
   intro U
   unfold Topology.isClosed
-  rw [Subtopology_eq_induced]
+  rw [Subtopology.isOpen_iff]
   constructor<;> intro ⟨V, HV, E⟩
   · use Vᶜ
     rw [compl_compl]
@@ -190,7 +190,7 @@ lemma Subtopology.neighborOf_iff [HX : Topology X] (A : Set X) (x : A) :
 := by
   intro U
   unfold neighborOf NeighborOf; simp
-  rw [Subtopology_eq_induced]
+  rw [Subtopology.isOpen_iff]
   constructor<;> intro H
   · rcases H with ⟨V, HV, Vx, VU⟩
     rcases HV with ⟨W, HW, rfl⟩
@@ -296,7 +296,7 @@ lemma Subtopology.isOpen_iff_covered_isOpen [HX : Topology X] {I : Type _} (A : 
 := by
   intro B
   constructor<;> intro H
-  · intro i; rw [Subtopology_eq_induced]; use B
+  · intro i; rw [Subtopology.isOpen_iff]; use B
   · have E : B = ⋃ i, B ∩ interior (A i) := by {
       ext x; simp; intro Bx
       have : x ∈ ⋃ i, interior (A i) := by grind
@@ -307,7 +307,7 @@ lemma Subtopology.isOpen_iff_covered_isOpen [HX : Topology X] {I : Type _} (A : 
     apply HX.isOpen_sUnion
     intro s Hs; simp at Hs
     rcases Hs with ⟨i, rfl⟩
-    have Hi := H i; rw [Subtopology_eq_induced] at Hi
+    have Hi := H i; rw [Subtopology.isOpen_iff] at Hi
     rcases Hi with ⟨V, HV, E⟩
     have E' := congr_arg (Set.image Subtype.val) E
     simp [Set.image] at E'
