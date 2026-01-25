@@ -271,4 +271,36 @@ lemma Subtopology.closure_mem_nenighborOf [HX : Topology X]
   use Ai; apply UV; simp
   apply WU Wi
 
+lemma Subtopology.isOpen_iff_covered_isOpen [HX : Topology X] {I : Type _} (A : I → Set X) (HA : ⋃ i, interior (A i) = Set.univ) :
+  ∀ B, B ∈ HX.isOpen ↔ ∀ i, {x : A i | x.val ∈ B}  ∈ (Subtopology (A i)).isOpen
+:= by
+  intro B
+  constructor<;> intro H
+  · intro i; use B
+  · have E : B = ⋃ i, B ∩ interior (A i) := by {
+      ext x; simp; intro Bx
+      have : x ∈ ⋃ i, interior (A i) := by grind
+      simp at this
+      exact this
+    }
+    rw [E]; clear E
+    apply HX.isOpen_sUnion
+    intro s Hs; simp at Hs
+    rcases Hs with ⟨i, rfl⟩
+    rcases H i with ⟨V, HV, E⟩
+    have E' := congr_arg (Set.image Subtype.val) E
+    simp [Set.image] at E'
+    have : B ∩ interior (A i) = V ∩ interior (A i) := by {
+      ext x; simp; intro Hx
+      have Ax := interior_le (A i) Hx
+      constructor<;> intro H
+      · have : x ∈ B ∩ A i := by grind
+        grind
+      · have : x ∈ V ∩ A i := by grind
+        grind
+    }
+    rw [this]
+    apply HX.isOpen_inter _ _ HV
+    apply interior_isOpen
+
 end Bourbaki
