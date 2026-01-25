@@ -220,10 +220,10 @@ lemma GlueData.topology_eq_topology' (G : GlueData) [∀ l : G.L, Topology (G.f 
     | inter S T HS HT IHS IHT =>
       simp; apply Topology.isOpen_inter _ _ IHS IHT
     | union S HS IH =>
-      simp; apply Topology.isOpen_union
+      simp; apply Topology.isOpen_sUnion
       intro s Hs; simp at *
       rcases Hs with ⟨V, rfl⟩
-      apply Topology.isOpen_union
+      apply Topology.isOpen_sUnion
       intro T HT; simp at HT
       rcases HT with ⟨SV, rfl⟩
       apply IH _ SV
@@ -238,10 +238,10 @@ lemma GlueData.topology_eq_topology' (G : GlueData) [∀ l : G.L, Topology (G.f 
     | inter S T HS HT IHS IHT =>
       simp; apply Topology.isOpen_inter _ _ IHS IHT
     | union S HS IH =>
-      simp; apply Topology.isOpen_union
+      simp; apply Topology.isOpen_sUnion
       intro s Hs; simp at *
       rcases Hs with ⟨V, rfl⟩
-      apply Topology.isOpen_union
+      apply Topology.isOpen_sUnion
       intro T HT; simp at HT
       rcases HT with ⟨SV, rfl⟩
       apply IH _ SV
@@ -262,16 +262,16 @@ instance (G : GlueData) [Hf : ∀ l : G.L, Topology (G.f l)] :
     use s ∩ t; constructor
     · apply Topology.isOpen_inter _ _ Hs Ht
     · ext x; simp
-  isOpen_union := by
+  isOpen_sUnion := by
     intro S HS; simp at *
     choose f Hf1 Hf2 using HS
     let U := ⋃ s : S , f s.val s.prop
     use U; constructor
     · simp [U]
-      apply Topology.isOpen_union
+      apply Topology.isOpen_sUnion
       intro s Hs; simp at Hs
       rcases Hs with ⟨V, HV, rfl⟩
-      apply Topology.isOpen_union
+      apply Topology.isOpen_sUnion
       intro W HW; simp at HW
       rcases HW with ⟨VS, rfl⟩
       apply Hf1
@@ -314,10 +314,10 @@ lemma GlueData.topology_eq_topology'' (G : GlueData) [∀ l : G.L, Topology (G.f
     | inter S T HS HT IHS IHT =>
       simp; apply Topology.isOpen_inter _ _ IHS IHT
     | union S HS IH =>
-      simp; apply Topology.isOpen_union
+      simp; apply Topology.isOpen_sUnion
       intro s Hs; simp at *
       rcases Hs with ⟨V, rfl⟩
-      apply Topology.isOpen_union
+      apply Topology.isOpen_sUnion
       intro s Hs; simp at Hs
       rcases Hs with ⟨SV, rfl⟩
       apply IH V SV
@@ -338,10 +338,10 @@ lemma GlueData.topology_eq_topology'' (G : GlueData) [∀ l : G.L, Topology (G.f
       apply Topology.isOpen_inter<;>
       unfold Topology.isOpen instTopologyElemQuotientRangeFι<;>simp<;> assumption
     | union S HS IH =>
-      simp; apply Topology.isOpen_union
+      simp; apply Topology.isOpen_sUnion
       intro s Hs; simp at Hs
       rcases Hs with ⟨V, rfl⟩
-      apply Topology.isOpen_union
+      apply Topology.isOpen_sUnion
       intro s Hs; simp at Hs
       rcases Hs with ⟨SV, rfl⟩
       apply IH V SV

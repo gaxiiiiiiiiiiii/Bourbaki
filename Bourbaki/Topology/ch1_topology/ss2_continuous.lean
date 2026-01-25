@@ -133,7 +133,7 @@ lemma IsContinuous_iff_base [HX : Topology X] [HX' : Topology X'] (f : X → X')
     subst U; simp
     have : (⋃ t ∈ B, f ⁻¹' t) = ⋃₀ ((λ t : Set X' => f ⁻¹' t) '' B)  := by simp
     rw [this]; clear this
-    apply HX.isOpen_union
+    apply HX.isOpen_sUnion
     simp; intro b Hb
     apply H; apply HB Hb
 
@@ -193,7 +193,7 @@ noncomputable def IsTopologyHom.topologyHom [Topology X] [Topology X'] {f : X �
     change g (f y) = y at H
     rw [H]
     exact Hy
-    
+
 def TopologyHom.isTopologyHom [Topology X] [Topology X'] (E : TopologyHom X X') :
   IsTopologyHom E.toFun
 := by
@@ -300,7 +300,7 @@ instance {X} : OrderBot (Topology X) where
     isOpen S := S ∈ Set.univ
     isOpen_univ := by simp;
     isOpen_inter := by simp
-    isOpen_union := by simp
+    isOpen_sUnion := by simp
   }
   bot_le x := by simp [LE.le]
 
@@ -313,7 +313,7 @@ instance {X} : OrderTop (Topology X) where
       rcases Hx with ⟨Hx⟩<;>
       rcases Hy with ⟨Hy⟩<;>
       try subst x y; simp
-    isOpen_union := by
+    isOpen_sUnion := by
       intro S HS
       by_contra F; simp at F; rcases F with ⟨F1, F2⟩
       rcases F1 with ⟨s, Hs, Fs⟩
@@ -379,7 +379,7 @@ lemma cod_le_continuous [Topology X] (HY HY' : Topology Y)  (f : X → Y)
 --       rcases Hb with ⟨b', Hb', rfl⟩
 --       rw [<- Set.sInter_union]
 --       use a' ∪ b'; simp; constructor<;> assumption
---     isOpen_union := by
+--     isOpen_sUnion := by
 --       intro S H
 --       simp [𝓓] at *
 --       choose! g Hg using H
@@ -431,7 +431,7 @@ lemma cod_le_continuous [Topology X] (HY HY' : Topology Y)  (f : X → Y)
 --   intro U HU
 --   simp [inverse] at HU
 --   rcases HU with ⟨B, HB, rfl⟩
---   apply HX.isOpen_union
+--   apply HX.isOpen_sUnion
 --   intro b Hb
 --   apply HB at Hb; simp at Hb
 --   rcases Hb with ⟨C, HC, rfl⟩

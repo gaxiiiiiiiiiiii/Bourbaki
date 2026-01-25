@@ -117,7 +117,7 @@ lemma Init.le_init [HX : Topology X] :
   | univ => apply HX.isOpen_univ
   | inter S T HS HT IHS IHT => apply HX.isOpen_inter S T IHS IHT
   | union S HS IHS =>
-    apply HX.isOpen_union
+    apply HX.isOpen_sUnion
     intro s Hs
     apply IHS s Hs
 
@@ -363,7 +363,7 @@ def Init.single {X : Type _} (𝓖 : Set (Set X)) : 𝓖 → Topology X
     rcases HS with rfl | rfl | rfl<;>
     rcases HT with rfl | rfl | rfl<;>
     simp
-  isOpen_union S HS := by
+  isOpen_sUnion S HS := by
     by_contra F
     simp at F
     rcases F with ⟨⟨s, Hs, Fs⟩, F1, F2⟩

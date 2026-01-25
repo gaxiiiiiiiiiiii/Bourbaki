@@ -8,12 +8,12 @@ namespace Bourbaki
 class Topology (X : Type _) where
   isOpen : Set (Set X)
   isOpen_inter (s t : Set X ): isOpen s → isOpen t → isOpen (s ∩ t)
-  isOpen_union (S : Set (Set X)) : (∀ s ∈ S, isOpen s) → isOpen (⋃₀ S)
+  isOpen_sUnion (S : Set (Set X)) : (∀ s ∈ S, isOpen s) → isOpen (⋃₀ S)
   isOpen_univ : isOpen (Set.univ : Set X)
 
 lemma Topology.isOpen_empty [Topology X] : isOpen (∅ : Set X)
 := by
-  have := isOpen_union (∅ : Set (Set X)); simp at this
+  have := isOpen_sUnion (∅ : Set (Set X)); simp at this
   exact this
 
 lemma isOpen_sInter [HX : Topology X] (S : Finset (Set X)) :
@@ -94,7 +94,7 @@ lemma mem_neighbor_iff_isOpen [HX : Topology X]  {V : Set X} :
           use U
       }
       rw [<- E]
-      apply HX.isOpen_union S
+      apply HX.isOpen_sUnion S
       intro s; simp [S]; grind
     · intro v Hv; use V
 
@@ -169,7 +169,7 @@ where
   isOpen_inter S T HS HT x Hx := by
     rcases Hx with ⟨Sx, Tx⟩
     apply N.inter x S T (HS x Sx) (HT x Tx)
-  isOpen_union 𝓑 H x Hx := by
+  isOpen_sUnion 𝓑 H x Hx := by
     rcases Hx with ⟨S, HS, Sx⟩
     have := H S HS x Sx
     apply N.subset x S _ this
@@ -302,7 +302,7 @@ lemma isClosed_inter [HX : Topology X] (S : Set (Set X)) :
 := by
   intro H; simp [Topology.isClosed]
   rw [@Set.compl_sInter]
-  apply HX.isOpen_union
+  apply HX.isOpen_sUnion
   intro s Hs; simp at Hs
   rcases Hs with ⟨s', Hs', E⟩
   subst s
@@ -381,7 +381,7 @@ lemma interior_isOpen [HX : Topology X] (A : Set X) :
   HX.isOpen (interior A)
 := by
   simp [interior]
-  apply HX.isOpen_union; simp; grind
+  apply HX.isOpen_sUnion; simp; grind
 
 lemma le_interior [HX : Topology X] (A : Set X) :
   ∀ U ⊆ A, HX.isOpen U → U ⊆ interior A

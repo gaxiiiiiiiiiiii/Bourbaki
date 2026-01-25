@@ -99,7 +99,7 @@ lemma Finale.isContinuous [HY : ∀ i, Topology (Y i)] (f : ∀ i, Y i → X) (i
     simp
     have : ⋃ t ∈ S, f i ⁻¹' t = ⋃₀ {U | ∃ t ∈ S, U = f i ⁻¹' t} := by ext U; simp
     rw [this]; clear this
-    apply (HY i).isOpen_union; simp
+    apply (HY i).isOpen_sUnion; simp
     intro x s Hs rfl
     apply IHS s Hs
 
@@ -215,7 +215,7 @@ lemma Finale.le_sup {X I : Type _} (HX : I → Topology X) :
   | inter S T HS HT IHS IHT =>
     apply (HX i).isOpen_inter _ _ IHS IHT
   | union S HS IHS =>
-    apply (HX i).isOpen_union; assumption
+    apply (HX i).isOpen_sUnion; assumption
 
 
 def Finale.sum {I : Type _} (f : I → Type _) [Hf : ∀ i, Topology (f i)] :
@@ -271,9 +271,9 @@ lemma Finale.glue {X L : Type} (f : L → Set X) [Hf : ∀ l, Topology (f l)]
         simp; apply (Hf l).isOpen_inter _ _ IHS IHT
       | union S HS IHS =>
         simp
-        apply (Hf l).isOpen_union; simp
+        apply (Hf l).isOpen_sUnion; simp
         intro s
-        apply (Hf l).isOpen_union; simp
+        apply (Hf l).isOpen_sUnion; simp
         intro Hs
         apply IHS s Hs
     · intro V HV
@@ -307,7 +307,7 @@ lemma Finale.glue {X L : Type} (f : L → Set X) [Hf : ∀ l, Topology (f l)]
           use Hly, Hl
       }
       rw [this, Set.image_sUnion]; clear this
-      apply Topology.isOpen_union; simp
+      apply Topology.isOpen_sUnion; simp
       intro b Hb; apply HB at Hb; simp at Hb
       rcases Hb with ⟨U, HU, rfl⟩
       induction U using Finset.cons_induction_on with

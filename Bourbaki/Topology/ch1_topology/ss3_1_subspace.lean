@@ -13,11 +13,11 @@ where
     intro ⟨S', HS', ES⟩ ⟨T', HT', ET⟩
     use S' ∩ T', HX.isOpen_inter _ _ HS' HT'
     ext x; simp; grind
-  isOpen_union S HS := by
+  isOpen_sUnion S HS := by
     choose! f Hf Hf' using HS
     use ⋃₀ {V | ∃ s ∈ S, V = f s}; constructor; swap
     · ext x; simp; grind
-    · apply HX.isOpen_union
+    · apply HX.isOpen_sUnion
       intro V HV; simp at HV
       rcases HV with ⟨s, Hs, rfl⟩
       apply Hf s Hs
@@ -122,7 +122,7 @@ lemma Subtopology.trans' [HX : Topology X] (A B : Set X) (BA : B ⊆ A):
       intro i j; grind
     | union S HS IH =>
       rw [Set.image_sUnion]
-      apply (Init.topology gh).isOpen_union
+      apply (Init.topology gh).isOpen_sUnion
       intro t Ht; simp at Ht
       rcases Ht with ⟨s, Ss, rfl⟩
       apply IH s Ss
@@ -240,6 +240,8 @@ lemma Dense_iff_subset_closure [HX : Topology X] (A B : Set X) (BA : B ⊆ A) :
     apply H
   · intro x Hx; rw [Subtopology.closure_eq A B BA]; simp
     apply H Hx
+
+
 
 
 

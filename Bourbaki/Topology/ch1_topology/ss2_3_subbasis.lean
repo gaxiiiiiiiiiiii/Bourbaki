@@ -14,19 +14,19 @@ where
     intro ⟨S', HS', ES⟩ ⟨T', HT', ET⟩
     rw [ES, ET]; clear ES ET
     have HUS : ⋃₀ S' ∈ HX.isOpen := by {
-      apply HX.isOpen_union
+      apply HX.isOpen_sUnion
       intro s Hs; apply HS' at Hs
       apply 𝓑.base_isOpen Hs
     }
     have HUT : ⋃₀ T' ∈ HX.isOpen := by {
-      apply HX.isOpen_union
+      apply HX.isOpen_sUnion
       intro t Ht; apply HT' at Ht
       apply 𝓑.base_isOpen Ht
     }
     have HST := HX.isOpen_inter _ _ HUS HUT
     rcases 𝓑.covered _ HST with ⟨U, HU, E⟩
     rw [E]; use U
-  isOpen_union S HS := by
+  isOpen_sUnion S HS := by
     choose! f Hf Hf' using HS
     let B := ⋃₀ {V | ∃ s ∈ S, V = f s}
     use ⋃₀ {V | ∃ s ∈ S, V = f s}
@@ -54,7 +54,7 @@ lemma TopologicalBase.topology_eq [HX : Topology X] (𝓑 : TopologicalBase X) :
   conv => arg 1; change ∃ B ⊆ 𝓑.base, U = ⋃₀ B
   constructor<;> intro HU
   · rcases HU with ⟨B, HB, rfl⟩
-    apply HX.isOpen_union
+    apply HX.isOpen_sUnion
     intro b Hb
     apply 𝓑.base_isOpen
     apply HB Hb
@@ -86,7 +86,7 @@ where
   isOpen U := GenedOpen B U
   isOpen_univ := GenedOpen.univ
   isOpen_inter S T HS HT := GenedOpen.inter S T HS HT
-  isOpen_union S HS := by apply GenedOpen.union S; grind
+  isOpen_sUnion S HS := by apply GenedOpen.union S; grind
 
 lemma GenedTopology_eq [HX : Topology X] {B : Set (Set X)} (HB : IsTopologicalSubbase B) U :
   U ∈ HB.topologicalBase.topology.isOpen ↔  (GenedTopology B).isOpen U
@@ -128,14 +128,14 @@ lemma GenedTopology_eq [HX : Topology X] {B : Set (Set X)} (HB : IsTopologicalSu
       rcases IHT with ⟨T', HT', ET⟩
       rw [ES, ET]; clear ES ET
       have H1 : ⋃₀ S' ∈ HX.isOpen := by {
-        apply HX.isOpen_union
+        apply HX.isOpen_sUnion
         intro s Hs; apply HS' at Hs; simp at Hs
         apply HB.topologicalBase.base_isOpen
         simp [IsTopologicalBase.topologicalBase]
         exact Hs
       }
       have H2 : ⋃₀ T' ∈ HX.isOpen := by {
-        apply HX.isOpen_union
+        apply HX.isOpen_sUnion
         intro t Ht; apply HT' at Ht; simp at Ht
         apply HB.topologicalBase.base_isOpen
         simp [IsTopologicalBase.topologicalBase]

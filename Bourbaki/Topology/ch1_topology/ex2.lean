@@ -94,7 +94,7 @@ example [HX : Topology X] [HX' : Topology X'] (f : X → X') (Hf : f.Bijective) 
             apply HX'.isOpen_inter _ _ IHS IHT
           | union S HS IH =>
             rw [Set.image_sUnion]
-            apply HX'.isOpen_union
+            apply HX'.isOpen_sUnion
             intro s Hs; simp at Hs
             rcases Hs with ⟨W, HW, rfl⟩
             apply IH _ HW
