@@ -6,7 +6,7 @@ namespace Bourbaki
 def Subtopology {X : Type _} [HX : Topology X] (A : Set X) :
   Topology A
 where
-  isOpen U := ∃ V ∈ HX.isOpen, U = Subtype.val ⁻¹' V
+  isOpen U := ∃ V ∈ HX.isOpen, U = {x : A | x.val ∈ V}
   isOpen_univ := by
     use Set.univ, HX.isOpen_univ; simp
   isOpen_inter S T := by
@@ -23,7 +23,7 @@ where
       apply Hf s Hs
 
 lemma Subtopology.isOpen_iff {X : Type _} [HX : Topology X] {A : Set X} :
-  ∀ U, U ∈ (Subtopology A).isOpen ↔ ∃ V ∈ HX.isOpen, U = Subtype.val ⁻¹' V
+  ∀ U, U ∈ (Subtopology A).isOpen ↔ ∃ V ∈ HX.isOpen, U = {x : A | x.val ∈ V}
 := by intro U; rfl
 
 lemma Subtopology_eq_induced {X : Type _} [HX : Topology X] (A : Set X) :
@@ -148,21 +148,109 @@ lemma Subtopology.isOpen_iff_all [HX : Topology X] (A : Set X) :
     apply H; use Set.univ; simp
     apply HX.isOpen_univ
   · intro B ⟨V, HV, E⟩
-    rw [E]; simp
-    apply HX.isOpen_inter _ _ H HV
+    rw [E]; simp [Set.image]
+    apply HX.isOpen_inter _ _ HV H
 
 lemma Subtopology.isClosed_iff [HX : Topology X] (A : Set X) :
-  ∀ U, (Subtopology A).isClosed U ↔ ∃ V, HX.isClosed V ∧ U = Subtype.val ⁻¹' V
+  ∀ U, (Subtopology A).isClosed U ↔ ∃ V, HX.isClosed V ∧ U = {x : A | x.val ∈ V }
 := by
   intro U
   unfold Topology.isClosed Subtopology; simp
-
   constructor<;> intro ⟨V, HV, E⟩
   · use Vᶜ
     rw [compl_compl]
     use HV
-    rw [<- compl_compl U, E]; simp
+    rw [<- compl_compl U, E]
+    ext; simp
   · use Vᶜ, HV
     rw [E]; simp
+    ext; simp
+
+lemma Subtopology.neighborOf_iff [HX : Topology X] (A : Set X) (x : A) :
+  ∀ U, U ∈ neighborOf (HX := Subtopology A) x ↔ ∃ V, V ∈ neighborOf (x.val) ∧ {x : A | x.val ∈ V} ⊆ U
+:= by
+  intro U
+  unfold neighborOf NeighborOf; simp
+  unfold Topology.isOpen Subtopology; simp
+  unfold Topology.isOpen
+  constructor<;> intro H
+  · rcases H with ⟨V, HV,Vx, E⟩
+    use V, ?_, E
+    use V, HV
+  · rcases H with ⟨V, ⟨W, HW, Wx, WV⟩, E⟩
+    use W, HW, Wx
+    intro a Ha; apply E; simp at *
+    apply WV Ha
+
+lemma Subtopology.neighbotOf_iff_all [HX : Topology X] (A : Set X) (x : A) :
+  (∀ U, U ∈ neighborOf (HX := Subtopology A) x → Subtype.val '' U ∈ neighborOf x.val)
+  ↔ A ∈ neighborOf x.val
+:= by
+  constructor<;> intro H
+  · specialize H Set.univ; simp at H
+    apply H
+    unfold neighborOf NeighborOf; simp
+    use Set.univ; simp
+    apply (Subtopology A).isOpen_univ
+  · intro U HU
+    rw [neighborOf_iff] at HU
+    rcases HU with ⟨V, HV, VU⟩
+    unfold neighborOf NeighborOf at *; simp at *
+    rcases HV with ⟨V', HV', Vx, VV⟩
+    rcases H with ⟨A', HA', Ax, AA⟩
+    have := Topology.isOpen_inter _ _ HA' HV'
+    use A' ∩ V', this, ⟨Ax, Vx⟩
+    intro i ⟨Ai, Vi⟩; simp
+    use AA Ai; apply VU; simp
+    apply VV Vi
+
+lemma Subtopology.closure_eq [HX : Topology X] (A B : Set X) (BA : B ⊆ A) :
+  closure (HX := Subtopology A) {x | x.val ∈ B}  = {x : A | x.val ∈ closure B}
+:= by
+  ext x; simp
+  rw [@mem_closure_iff_adherent, @mem_closure_iff_adherent]
+  constructor<;> intro Hx U HU FU
+  · have : {x | x.val ∈ U} ∈ @neighborOf (↑A) (Subtopology A) x := by {
+      rw [neighborOf_iff]; use U, HU
+    }
+    apply Hx _ this; ext i; simp
+    intro Bi Ui
+    have : i.val ∈ B ∩ U := by grind
+    grind
+  · rw [neighborOf_iff] at HU
+    rcases HU with ⟨V, HV, VU⟩
+    apply Hx _ HV
+    ext i; simp
+    intro Bi Vi
+    let i' : A := ⟨i, BA Bi⟩
+    have : i' ∈ {x : A | ↑x ∈ B} ∩ U := by {
+      constructor<;> simp [i']; grind
+      apply VU; simp; grind
+    }
+    grind
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 end Bourbaki
