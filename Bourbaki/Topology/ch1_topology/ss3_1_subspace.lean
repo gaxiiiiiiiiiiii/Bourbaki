@@ -324,4 +324,42 @@ lemma Subtopology.isOpen_iff_covered_isOpen [HX : Topology X] {I : Type _} (A : 
     apply HX.isOpen_inter _ _ HV
     apply interior_isOpen
 
+lemma Subtopology.isClosed_iff_covered_isClosed [HX : Topology X] {I : Type _} (A : I → Set X)
+  (HA1 : LocallyFinite A) (HA2 : ⋃ i, A i = Set.univ) (HA3 : ∀ i, HX.isClosed (A i)) :
+  ∀ B, HX.isClosed B ↔ ∀ i, (Subtopology (A i)).isClosed {x : A i | x.val ∈ B}
+:= by
+  intro B
+  constructor<;> intro H
+  · intro i
+    unfold Topology.isClosed at H ⊢
+    rw [Subtopology.isOpen_iff]; use Bᶜ, H
+    ext x; simp
+  ·
+    have E : B = ⋃ i, B ∩  (A i) := by {
+      ext x; simp; intro Bx
+      have : x ∈ ⋃ i, (A i) := by grind
+      simp at this
+      exact this
+    }
+    rw [E]; clear E
+    apply union_of_ClosedLocallyFinite_isClosed
+    · unfold LocallyFinite at HA1 ⊢
+      intro x
+      specialize HA1 x
+      rcases HA1 with ⟨U, HU, Ux⟩
+      use U, HU
+      simp
+      apply Ux.subset; simp
+      intro i Hi
+      apply Hi.mono; grind
+    · intro i
+      specialize H i
+      rw [Subtopology.isClosed_iff] at H
+      rcases H with ⟨V, HV, E⟩
+      specialize HA3 i
+      change Subtype.val ⁻¹' B = Subtype.val ⁻¹' V at E
+      rw [Subtype.preimage_coe_eq_preimage_coe_iff] at E
+      rw [Set.inter_comm, E, <- Set.sInter_pair]
+      apply isClosed_inter; simp; grind
+
 end Bourbaki
