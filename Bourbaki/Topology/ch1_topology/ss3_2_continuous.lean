@@ -3,7 +3,6 @@ import Bourbaki.Topology.ch1_topology.ss2
 import Bourbaki.Topology.ch1_topology.ss3_1_subspace
 
 namespace Bourbaki
-#check IsContinuous
 
 def Subtopology.incl [Topology X] (A : Set X) : A → X := Subtype.val
 
