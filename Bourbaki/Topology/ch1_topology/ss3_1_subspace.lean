@@ -3,7 +3,7 @@ import Bourbaki.Topology.ch1_topology.ss2
 
 namespace Bourbaki
 
-def Subtopology [HX : Topology X] (A : Set X) :
+instance Subtopology [HX : Topology X] (A : Set X) :
   Topology A
 := Init.induced (Function.Embedding.subtype A)
 
