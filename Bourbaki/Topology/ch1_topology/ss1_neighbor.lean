@@ -563,6 +563,14 @@ lemma closure_le [HX : Topology X] (A : Set X) :
   simp [closure] at Hx
   grind
 
+lemma le_closure [HX : Topology X] (A : Set X) :
+  A ⊆ closure A
+:= by
+  intro x Hx
+  simp [closure]
+  intro B HB AB
+  apply AB Hx
+
 lemma isClosed_iff_eq_closure [HX : Topology X] {A : Set X} :
   HX.isClosed A ↔ closure A = A
 := by
