@@ -156,7 +156,7 @@ lemma Subtopology.trans [HX : Topology X] (A B : Set X) (BA : B ⊆ A):
   have E := Subtopology.trans' A B BA U
   rw [E]
 
-lemma Subtopology.isOpen_iff_all [HX : Topology X] (A : Set X) :
+lemma Subtopology.isOpen_iff [HX : Topology X] (A : Set X) :
   A ∈ HX.isOpen ↔ (∀ U ∈ (Subtopology A).isOpen, Subtype.val '' U ∈ HX.isOpen)
 := by
   rw [Subtopology.isOpen_eq]
