@@ -60,7 +60,7 @@ lemma le_α [HX : Topology X] (A : Set X) (HA : HX.isOpen A) :
   simp [α]
   apply le_interior _ A _ HA
   intro x Hx
-  rw [mem_closure_iff_adherent]
+  rw [mem_closure_iff]
   intro B HB F
   simp [neighborOf, NeighborOf] at HB
   rcases HB with ⟨U, HU, Ux, UB⟩
@@ -118,13 +118,13 @@ lemma α_disjunction [HX : Topology X] (A B : Set X) (HA : HX.isOpen A) (HB : HX
     have : x ∈ U ∩ (closure A)ᶜ := by grind
     grind
   }
-  rw [mem_closure_iff_adherent] at Ax
+  rw [mem_closure_iff] at Ax
   apply Ax _ Bx'
   ext i; simp
   intro Ai HBi
   rw [isOpen_iff_eq_interior] at HA
   rw [<- HA, mem_interior_iff_neighborOf] at Ai
-  rw [mem_closure_iff_adherent ] at HBi
+  rw [mem_closure_iff ] at HBi
   apply HBi _ Ai
   rw [Set.inter_comm, H]
 
@@ -178,7 +178,7 @@ example [HX : Topology X] (A B : Set X) (H : closure A ∩ closure B = ∅) :
   · intro x ⟨Hx, Hx'⟩
     have Fx : x ∉ closure B := by intro F; have : x ∈ closure A ∩ closure B := by {grind}; grind
     clear Hx
-    rw [mem_closure_iff_adherent] at Fx Hx' ⊢; simp at Fx
+    rw [mem_closure_iff] at Fx Hx' ⊢; simp at Fx
     rcases Fx with ⟨V, HV, EV⟩
     intro U HU F
     have HUV := neighborOf_inter HU HV
@@ -188,7 +188,7 @@ example [HX : Topology X] (A B : Set X) (H : closure A ∩ closure B = ∅) :
     grind
   · intro x ⟨Hx, Hx'⟩
     have Fx : x ∉ closure A := by intro F; have : x ∈ closure A ∩ closure B := by {grind}; grind
-    rw [mem_closure_iff_adherent] at Fx Hx' Hx ⊢; simp at Fx
+    rw [mem_closure_iff] at Fx Hx' Hx ⊢; simp at Fx
     rcases Fx with ⟨V, HV, EV⟩
     intro U HU F
     have HUV := neighborOf_inter HU HV
@@ -203,7 +203,7 @@ example [HX : Topology X]  (A B : Set X) (HA : HX.isOpen A) (HB : HX.isOpen B) :
   simp [frontier]
   constructor<;> constructor<;>
   intro x ⟨Hx, H, H'⟩<;>
-  rw [mem_closure_iff_adherent] at H H' ⊢<;>
+  rw [mem_closure_iff] at H H' ⊢<;>
   intro U HU F
   · rw [isOpen_iff_eq_interior] at HA
     rw [<- HA, mem_interior_iff_neighborOf] at Hx
@@ -230,7 +230,7 @@ example [HX : Topology X]  (A B : Set X) (HA : HX.isOpen A) (HB : HX.isOpen B) :
   frontier (A ∩ B) ⊆ (A ∩ frontier B) ∪ (B ∩ frontier A) ∪ (frontier A ∩ frontier B)
 := by
   intro x ⟨H1, H2⟩; simp
-  rw [mem_closure_iff_adherent] at H1 H2
+  rw [mem_closure_iff] at H1 H2
   by_cases Ax : x ∈ A
   · left; left; use Ax
     rw [frontier_mem_iff]
@@ -288,7 +288,7 @@ example [HX : Topology X] (A : Set X) :
   · intro F
     apply H Aᶜ; swap; simp
     intro x
-    rw [mem_closure_iff_adherent]
+    rw [mem_closure_iff]
     intro U HU FU
     have Ux := neighborOf_mem_self HU
     have Ax : x ∈ A := by by_contra Fx; have : x ∈ Aᶜ ∩ U := by {grind}; grind
@@ -301,7 +301,7 @@ example [HX : Topology X] (A : Set X) :
     ext x; simp
     intro Ax
     specialize HU x
-    rw [mem_closure_iff_adherent] at HU
+    rw [mem_closure_iff] at HU
     rw [mem_interior_iff_neighborOf] at Ax
     apply HU A Ax
     rw [Set.inter_comm, F]
@@ -314,7 +314,7 @@ example [HX : Topology X] (A : Set X) :
   intro Hx
   simp [isolate] at Hx H
   rcases Hx with ⟨Hx, Fx⟩
-  rw [mem_closure_iff_adherent] at Hx Fx
+  rw [mem_closure_iff] at Hx Fx
   apply Fx; clear Fx
   intro U HU F
   apply Hx _ HU
@@ -330,19 +330,19 @@ example [HX : Topology X] (A : Set X) :
     simp; constructor; swap
     · intro E; subst y
       specialize H x Ay
-      rw [mem_closure_iff_adherent] at H
+      rw [mem_closure_iff] at H
       apply H U HU
       ext y; simp
       intro Ay' E Uy'
       have Fy : y ∉ closure A \ {x} := by intro F; have : y ∈ closure A \ {x} ∩ U := by {grind}; grind
       apply Fy; simp; clear Fy
       use ?_, E
-      rw [mem_closure_iff_adherent]
+      rw [mem_closure_iff]
       intro V HV AV
       have Vy := neighborOf_mem_self HV
       have Ax : y ∉ A := by by_contra F; have : y ∈ A ∩ V := by {grind}; grind
       contradiction
-    · rw [mem_closure_iff_adherent]
+    · rw [mem_closure_iff]
       intro V HV AV
       have Vy := neighborOf_mem_self HV
       have Fy : y ∈ A ∩ V := by grind

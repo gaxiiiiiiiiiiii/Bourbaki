@@ -519,7 +519,7 @@ lemma closure_isClosed [HX : Topology X] (A : Set X) :
   apply isClosed_inter; grind
 
 
-def mem_closure_iff_adherent [HX : Topology X] {A : Set X} {x : X} :
+def mem_closure_iff [HX : Topology X] {A : Set X} {x : X} :
   x ∈ closure A ↔ ∀ B, B ∈ neighborOf x → A ∩ B ≠ ∅
 := by
   constructor<;> intro H
@@ -616,7 +616,7 @@ lemma closure_mono [HX : Topology X] {A B : Set X} :
   A ⊆ B → closure A ⊆ closure B
 := by
   intro H x
-  rw [mem_closure_iff_adherent, mem_closure_iff_adherent]
+  rw [mem_closure_iff, mem_closure_iff]
   intro Hx U HU F
   specialize Hx U HU
   apply Hx; ext y; simp
@@ -635,7 +635,7 @@ example [HX : Topology X] (A : Set X) :
   ∀ x ∈ closure A, x ∉ A → ∀ B ∈ neighborOf x, ∃ y ∈ A, y ∈ B ∧ x ≠ y
 := by
   intro x Hx Fx B HB
-  simp [mem_closure_iff_adherent] at Hx
+  simp [mem_closure_iff] at Hx
   specialize Hx B HB
   by_contra F; simp at F
   apply Hx; ext y; simp
@@ -652,7 +652,7 @@ lemma isolate_mem_neighbor [HX : Topology X] {A : Set X} {x : X} :
   x ∈ isolate A → ∃ B ∈ neighborOf x, ∀ y ∈ B ∩ A, y = x
 := by
   simp [isolate]
-  rw [mem_closure_iff_adherent]
+  rw [mem_closure_iff]
   intro Ax H; simp at H
   rcases H with ⟨B, HB, EB⟩
   use B, HB
@@ -678,7 +678,7 @@ lemma mem_frontier_iff [HX : Topology X] {A : Set X} {x : X} :
   (∀ B, B ∈ neighborOf x → A ∩ B ≠ ∅ ∧ Aᶜ ∩ B ≠ ∅)
 := by
   simp [frontier]
-  rw [mem_closure_iff_adherent, mem_closure_iff_adherent]
+  rw [mem_closure_iff, mem_closure_iff]
   grind
 
 lemma frontier_compl_eq [HX : Topology X] (A : Set X) :

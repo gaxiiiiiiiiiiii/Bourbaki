@@ -228,7 +228,7 @@ lemma Subtopology.closure_eq [HX : Topology X] (A B : Set X) (BA : B ⊆ A) :
   closure (HX := Subtopology A) {x | x.val ∈ B}  = {x : A | x.val ∈ closure B}
 := by
   ext x; simp
-  rw [@mem_closure_iff_adherent, @mem_closure_iff_adherent]
+  rw [@mem_closure_iff, @mem_closure_iff]
   constructor<;> intro Hx U HU FU
   · have : {x | x.val ∈ U} ∈ @neighborOf (↑A) (Subtopology A) x := by {
       rw [neighborOf_iff]; use U, HU

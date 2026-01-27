@@ -84,7 +84,7 @@ lemma IsContinuous_iff_IsClosed_preimage [HX : Topology X] [HX' : Topology X'] (
       rw [<- HV']
       have : closure (f '' (f ⁻¹' V')) ⊆ closure V' := by  apply closure_mono; simp
       apply this; assumption
-    · rw [mem_closure_iff_adherent]
+    · rw [mem_closure_iff]
       intro U HU F
       have Ux := neighborOf_mem_self HU
       have Hx' : x ∈ (f ⁻¹' V')ᶜ := by intro F; have : x ∈ f ⁻¹' V' ∩ U := by {grind}; grind
@@ -100,7 +100,7 @@ lemma IsContinuous_iff_IsClosed_preimage [HX : Topology X] [HX' : Topology X'] (
     change closure A ⊆ closure (f ⁻¹' closure (f '' A))
     apply closure_mono
     intro x Hx; simp
-    rw [mem_closure_iff_adherent]
+    rw [mem_closure_iff]
     intro U HU F
     have : f x ∈ f '' A ∩ U := by {
       simp; constructor; use x
