@@ -146,7 +146,7 @@ lemma neighborOf_mem_self [HX : Topology X] {x : X} {V : Set X} :
   simp [neighborOf, NeighborOf]; grind
 
 
-lemma neighbor_core {X} [HX : Topology X] {x : X} {V : Set X} :
+lemma neighborOf_core {X} [HX : Topology X] {x : X} {V : Set X} :
   V ∈ neighborOf x → ∃ W ∈ neighborOf x, ∀ y ∈ W, V ∈ neighborOf y
 := by
   intro ⟨U, HU, Ux, UV⟩
