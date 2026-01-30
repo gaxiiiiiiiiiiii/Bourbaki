@@ -691,4 +691,82 @@ lemma frontier_compl_eq [HX : Topology X] (A : Set X) :
 def IsDense [HX : Topology X] (A : Set X) :=
   ∀ x, x ∈ closure A
 
+section MISC
+
+lemma Topology.isOpen.closure_inter [HX : Topology X] {U : Set X} (HU : HX.isOpen U) (V : Set X):
+  U ∩ closure V ⊆ closure (U ∩ V)
+:= by
+  intro x ⟨Ux, Vx⟩
+  rw [isOpen_iff_eq_interior] at HU
+  rw [<- HU] at Ux
+  rw [mem_closure_iff] at ⊢ Vx
+  rw [mem_interior_iff] at Ux
+  intro A HA F
+  rcases Ux with ⟨B, HB, E⟩
+  have := neighborOf_inter HA HB
+  apply Vx _ this
+  ext i; simp
+  intro Vi Ai Bi
+  have Ui : i ∈ U := by {
+    by_contra Fi : i ∈ Uᶜ
+    have : i ∈ V ∩ Uᶜ := by grind
+    grind
+  }
+  grind
+
+lemma Topology.isOpen.inter_closure [HX : Topology X] {U : Set X} (HU : HX.isOpen U) (V : Set X):
+  closure V ∩ U ⊆ closure (V ∩ U)
+:= by
+  rw [Set.inter_comm _ U, Set.inter_comm _ U]
+  apply HU.closure_inter
+
+lemma closure_inter [HX : Topology X] (U V : Set X) :
+  closure (U ∩ V) ⊆ closure U ∩ closure V
+:= by
+  intro x Hx; constructor<;>
+  revert x<;> change closure _ ⊆ closure _<;>
+  apply closure_mono<;> simp
+
+lemma interior_union [HX : Topology X] (U V : Set X) :
+  interior U ∪ interior V ⊆ interior (U ∪ V)
+:= by
+  intro x Hx
+  rcases Hx with Hx | Hx<;>
+  revert x<;> change interior _ ⊆ interior _<;>
+  apply interior_mono<;> simp
+
+lemma Topology.isClosed.union_interior [HX : Topology X] {s t : Set X} (Hs : HX.isClosed s):
+ interior (s ∪ t) ⊆ s ∪ interior t
+:= by
+  intro x Hx
+  rw [mem_interior_iff] at Hx
+  rcases Hx with ⟨U, HU, E⟩
+  have Ux : x ∈ U := by apply neighborOf_mem_self HU
+  by_cases xs : x ∈ s
+  · left; exact xs
+  · rw [isClosed_iff_eq_closure] at Hs
+    rw [<- Hs] at xs
+    change x ∈ (closure s)ᶜ at xs
+    rw [compl_closure] at xs
+    rw [mem_interior_iff_neighborOf] at xs
+    have := neighborOf_inter HU xs
+    right; rw [mem_interior_iff]
+    use U ∩ sᶜ, this; grind
+
+lemma Topology.isClosed.interior_union [HX : Topology X] {s t : Set X} (Ht : HX.isClosed t):
+ interior (s ∪ t) ⊆ interior s ∪ t
+:= by
+  rw [Set.union_comm s t, Set.union_comm (interior s) t]
+  apply Ht.union_interior
+
+lemma coborder_eq_union_frontier_compl  [Topology X] (L : Set X) :
+  (closure L ∩ Lᶜ)ᶜ = L ∪ (frontier L)ᶜ
+:= by
+  rw [frontier, Set.compl_inter, Set.compl_inter, compl_closure, <- compl_interior, compl_compl, compl_compl]
+  rw [<- Set.union_assoc, Set.union_comm L]
+  ext x; simp
+  intro Hx; right; apply interior_le L Hx
+
+end MISC
+
 end Bourbaki

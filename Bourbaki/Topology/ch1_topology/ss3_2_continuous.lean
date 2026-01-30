@@ -55,11 +55,11 @@ lemma Subtopology.pasting_openCverd_continuous [HX : Topology X] {I : Type _} (A
   intro U HU
   change _ ∈ HX.isOpen
   rw [H']
-  intro i; rw [Subtopology.isOpen_iff]; simp
+  intro i; rw [Subtopology.isOpen_eq]; simp
   specialize H i; rw [@IsContinuous_iff_IsOpen_preimage] at H
   specialize H U HU
   simp [restrict, incl] at H
-  rw [Subtopology.isOpen_iff] at H
+  rw [Subtopology.isOpen_eq] at H
   rcases H with ⟨V, HV, E⟩
   use V, HV; rw [<- E]; ext x; simp
 
