@@ -154,6 +154,13 @@ lemma Finale.isClosed_iff [HY : ∀ i, Topology (Y i)] (f : ∀ i, Y i → X) (F
     intro i
     apply H i
 
+lemma Finale.isOpen_iff [HY : ∀ i, Topology (Y i)] (f : ∀ i, Y i → X) (U : Set X) :
+  (topology f).isOpen U ↔ ∀ i,  (HY i).isOpen (f i ⁻¹' U)
+:= by
+  conv => arg 1; rw [<- compl_compl U]; change (topology f).isClosed Uᶜ
+  rw [isClosed_iff]; unfold Topology.isClosed; simp
+
+
 
 lemma Finale.trans {X I L : Type _} {Z : I → Type _} {Y : L → Type _} [HZ : ∀ i, Topology (Z i)] (h : ∀ l, Y l → X) (g : ∀ l i, Z i → Y l) :
   let _HY : ∀ l, Topology (Y l) := fun l =>  Finale.topology (g l)
