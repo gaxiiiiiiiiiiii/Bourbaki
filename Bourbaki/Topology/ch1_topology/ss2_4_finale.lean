@@ -191,7 +191,7 @@ lemma Finale.trans {X I L : Type _} {Z : I → Type _} {Y : L → Type _} [HZ : 
     apply Hg at HU
     exact HU
 
-def Finale.quotient [Topology X] (R : Setoid X) :
+instance Finale.quotient [Topology X] (R : Setoid X) :
   Topology (Quotient R)
 := Finale.topology (fun (_ : PUnit.{1}) => Quotient.mk R)
 
