@@ -6,8 +6,8 @@ namespace Bourbaki
 
 def Subtopology.incl [Topology X] (A : Set X) : A → X := Subtype.val
 
-def Subtopology.incl_isContinuous [HX : Topology X] (A : Set X) :
-  IsContinuous (incl A )
+def Subtopology.isContinuous [HX : Topology X] (A : Set X) :
+  IsContinuous (Subtype.val : A → X)
 := Init.isContinuous (fun _ : PUnit.{1} => (Function.Embedding.subtype A).1) PUnit.unit
 
 def Subtopology.restrict [HX : Topology X] (f : X → Y) (A : Set X) : A → Y := f ∘ incl A
@@ -15,7 +15,7 @@ def Subtopology.restrict [HX : Topology X] (f : X → Y) (A : Set X) : A → Y :
 lemma Subtopology.restrict_isContinuous [HX : Topology X] [HY : Topology Y]
   {A : Set X} {f : X → Y} (Hf : IsContinuous f) :
   @IsContinuous A Y (Subtopology A) HY (restrict f A)
-:= IsContinuous_compose (incl_isContinuous A) Hf
+:= IsContinuous_compose (isContinuous A) Hf
 
 def Subtopology.IsContinuousWithinAt [HX : Topology X] [HY : Topology Y] (f : X → Y) (A : Set X) (x : A) :=
   @IsContinuousAt _ _ (Subtopology A) _ (restrict f A) x
