@@ -34,6 +34,21 @@ lemma kerLift_bijective [HX : Topology X] [HY : Topology Y] (f : X → Y) :
     rw [Quotient.liftOn_mk]; simp
     rw [Hx]
 
+lemma kerLift_isContinuous [HX : Topology X] [HY : Topology Y] (f : X → Y) (Hf : IsContinuous f) :
+  IsContinuous (kerLift f)
+:= by
+  rw [IsContinuous_iff_IsOpen_preimage]
+  intro U HU
+  rw [Subtopology.isOpen_eq] at HU
+  rcases HU with ⟨V, HV, rfl⟩; simp
+  change {a | ↑(kerLift f a) ∈ V} ∈ Topology.isOpen
+  rw [Finale.isOpen_iff]; --simp [kerLift]
+  rw [ Set.preimage_setOf_eq (f := (Quotient.mk (Setoid.ker f)))]
+  have : {a | ↑(kerLift f ⟦a⟧) ∈ V} = f ⁻¹' V := by ext x; simp [kerLift]
+  rw [this]; clear this; simp
+  rw [IsContinuous_iff_IsOpen_preimage] at Hf
+  apply Hf V HV
+
 def decompose [HX : Topology X] [HY : Topology Y] (f : X → Y) :
   X → Y
 := (Subtype.val) ∘ (kerLift f) ∘ Quotient.mk (Setoid.ker f)
@@ -67,16 +82,9 @@ lemma decompose_IsTopologyHom_iff_isOpen [HX : Topology X] [HY : Topology Y] (f 
     let E := Equiv.ofBijective _ (kerLift_bijective f)
     let H : TopologyHom (Quotient (Setoid.ker f)) (Set.range f) := by {
       apply TopologyHom.mk (toEquiv := E)
-      · intro U HU
-        rw [Subtopology.isOpen_eq] at HU
-        rcases HU with ⟨V, HV, rfl⟩; simp
-        change {a | ↑(E a) ∈ V} ∈ Topology.isOpen
-        rw [Finale.isOpen_iff]; simp [E]
-        rw [ Set.preimage_setOf_eq (f := (Quotient.mk (Setoid.ker f)))]
-        have : {a | ↑(kerLift f ⟦a⟧) ∈ V} = f ⁻¹' V := by ext x; simp [kerLift]
-        rw [this]; clear this
-        rw [IsContinuous_iff_IsOpen_preimage] at Hf
-        apply Hf V HV
+      · have := kerLift_isContinuous f Hf
+        rw [IsContinuous_iff_IsOpen_preimage] at this
+        exact this
       · intro U HU
         change _ ∈ (Subtopology (Set.range f)).isOpen
         rw [Subtopology.isOpen_eq]; simp
