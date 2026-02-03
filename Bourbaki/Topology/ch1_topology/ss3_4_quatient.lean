@@ -10,6 +10,10 @@ def Quotspace [HX : Topology X] (R : Setoid X) :
   Topology (Quotient R)
 := Finale.quotient R
 
+lemma Quotspace.isContinuous [HX : Topology X] [HY : Topology Y] (R : Setoid X) (f : Quotient R → Y) :
+  IsContinuous (Quotient.mk R)
+:= Finale.isContinuous (fun (_ : PUnit.{1}) => Quotient.mk R) PUnit.unit
+
 lemma Quotspace.isOpen_iff [HX : Topology X] (R : Setoid X) (U : Set (Quotient R)) :
   U ∈ (Quotspace R).isOpen ↔  (Quotient.mk R ⁻¹' U) ∈ Topology.isOpen
 := by rw [Finale.isOpen_iff]; simp; conv => arg 1; change Quotient.mk R ⁻¹' U ∈ Topology.isOpen
