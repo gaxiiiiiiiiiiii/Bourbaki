@@ -48,7 +48,7 @@ lemma IsContinuousAt_iff_closure [Topology X] [Topology X'] (f : X → X') (x : 
     }
     apply this H
 
-lemma IsContinuousAt_compose [Topology X] [Topology X'] [Topology X''] {f : X → X'} {g : X' → X''}
+lemma IsContinuousAt_comp [Topology X] [Topology X'] [Topology X''] {f : X → X'} {g : X' → X''}
   (x₀ : X) (Hf : IsContinuousAt f x₀) (Hg : IsContinuousAt g (f x₀)) :
   IsContinuousAt (g ∘ f) x₀
 := by
@@ -137,11 +137,11 @@ lemma IsContinuous_iff_base [HX : Topology X] [HX' : Topology X'] (f : X → X')
     simp; intro b Hb
     apply H; apply HB Hb
 
-lemma IsContinuous_compose [Topology X] [Topology X'] [Topology X''] {f : X → X'} {g : X' → X''}
+lemma IsContinuous_comp [Topology X] [Topology X'] [Topology X''] {f : X → X'} {g : X' → X''}
   (Hf : IsContinuous f) (Hg : IsContinuous g) :
   IsContinuous (g ∘ f)
 := by
-  intro s; apply IsContinuousAt_compose; apply Hf; apply Hg
+  intro s; apply IsContinuousAt_comp; apply Hf; apply Hg
 
 
 #check Homeomorph
