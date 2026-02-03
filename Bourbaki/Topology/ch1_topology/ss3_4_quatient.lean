@@ -49,7 +49,7 @@ def Quotspace.map [HX : Topology X] [HY : Topology Y] {R : Setoid X} {S : Setoid
 
 
 
-lemma Quotspace.isContinuous [Topology X] [Topology Y] (R : Setoid X)  (S : Setoid Y) (f : X → Y) (Hf : R ≤ Setoid.comap f S) :
+lemma Quotspace.map_isContinuous [Topology X] [Topology Y] (R : Setoid X)  (S : Setoid Y) (f : X → Y) (Hf : R ≤ Setoid.comap f S) :
   IsContinuous f → IsContinuous (map Hf)
 := by
   intro H
