@@ -43,7 +43,7 @@ lemma Quotspace.isContinuous_iff [HX : Topology X] [HY : Topology Y] (R : Setoid
 
 
 
-def Quotspace.map [HX : Topology X] [HY : Topology Y] {R : Setoid X} {S : Setoid Y} {f : X → Y} (Hf : R ≤ Setoid.comap f S) :
+def Quotspace.map  {R : Setoid X} {S : Setoid Y} {f : X → Y} (Hf : R ≤ Setoid.comap f S) :
   Quotient R → Quotient S
 := fun x => by
   apply Quotient.liftOn x (Quotient.mk S ∘ f)
