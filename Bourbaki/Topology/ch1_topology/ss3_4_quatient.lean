@@ -10,7 +10,7 @@ def Quotspace [HX : Topology X] (R : Setoid X) :
   Topology (Quotient R)
 := Finale.quotient R
 
-lemma Quotspace.isContinuous [HX : Topology X] [HY : Topology Y] (R : Setoid X) (f : Quotient R → Y) :
+lemma Quotspace.isContinuous [HX : Topology X]  (R : Setoid X) :
   IsContinuous (Quotient.mk R)
 := Finale.isContinuous (fun (_ : PUnit.{1}) => Quotient.mk R) PUnit.unit
 
