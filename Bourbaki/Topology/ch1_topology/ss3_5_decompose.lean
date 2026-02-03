@@ -58,7 +58,7 @@ lemma decompose_eq [HX : Topology X] [HY : Topology Y] (f : X → Y) :
 := by ext x; simp [decompose, kerLift]
 
 
-lemma decompose_IsTopologyHom_iff_isOpen [HX : Topology X] [HY : Topology Y] (f : X → Y) (Hf : IsContinuous f) :
+lemma kerLift_IsTopologyHom_iff_isOpen [HX : Topology X] [HY : Topology Y] (f : X → Y) (Hf : IsContinuous f) :
   IsTopologyHom (kerLift f) ↔
   ∀ U ∈ HX.isOpen, IsSaturated f U →  ({x : Set.range f | x.val ∈ f '' U} ∈ (Subtopology (Set.range f)).isOpen)
 := by
@@ -114,12 +114,12 @@ lemma decompose_IsTopologyHom_iff_isOpen [HX : Topology X] [HY : Topology Y] (f 
     apply H.isTopologyHom
 
 
-lemma decompose_IsTopologyHom_iff_isClosed [HX : Topology X] [HY : Topology Y] (f : X → Y) (Hf : IsContinuous f) :
+lemma kerLift_IsTopologyHom_iff_isClosed [HX : Topology X] [HY : Topology Y] (f : X → Y) (Hf : IsContinuous f) :
   IsTopologyHom (kerLift f) ↔
   ∀ U, HX.isClosed U → IsSaturated f U →   (Subtopology (Set.range f)).isClosed {x : Set.range f | x.val ∈ f '' U}
 := by
   unfold Topology.isClosed
-  rw [decompose_IsTopologyHom_iff_isOpen f Hf]
+  rw [kerLift_IsTopologyHom_iff_isOpen f Hf]
   constructor<;> intro H U HU HfU
   · have HfU' : IsSaturated f Uᶜ := by {
       intro x Hx y H F; apply Hx
