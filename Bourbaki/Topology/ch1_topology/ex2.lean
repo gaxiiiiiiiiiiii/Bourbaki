@@ -42,7 +42,7 @@ end ex_2_1
 section ex_2_3
 
 example [HX : Topology X] [HX' : Topology X'] (f : X → X') (Hf : f.Bijective) :
-  IsTopologyHom f ↔ HX = Init.induced (Function.Embedding.mk f Hf.injective)
+  IsHomeomorphic f ↔ HX = Init.induced (Function.Embedding.mk f Hf.injective)
 := by
   constructor<;> intro H
   · apply le_antisymm

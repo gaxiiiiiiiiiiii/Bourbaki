@@ -373,8 +373,8 @@ lemma GlueData.range_mem (G : GlueData) [Hf : ∀ l, Topology (G.f l)] (HA : ∀
   rw [this]
   apply HA
 
-noncomputable def GlueData.topologyHom (G : GlueData) [Hf : ∀ l, Topology (G.f l)]  l :
- TopologyHom  (G.f l) (Set.range (G.ι l))
+noncomputable def GlueData.Homeomorphic (G : GlueData) [Hf : ∀ l, Topology (G.f l)]  l :
+ Homeomorphic  (G.f l) (Set.range (G.ι l))
 where
   toFun := G.ι_equiv l
   invFun := (G.ι_equiv l).invFun

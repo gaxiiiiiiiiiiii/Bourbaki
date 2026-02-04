@@ -145,8 +145,8 @@ lemma IsContinuous_comp [Topology X] [Topology X'] [Topology X''] {f : X → X'}
 
 
 #check Homeomorph
-lemma TopologyHom_iff_continuous [Topology X] [Topology X'] :
-  Nonempty (TopologyHom X X') ↔ ∃ f : X ≃ X', IsContinuous f.toFun ∧ IsContinuous f.invFun
+lemma Homeomorphic_iff_continuous [Topology X] [Topology X'] :
+  Nonempty (Homeomorphic X X') ↔ ∃ f : X ≃ X', IsContinuous f.toFun ∧ IsContinuous f.invFun
 := by
   constructor
   · intro ⟨f⟩
@@ -158,19 +158,19 @@ lemma TopologyHom_iff_continuous [Topology X] [Topology X'] :
     rw [IsContinuous_iff_IsOpen_preimage] at H1 H2
     constructor; use E
 
-structure IsTopologyHom [Topology X] [Topology X'] (f : X → X') where
+structure IsHomeomorphic [Topology X] [Topology X'] (f : X → X') where
   continuous : IsContinuous f
   bij :  f.Bijective
   open_map : ∀ x U, U ∈ neighborOf x → f '' U ∈ neighborOf (f x)
 
 
-noncomputable def IsTopologyHom.topologyHom [Topology X] [Topology X'] {f : X → X'} (H : IsTopologyHom f) :
-  TopologyHom X X'
+noncomputable def IsHomeomorphic.Homeomorphic [Topology X] [Topology X'] {f : X → X'} (H : IsHomeomorphic f) :
+  Homeomorphic X X'
 := by
   let E := Equiv.ofBijective _ H.bij
   have Hf := H.continuous
   have H2 := H.open_map
-  apply TopologyHom.mk E
+  apply Homeomorphic.mk E
   · intro S HS
     conv => arg 1; arg 1; change f
     rw [IsContinuous_iff_IsOpen_preimage] at Hf
@@ -194,8 +194,8 @@ noncomputable def IsTopologyHom.topologyHom [Topology X] [Topology X'] {f : X �
     rw [H]
     exact Hy
 
-def TopologyHom.isTopologyHom [Topology X] [Topology X'] (E : TopologyHom X X') :
-  IsTopologyHom E.toFun
+def Homeomorphic.isHomeomorphic [Topology X] [Topology X'] (E : Homeomorphic X X') :
+  IsHomeomorphic E.toFun
 := by
   have H1 := E.continuous_fun
   have H2 := E.bijective

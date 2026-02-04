@@ -55,7 +55,7 @@ structure OpenCover (X : Type _) [Topology X] extends Cover X where
 
 
 -- 位相同型
-structure TopologyHom (X Y : Type _) [Topology X] [Topology Y] extends X ≃ Y where
+structure Homeomorphic (X Y : Type _) [Topology X] [Topology Y] extends X ≃ Y where
   continuous_fun : ∀ S : Set Y, Topology.isOpen S → Topology.isOpen (toFun ⁻¹' S)
   continuous_inv : ∀ S : Set X, Topology.isOpen S → Topology.isOpen (invFun ⁻¹' S)
 

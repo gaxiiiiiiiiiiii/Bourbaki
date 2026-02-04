@@ -11,6 +11,21 @@ namespace Bourbaki
 
 section decompose
 
+/-
+
+  f : X → Y
+  Hf : IsContinuous f
+  を分解する方法を示す
+
+  R x y := f x = f y とする同値関係Rを使って
+  kerLift f : X⧸R → Im f を定義できる。この時、
+  decompose f : X → X⧸R → Im f → Y
+  := Subtype.val ∘ kerLift f ∘ Quotient.mk R
+
+  とすると、
+  decompose f = f
+-/
+
 def kerLift [HX : Topology X] [HY : Topology Y] (f : X → Y) :
   Quotient (Setoid.ker f) → Set.range f
 := fun x => by
@@ -58,15 +73,15 @@ lemma decompose_eq [HX : Topology X] [HY : Topology Y] (f : X → Y) :
 := by ext x; simp [decompose, kerLift]
 
 
-lemma kerLift_IsTopologyHom_iff_isOpen [HX : Topology X] [HY : Topology Y] (f : X → Y) (Hf : IsContinuous f) :
-  IsTopologyHom (kerLift f) ↔
+lemma kerLift_IsHomeomorphic_iff_isOpen [HX : Topology X] [HY : Topology Y] (f : X → Y) (Hf : IsContinuous f) :
+  IsHomeomorphic (kerLift f) ↔
   ∀ U ∈ HX.isOpen, IsSaturated f U →  ({x : Set.range f | x.val ∈ f '' U} ∈ (Subtopology (Set.range f)).isOpen)
 := by
   constructor<;> intro H
   · intro U HU HfU
     rw [Subtopology.isOpen_eq]; simp
-    have H2 := H.topologyHom.continuous_inv
-    set σ := H.topologyHom.toEquiv
+    have H2 := H.Homeomorphic.continuous_inv
+    set σ := H.Homeomorphic.toEquiv
 
     rw [IsSaturated_iff_eq_preimage_image] at HfU
     rw [<- HfU, <- Quotspace.isOpen_iff] at HU
@@ -76,12 +91,12 @@ lemma kerLift_IsTopologyHom_iff_isOpen [HX : Topology X] [HY : Topology Y] (f : 
     use V, HV
     rw [<- E]; simp
     rw [<- σ.image_eq_preimage_symm]
-    simp [σ, IsTopologyHom.topologyHom]
+    simp [σ, IsHomeomorphic.Homeomorphic]
     ext x; simp [kerLift]; grind
   ·
     let E := Equiv.ofBijective _ (kerLift_bijective f)
-    let H : TopologyHom (Quotient (Setoid.ker f)) (Set.range f) := by {
-      apply TopologyHom.mk (toEquiv := E)
+    let H : Homeomorphic (Quotient (Setoid.ker f)) (Set.range f) := by {
+      apply Homeomorphic.mk (toEquiv := E)
       · have := kerLift_isContinuous f Hf
         rw [IsContinuous_iff_IsOpen_preimage] at this
         exact this
@@ -111,15 +126,15 @@ lemma kerLift_IsTopologyHom_iff_isOpen [HX : Topology X] [HY : Topology Y] (f : 
           rw [Quotient.liftOn_mk]; simp
           rw [E]
     }
-    apply H.isTopologyHom
+    apply H.isHomeomorphic
 
 
-lemma kerLift_IsTopologyHom_iff_isClosed [HX : Topology X] [HY : Topology Y] (f : X → Y) (Hf : IsContinuous f) :
-  IsTopologyHom (kerLift f) ↔
+lemma kerLift_IsHomeomorphic_iff_isClosed [HX : Topology X] [HY : Topology Y] (f : X → Y) (Hf : IsContinuous f) :
+  IsHomeomorphic (kerLift f) ↔
   ∀ U, HX.isClosed U → IsSaturated f U →   (Subtopology (Set.range f)).isClosed {x : Set.range f | x.val ∈ f '' U}
 := by
   unfold Topology.isClosed
-  rw [kerLift_IsTopologyHom_iff_isOpen f Hf]
+  rw [kerLift_IsHomeomorphic_iff_isOpen f Hf]
   constructor<;> intro H U HU HfU
   · have HfU' : IsSaturated f Uᶜ := by {
       intro x Hx y H F; apply Hx
@@ -167,16 +182,16 @@ lemma kerLift_IsTopologyHom_iff_isClosed [HX : Topology X] [HY : Topology Y] (f 
       · specialize this x Ux; contradiction
 
 
---　ブルバキ位相では、連続断面なる概念を使ってて、たぶん右逆像gで良さそう
+--　ブルバキ位相では、連続断面なる概念を使ってて、たぶん右逆像gを意味してそう
 -- fの全射性から存在がいえる右逆写像が連続としてもよいけど、noncomputableになるのを避けた
 structure ContinuousSection [HX : Topology X] [HY : Topology Y] (f : X → Y) where
   sect : Y → X
   continuous : IsContinuous sect
   right_inverse : f ∘ sect = id
 
-lemma ContinuousSection.kerLift_IsTopologyHom [HX : Topology X] [HY : Topology Y]
+lemma ContinuousSection.kerLift_IsHomeomorphic [HX : Topology X] [HY : Topology Y]
   (f : X → Y) (Hf : IsContinuous f) (s : ContinuousSection f) :
-  IsTopologyHom (kerLift f)
+  IsHomeomorphic (kerLift f)
 where
   continuous := by
     rw [IsContinuous_iff_IsOpen_preimage]
@@ -232,9 +247,9 @@ where
       rw [this]
 
 
-def ContinuousSection.TopologyHom [HX : Topology X] [HY : Topology Y]
+def ContinuousSection.Homeomorphic [HX : Topology X] [HY : Topology Y]
   (f : X → Y) (Hf : IsContinuous f) (s : ContinuousSection f) :
-  TopologyHom Y (Set.range s.sect)
+  Homeomorphic Y (Set.range s.sect)
 where
   toFun := fun y => ⟨s.sect y, by simp⟩
   invFun := fun x => f x.val

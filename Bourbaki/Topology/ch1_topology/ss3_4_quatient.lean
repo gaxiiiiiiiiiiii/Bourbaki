@@ -113,9 +113,9 @@ def Quotspace.trans {X : Type _} {R S : Setoid X} (RS : R ≤ S) :
     exact E
 
 
-lemma Quotspace.isTopologyHom [HX : Topology X] (R S : Setoid X) (RS : R ≤ S) :
+lemma Quotspace.isHomeomorphic [HX : Topology X] (R S : Setoid X) (RS : R ≤ S) :
   -- (X⧸R) ⧸ (R⧸S) ≅ X ⧸ S
-  IsTopologyHom (trans RS)
+  IsHomeomorphic (trans RS)
 where
   continuous := by
     rw [isContinuous_iff, IsContinuous_iff_IsOpen_preimage]
