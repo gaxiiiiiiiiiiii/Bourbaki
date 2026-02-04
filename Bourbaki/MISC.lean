@@ -6,6 +6,11 @@ section saturated
 def IsSaturated {X Y : Type _} (f : X → Y) (V : Set X) :=
   ∀ x ∈ V, ∀ y, (Setoid.ker f).r x y → y ∈ V
 
+lemma IsSaturated_compl (f : X → Y) (V : Set X) :
+  IsSaturated f V ↔ IsSaturated f Vᶜ
+:= by
+  unfold IsSaturated; simp; grind
+
 lemma IsSaturated_iff_eq_preimage_image (f : X → Y) (V : Set X) :
   IsSaturated f V ↔ ((Quotient.mk (Setoid.ker f)) ⁻¹' (Quotient.mk (Setoid.ker f) '' V)) = V
 := by
