@@ -1,0 +1,6 @@
+import Bourbaki.Topology.ch1_topology.ss3_1_subspace
+import Bourbaki.Topology.ch1_topology.ss3_2_continuous
+import Bourbaki.Topology.ch1_topology.ss3_3_locallyClosed
+import Bourbaki.Topology.ch1_topology.ss3_4_quatient
+import Bourbaki.Topology.ch1_topology.ss3_5_decompose
+import Bourbaki.Topology.ch1_topology.ss3_6_subquot
