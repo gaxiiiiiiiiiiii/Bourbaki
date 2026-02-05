@@ -8,21 +8,6 @@ import Bourbaki.Topology.ch1_topology.ss3_5_decompose
 
 namespace Bourbaki
 
-/-
-
-  f : X → Y
-  R : Setoid
-  A : Set S
-  に対して、
-  g : A → X⧸R := Quotient.mk R ∘ Subtypev.val A
-  とすると、gは連続なので標準分解がつくれる
-
-  gとは、X → X⧸R のAへの制限であるから、Im g とは言うなれば  A⧸R である。
-  decompose g : A → A⧸(R|A) → A⧸R → X⧸R
-
--/
-
-
 
 
 def Subquot {X : Type _}  (R : Setoid X) (A : Set X) : Setoid A :=
