@@ -81,6 +81,14 @@ instance Init.topology [HY : ∀ i, Topology (Y i)] (f : ∀ i, X → Y i) :
   Topology (Init f)
 := GenedTopology (Init.subbase f)
 
+def Init.base [HY : ∀ i, Topology (Y i)] (f : ∀ i, X → Y i) :
+  Set (Set (Init f))
+:= (subbase_isTopologicalSubbase f).topologicalBase.base
+
+lemma Init.base_isTopologicalBase [HY : ∀ i, Topology (Y i)] (f : ∀ i, X → Y i) :
+  IsTopologicalBase (Init.base f)
+:= TopologicalBase.isTopologicalBase (IsTopologicalBase.topologicalBase (subbase_isTopologicalSubbase f))
+
 lemma Init.isOpen_iff [HY : ∀ i, Topology (Y i)] {f : ∀ i, X → Y i} U :
   U ∈ (Init.topology f).isOpen ↔ U ∈ {U | ∃ B ⊆ {V | ∃ U : Finset (Set (Init f)), ↑U ⊆ Init.subbase f ∧ V = ⋂₀ ↑U}, U = ⋃₀ B}
 := by
