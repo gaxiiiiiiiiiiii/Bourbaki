@@ -110,14 +110,14 @@ instance [Topology X] [Topology Y] :
 := by
   intro b; rcases b<;> assumption
 
-def graf {X Y : Type u} (f : X → Y) (x : X) :{ g : biProd X Y | g false = f (g true) }
+def graph {X Y : Type u} (f : X → Y) (x : X) :{ g : biProd X Y | g false = f (g true) }
 := ⟨fun b => match b with | true => x | false => f x, by simp⟩
 
-lemma isContinuous_iff_isHomeomorphic_graf  {X Y : Type u} [HX : Topology X] [HY : Topology Y] (f : X → Y) :
-  IsContinuous f ↔ IsHomeomorphic (graf f)
+lemma isContinuous_iff_isHomeomorphic_graph  {X Y : Type u} [HX : Topology X] [HY : Topology Y] (f : X → Y) :
+  IsContinuous f ↔ IsHomeomorphic (graph f)
 := by
-  have Ef : biProd.snd ∘ Subtype.val ∘ graf f = f := by {
-    ext x; simp [biProd.snd, graf]
+  have Ef : biProd.snd ∘ Subtype.val ∘ graph f = f := by {
+    ext x; simp [biProd.snd, graph]
   }
   constructor<;> intro H
   · refine {
@@ -129,13 +129,13 @@ lemma isContinuous_iff_isHomeomorphic_graf  {X Y : Type u} [HX : Topology X] [HY
         induction HV with
         | base W HW =>
           simp [Init.subbase, Init.to] at HW
-          rcases HW with ⟨K, HK, rfl⟩ | ⟨K, HK, rfl⟩; simp [graf]
+          rcases HW with ⟨K, HK, rfl⟩ | ⟨K, HK, rfl⟩; simp [graph]
           · apply H at HK
             have : {a | f a ∈ K} = f ⁻¹' K := by {
               ext x; simp
             }
             rw [this]; exact HK
-          · simp [graf]; exact HK
+          · simp [graph]; exact HK
         | univ =>
           simp; apply Topology.isOpen_univ
         | inter S T HS HT IHS IHT =>
@@ -143,7 +143,7 @@ lemma isContinuous_iff_isHomeomorphic_graf  {X Y : Type u} [HX : Topology X] [HY
           rw [Set.setOf_and]
           apply Topology.isOpen_inter _ _ IHS IHT
         | union S HS IHS =>
-          have : {a | (graf f a).val ∈ ⋃₀ S} =  ⋃ s ∈ S, {a | (graf f a).val ∈ s} := by {
+          have : {a | (graph f a).val ∈ ⋃₀ S} =  ⋃ s ∈ S, {a | (graph f a).val ∈ s} := by {
             ext x; simp
           }
           rw [this]
@@ -158,10 +158,10 @@ lemma isContinuous_iff_isHomeomorphic_graf  {X Y : Type u} [HX : Topology X] [HY
         constructor
         · intro x y E
           have := congr_arg (biProd.fst ∘ Subtype.val) E;
-          simp [graf, biProd.fst] at this
+          simp [graph, biProd.fst] at this
           exact this
         · intro ⟨p, Hp⟩; simp at Hp
-          use p true; simp [graf]
+          use p true; simp [graph]
           ext b; rcases b<;> simp
           rw [Hp]
       open_map := by
@@ -171,11 +171,11 @@ lemma isContinuous_iff_isHomeomorphic_graf  {X Y : Type u} [HX : Topology X] [HY
         use { g | g.val true ∈ V}
         constructor; swap
         · constructor
-          · simp [graf]; exact Vx
+          · simp [graph]; exact Vx
           · intro i Hi; simp at Hi; simp
             rcases i with ⟨g, Hg⟩; simp at Hi
             use g true, VU Hi
-            ext b; simp [graf]
+            ext b; simp [graph]
             rcases b<;> simp; rw [Hg]
         ·
           have Hpr := prod.isContinuous (fun b => cond b X Y) true
