@@ -207,7 +207,7 @@ lemma Subquot.isHomeomorphic' [Topology X ] (R : Setoid X) (A : Set X) (u : X �
   rw [kerLift_isHomeomorphic_iff_isOpen]
   have Hmk := mk_surjective R A u H
   intro U HU HU'
-  rw [IsContinuous_iff_IsOpen_preimage] at Hu
+  rw [IsContinuous_iff] at Hu
   have := Hu U HU
   use u ⁻¹' U, this
   constructor; swap

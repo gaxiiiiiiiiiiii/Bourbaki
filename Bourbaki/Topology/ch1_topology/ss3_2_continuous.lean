@@ -51,12 +51,12 @@ lemma Subtopology.pasting_openCverd_continuous [HX : Topology X] {I : Type _} (A
 := by
   intro H
   have H' := isOpen_iff_covered_isOpen A HA
-  rw [IsContinuous_iff_IsOpen_preimage]
+  rw [IsContinuous_iff]
   intro U HU
   change _ ∈ HX.isOpen
   rw [H']
   intro i; rw [Subtopology.isOpen_eq]; simp
-  specialize H i; rw [@IsContinuous_iff_IsOpen_preimage] at H
+  specialize H i; rw [@IsContinuous_iff] at H
   specialize H U HU
   simp [restrict, incl] at H
   rw [Subtopology.isOpen_eq] at H

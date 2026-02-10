@@ -65,7 +65,7 @@ lemma prod.lift_isContinuousAt {I : Type _} {X : I → Type _} {Y : I → Type _
     unfold neighborOf NeighborOf at H ⊢; simp at H ⊢
     rcases H with ⟨V, HV, Va, VU⟩
     have HX := isContinuous X i
-    rw [IsContinuous_iff_IsOpen_preimage] at HX
+    rw [IsContinuous_iff] at HX
     specialize HX V HV
     use ((fun X ↦ X i) ⁻¹' V), HX; simp
     use Va
@@ -122,7 +122,7 @@ lemma isContinuous_iff_isHomeomorphic_graph  {X Y : Type u} [HX : Topology X] [H
   constructor<;> intro H
   · refine {
       continuous := by
-        rw [IsContinuous_iff_IsOpen_preimage] at ⊢ H
+        rw [IsContinuous_iff] at ⊢ H
         intro U HU
         rw [Subtopology.isOpen_eq] at HU
         rcases HU with ⟨V, HV, rfl⟩; simp
@@ -179,7 +179,7 @@ lemma isContinuous_iff_isHomeomorphic_graph  {X Y : Type u} [HX : Topology X] [H
             rcases b<;> simp; rw [Hg]
         ·
           have Hpr := prod.isContinuous (fun b => cond b X Y) true
-          rw [IsContinuous_iff_IsOpen_preimage] at Hpr; simp at Hpr
+          rw [IsContinuous_iff] at Hpr; simp at Hpr
           specialize Hpr V HV
 
           change ((fun g : Π b, cond b X Y ↦ g true) ⁻¹' V) ∈ Topology.isOpen at Hpr
@@ -285,14 +285,14 @@ lemma prod.curry {X I : Type _} {Y : I → Type _} [HY : ∀ i, Topology (Y i)] 
   rw [<- this]; clear this
   apply le_antisymm<;> apply Init.le_init
   · intro ⟨u, i⟩; simp
-    rw [IsContinuous_iff_IsOpen_preimage]
+    rw [IsContinuous_iff]
     intro U HU
     have : ((fun g ↦ g i) ∘ fun x i ↦ f i x) = f i := by ext x; simp
     rw [this]; clear this
     apply GenedOpen.base; simp [Init.subbase, Init.to]
     use i, U, HU
   · intro i
-    rw [IsContinuous_iff_IsOpen_preimage]
+    rw [IsContinuous_iff]
     intro U HU
     apply GenedOpen.base; simp [Init.subbase, Init.to]
     use i, U, HU

@@ -52,7 +52,7 @@ lemma kerLift_bijective [HX : Topology X] [HY : Topology Y] (f : X → Y) :
 lemma kerLift_isContinuous [HX : Topology X] [HY : Topology Y] (f : X → Y) (Hf : IsContinuous f) :
   IsContinuous (kerLift f)
 := by
-  rw [IsContinuous_iff_IsOpen_preimage]
+  rw [IsContinuous_iff]
   intro U HU
   rw [Subtopology.isOpen_eq] at HU
   rcases HU with ⟨V, HV, rfl⟩; simp
@@ -61,7 +61,7 @@ lemma kerLift_isContinuous [HX : Topology X] [HY : Topology Y] (f : X → Y) (Hf
   rw [ Set.preimage_setOf_eq (f := (Quotient.mk (Setoid.ker f)))]
   have : {a | ↑(kerLift f ⟦a⟧) ∈ V} = f ⁻¹' V := by ext x; simp [kerLift]
   rw [this]; clear this; simp
-  rw [IsContinuous_iff_IsOpen_preimage] at Hf
+  rw [IsContinuous_iff] at Hf
   apply Hf V HV
 
 def decompose [HX : Topology X] [HY : Topology Y] (f : X → Y) :
@@ -98,7 +98,7 @@ lemma kerLift_IsHomeomorphic_iff_isOpen [HX : Topology X] [HY : Topology Y] (f :
     let H : Homeomorphic (Quotient (Setoid.ker f)) (Set.range f) := by {
       apply Homeomorphic.mk (toEquiv := E)
       · have := kerLift_isContinuous f Hf
-        rw [IsContinuous_iff_IsOpen_preimage] at this
+        rw [IsContinuous_iff] at this
         exact this
       · intro U HU
         change _ ∈ (Subtopology (Set.range f)).isOpen
@@ -194,7 +194,7 @@ lemma ContinuousSection.kerLift_IsHomeomorphic [HX : Topology X] [HY : Topology 
   IsHomeomorphic (kerLift f)
 where
   continuous := by
-    rw [IsContinuous_iff_IsOpen_preimage]
+    rw [IsContinuous_iff]
     intro U HU
     rw [Subtopology.isOpen_eq] at HU
     change (kerLift f ⁻¹' U) ∈ Topology.isOpen
@@ -203,7 +203,7 @@ where
     rw [ Set.preimage_setOf_eq (f := (Quotient.mk (Setoid.ker f)))]
     have : {a | ↑(kerLift f ⟦a⟧) ∈ V} = f ⁻¹' V := by ext x; simp [kerLift]
     rw [this]; clear this
-    rw [IsContinuous_iff_IsOpen_preimage] at Hf
+    rw [IsContinuous_iff] at Hf
     apply Hf V HV
   bij := by
     constructor
@@ -223,7 +223,7 @@ where
     rcases HU with ⟨V, HV, Vx, VU⟩
     change V ∈ Topology.isOpen at HV
     rw [Finale.isOpen_iff] at HV; simp at HV
-    rw [IsContinuous_iff_IsOpen_preimage] at Hs
+    rw [IsContinuous_iff] at Hs
     apply Hs at HV
     use @Subtype.val Y (Set.range f) ⁻¹' (s.sect ⁻¹' (Quotient.mk (Setoid.ker f) ⁻¹' V))
     constructor
@@ -268,12 +268,12 @@ where
     have Hs := s.continuous
     rw [Subtopology.isOpen_eq] at HU
     rcases HU with ⟨V, HV, rfl⟩; simp
-    rw [IsContinuous_iff_IsOpen_preimage] at Hs
+    rw [IsContinuous_iff] at Hs
     apply Hs V HV
   continuous_inv := by
     intro U HU
     rw [Subtopology.isOpen_eq]
-    rw [IsContinuous_iff_IsOpen_preimage] at Hf
+    rw [IsContinuous_iff] at Hf
     specialize Hf U HU
     use f ⁻¹' U, Hf; simp
     ext x; simp

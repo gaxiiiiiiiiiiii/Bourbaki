@@ -206,7 +206,7 @@ lemma GlueData.topology_eq_topology' (G : GlueData) [∀ l : G.L, Topology (G.f 
 := by
   unfold GlueData.topology GlueData.topology' Finale.quotient
   apply le_antisymm<;> apply Finale.finale_le<;>
-  intro i<;> rw [@IsContinuous_iff_IsOpen_preimage]<;>
+  intro i<;> rw [@IsContinuous_iff]<;>
   intro U HU
   · induction HU with
     | base V HV =>
@@ -296,7 +296,7 @@ lemma GlueData.topology_eq_topology'' (G : GlueData) [∀ l : G.L, Topology (G.f
 := by
   unfold GlueData.topology GlueData.topology''
   apply le_antisymm<;> apply Finale.finale_le<;>
-  intro l<;> rw [@IsContinuous_iff_IsOpen_preimage]<;> intro U HU
+  intro l<;> rw [@IsContinuous_iff]<;> intro U HU
   · conv => arg 1; arg 1; change G.ι l
     induction HU with
     | base U HU =>

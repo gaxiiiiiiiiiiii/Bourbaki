@@ -104,7 +104,7 @@ variable [HY : ∀ i, Topology (Y i)] (f : ∀ i, X → Y i)
 lemma Init.isContinuous (i : ι) :
   IsContinuous (Init.to f i)
 := by
-  rw [@IsContinuous_iff_IsOpen_preimage]
+  rw [@IsContinuous_iff]
   intro U HU
   apply GenedOpen.base
   simp [Init.subbase]
@@ -120,7 +120,7 @@ lemma Init.le_init [HX : Topology X] :
     simp [Init.subbase] at HU
     rcases HU with ⟨i, V, HV, rfl⟩
     specialize Hf i
-    rw [@IsContinuous_iff_IsOpen_preimage] at Hf
+    rw [@IsContinuous_iff] at Hf
     apply Hf V HV
   | univ => apply HX.isOpen_univ
   | inter S T HS HT IHS IHT => apply HX.isOpen_inter S T IHS IHT
@@ -258,17 +258,17 @@ lemma Init.trans {X I L : Type _} {Z : I →  Type _} {Y : L → Type _} [∀ ι
   apply le_antisymm; swap
   · apply le_init
     intro ⟨l, i⟩; simp
-    rw [IsContinuous_iff_IsOpen_preimage]
+    rw [IsContinuous_iff]
     intro U HU
     have Hg := Init.isContinuous (g l) i
     have Hh := Init.isContinuous h l
-    rw [@IsContinuous_iff_IsOpen_preimage, Init.to] at Hg Hh
+    rw [@IsContinuous_iff, Init.to] at Hg Hh
     specialize Hg U HU
     specialize Hh _ Hg
     exact Hh
   · apply Init.le_init
     intro l
-    rw [IsContinuous_iff_IsOpen_preimage]
+    rw [IsContinuous_iff]
     intro U HU
     induction HU with
     | base V HV =>
@@ -317,7 +317,7 @@ lemma Init.IsContinuous_iff_le_inverse [HX : Topology X] [HX' : Topology X'] (f 
     apply Init.le_init; simp
     assumption
   · simp [LE.le] at H
-    rw [@IsContinuous_iff_IsOpen_preimage]
+    rw [@IsContinuous_iff]
     intro U HU
     apply H
     apply GenedOpen.base
@@ -340,7 +340,7 @@ lemma Init.le_inf {X I : Type _} (HX : I →  Topology X) :
   apply Init.le_init (HY := HX) (f := fun (_ : I) (x : X) => x)
   intro i
   specialize HH i; simp [LE.le] at HH
-  rw [@IsContinuous_iff_IsOpen_preimage]
+  rw [@IsContinuous_iff]
   intro U HU
   apply HH; simp; assumption
 

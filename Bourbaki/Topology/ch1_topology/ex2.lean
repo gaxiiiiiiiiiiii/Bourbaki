@@ -11,7 +11,7 @@ example :
   IsContinuous f ↔ ∀ A' : Set X', f ⁻¹' (interior A') ⊆ interior (f ⁻¹' A')
 := by
   constructor<;> intro H
-  · rw [IsContinuous_iff_IsOpen_preimage] at H
+  · rw [IsContinuous_iff] at H
     intro A' x Hx
     simp [interior] at Hx ⊢
     rcases Hx with ⟨U', ⟨HU', UA⟩, U'x⟩
@@ -65,7 +65,7 @@ example [HX : Topology X] [HX' : Topology X'] (f : X → X') (Hf : f.Bijective) 
   · refine {
       continuous := by
         have H' := congr_arg (@Topology.isOpen X) H
-        rw [IsContinuous_iff_IsOpen_preimage]
+        rw [IsContinuous_iff]
         intro U HU
         rw [H'] at ⊢
         apply GenedOpen.base

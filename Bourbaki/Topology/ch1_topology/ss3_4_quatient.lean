@@ -58,7 +58,7 @@ lemma Quotspace.map_isContinuous [Topology X] [Topology Y] (R : Setoid X)  (S : 
 := by
   intro H
   rw [isContinuous_iff]
-  rw [IsContinuous_iff_IsOpen_preimage] at H ⊢
+  rw [IsContinuous_iff] at H ⊢
   intro U HU
   change U ∈ Topology.isOpen at HU
   rw [Quotspace.isOpen_iff] at HU
@@ -118,7 +118,7 @@ lemma Quotspace.isHomeomorphic [HX : Topology X] (R S : Setoid X) (RS : R ≤ S)
   IsHomeomorphic (trans RS)
 where
   continuous := by
-    rw [isContinuous_iff, IsContinuous_iff_IsOpen_preimage]
+    rw [isContinuous_iff, IsContinuous_iff]
     intro U (HU : U ∈ Topology.isOpen)
     change (trans RS ∘ Quotient.mk (Setoid.quontRel RS) ⁻¹' U) ∈ Topology.isOpen
     rw [Quotspace.isOpen_iff] at HU ⊢

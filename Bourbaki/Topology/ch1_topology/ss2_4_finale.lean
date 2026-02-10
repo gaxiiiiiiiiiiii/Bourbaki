@@ -85,7 +85,7 @@ lemma Finale.isContinuous [HY : ∀ i, Topology (Y i)] (f : ∀ i, Y i → X) (i
   @IsContinuous _ _ (HY i) (Finale.topology f) (Finale.to f i)
 := by
   simp [Finale.to]
-  rw [@IsContinuous_iff_IsOpen_preimage]
+  rw [@IsContinuous_iff]
   intro U HU
   induction HU with
   | base V HV =>
@@ -112,7 +112,7 @@ lemma Finale.finale_le [HY : ∀ i, Topology (Y i)] (f : ∀ i, Y i → X) (HX :
   simp [base, Finale.to] at *
   intro i
   specialize Hf i
-  rw [@IsContinuous_iff_IsOpen_preimage] at Hf
+  rw [@IsContinuous_iff] at Hf
   apply Hf U HU
 
 lemma Finale.isContinuous_iff [Topology Z] [HY : ∀ i, Topology (Y i)] (f : ∀ i, Y i → X) (g : X → Z) :
@@ -124,18 +124,18 @@ lemma Finale.isContinuous_iff [Topology Z] [HY : ∀ i, Topology (Y i)] (f : ∀
   constructor<;> intro H
   · intro i
     specialize Hf i
-    rw [@IsContinuous_iff_IsOpen_preimage] at *
+    rw [@IsContinuous_iff] at *
     intro U HU
     specialize H U HU
     specialize Hf _ H
     exact Hf
-  · rw [@IsContinuous_iff_IsOpen_preimage]
+  · rw [@IsContinuous_iff]
     intro U HU
     apply GenedOpen.base
     simp [base, Finale.to]
     intro i
     specialize H i
-    rw [@IsContinuous_iff_IsOpen_preimage] at H
+    rw [@IsContinuous_iff] at H
     apply H U HU
 
 lemma Finale.isClosed_iff [HY : ∀ i, Topology (Y i)] (f : ∀ i, Y i → X) (F : Set X) :
@@ -146,7 +146,7 @@ lemma Finale.isClosed_iff [HY : ∀ i, Topology (Y i)] (f : ∀ i, Y i → X) (F
   constructor<;> intro H
   · intro i
     specialize Hf i
-    rw [@IsContinuous_iff_IsOpen_preimage] at Hf
+    rw [@IsContinuous_iff] at Hf
     specialize Hf _ H; simp at Hf
     exact Hf
   · apply GenedOpen.base
@@ -170,7 +170,7 @@ lemma Finale.trans {X I L : Type _} {Z : I → Type _} {Y : L → Type _} [HZ : 
   apply le_antisymm
   · apply finale_le
     intro l
-    rw [@IsContinuous_iff_IsOpen_preimage]
+    rw [@IsContinuous_iff]
     intro U HU
     apply GenedOpen.base
     simp [base, Finale.to]
@@ -178,14 +178,14 @@ lemma Finale.trans {X I L : Type _} {Z : I → Type _} {Y : L → Type _} [HZ : 
     have := Finale.isContinuous ((fun p : L × I => h p.1 ∘ g p.1 p.2))
     simp [Finale.to] at this
     specialize this l i
-    rw [@IsContinuous_iff_IsOpen_preimage] at this
+    rw [@IsContinuous_iff] at this
     specialize this U HU
     exact this
   · apply finale_le
     intro ⟨l, i⟩; simp
     have Hg := Finale.isContinuous (g l) i
     have Hh := Finale.isContinuous h l;
-    rw [@IsContinuous_iff_IsOpen_preimage, Finale.to] at *
+    rw [@IsContinuous_iff, Finale.to] at *
     intro U HU
     apply Hh at HU
     apply Hg at HU
@@ -235,7 +235,7 @@ lemma Finale.sum.isOpen_iff {I : Type _} (f : I → Type _) [Hf : ∀ i, Topolog
   constructor<;> intro H
   · intro i
     have Hi := Finale.isContinuous (HY := Hf) (fun i => Sigma.mk i) i
-    rw [@IsContinuous_iff_IsOpen_preimage] at Hi
+    rw [@IsContinuous_iff] at Hi
     exact Hi U H
   · apply GenedOpen.base
     simp [base, Finale.to]
@@ -265,7 +265,7 @@ lemma Finale.glue {X L : Type} (f : L → Set X) [Hf : ∀ l, Topology (f l)]
   · apply le_antisymm; swap
     · unfold Init.induced Init.inverse
       apply Init.le_init; simp
-      rw [IsContinuous_iff_IsOpen_preimage]
+      rw [IsContinuous_iff]
       intro U HU
       induction HU with
       | base V HV =>
@@ -294,7 +294,7 @@ lemma Finale.glue {X L : Type} (f : L → Set X) [Hf : ∀ l, Topology (f l)]
       set fn := (Incl (f l ∩ f n) (f n) (by simp))
       have Hl := Init.isContinuous (f := fun _ : PUnit.{1} => fl) PUnit.unit
       have Hn := Init.isContinuous (f := fun _ : PUnit.{1} => fn) PUnit.unit
-      rw [@IsContinuous_iff_IsOpen_preimage, Init.to] at Hl Hn
+      rw [@IsContinuous_iff, Init.to] at Hl Hn
       specialize Hl V HV
       change (⇑fl ⁻¹' V) ∈ (Init.induced fl).isOpen at Hl
       rw [H2] at Hl

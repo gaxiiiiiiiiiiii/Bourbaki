@@ -108,7 +108,7 @@ lemma IsContinuous_iff_IsClosed_preimage [HX : Topology X] [HX' : Topology X'] (
     }
     grind
 
-lemma IsContinuous_iff_IsOpen_preimage [HX : Topology X] [HX' : Topology X'] (f : X → X') :
+lemma IsContinuous_iff [HX : Topology X] [HX' : Topology X'] (f : X → X') :
   IsContinuous f  ↔ ∀ V', HX'.isOpen V' → HX.isOpen (f ⁻¹' V')
 := by
   rw [IsContinuous_iff_IsClosed_preimage]
@@ -124,7 +124,7 @@ lemma IsContinuous_iff_IsOpen_preimage [HX : Topology X] [HX' : Topology X'] (f 
 lemma IsContinuous_iff_base [HX : Topology X] [HX' : Topology X'] (f : X → X') (𝓑 : TopologicalBase X') :
   IsContinuous f ↔ ∀ U' ∈ 𝓑.base, HX.isOpen (f ⁻¹' U')
 := by
-  rw [IsContinuous_iff_IsOpen_preimage]
+  rw [IsContinuous_iff]
   constructor<;> intro H
   · intro U' HU'
     apply H U' (𝓑.base_isOpen HU')
@@ -153,9 +153,9 @@ lemma Homeomorphic_iff_continuous [Topology X] [Topology X'] :
     use f.toEquiv
     have H := f.continuous_fun
     have H' := f.continuous_inv
-    constructor<;> rw [IsContinuous_iff_IsOpen_preimage]<;> assumption
+    constructor<;> rw [IsContinuous_iff]<;> assumption
   . intro ⟨E, H1, H2⟩
-    rw [IsContinuous_iff_IsOpen_preimage] at H1 H2
+    rw [IsContinuous_iff] at H1 H2
     constructor; use E
 
 structure IsHomeomorphic [Topology X] [Topology X'] (f : X → X') where
@@ -173,7 +173,7 @@ noncomputable def IsHomeomorphic.Homeomorphic [Topology X] [Topology X'] {f : X 
   apply Homeomorphic.mk E
   · intro S HS
     conv => arg 1; arg 1; change f
-    rw [IsContinuous_iff_IsOpen_preimage] at Hf
+    rw [IsContinuous_iff] at Hf
     apply Hf S HS
   · intro S HS
     rw [<- mem_neighbor_iff_isOpen] at HS ⊢
@@ -200,7 +200,7 @@ def Homeomorphic.isHomeomorphic [Topology X] [Topology X'] (E : Homeomorphic X X
   have H1 := E.continuous_fun
   have H2 := E.bijective
   have H3 := E.continuous_inv
-  rw [<- IsContinuous_iff_IsOpen_preimage] at H1
+  rw [<- IsContinuous_iff] at H1
   use H1, H2
   intro x U HU
   set f := E.toFun
@@ -277,7 +277,7 @@ lemma Topology_le_iff_closure (s t : Topology X) :
 := by
   simp [LE.le]
   have E := @IsContinuous_iff_subset _ _ s t id; simp at E
-  rw [@IsContinuous_iff_IsOpen_preimage] at E; simp at E
+  rw [@IsContinuous_iff] at E; simp at E
   exact E
 
 lemma Topology_le_iff_neighbor (s t : Topology X) :
@@ -285,14 +285,14 @@ lemma Topology_le_iff_neighbor (s t : Topology X) :
 := by
   conv => arg 2; change @IsContinuous _ _ s t id
   simp [LE.le]
-  rw [@IsContinuous_iff_IsOpen_preimage]; simp
+  rw [@IsContinuous_iff]; simp
 
 lemma Topology_le_iff_isClosed (s t : Topology X) :
   s ≤ t ↔ (∀ U , t.isClosed U → s.isClosed U)
 := by
   simp [LE.le]
   have E := @IsContinuous_iff_IsClosed_preimage _ _ s t id; simp at E
-  rw [@IsContinuous_iff_IsOpen_preimage] at E; simp at E
+  rw [@IsContinuous_iff] at E; simp at E
   exact E
 
 instance {X} : OrderBot (Topology X) where
@@ -334,7 +334,7 @@ lemma le_com_continuous (HX HX' : Topology X) [Topology Y ] (f : X → Y) (Hf : 
 := by
   simp [LE.le]
   intro H
-  rw [@IsContinuous_iff_IsOpen_preimage] at Hf ⊢
+  rw [@IsContinuous_iff] at Hf ⊢
   intro U HU
   specialize Hf U HU
   apply  H _ Hf
@@ -344,7 +344,7 @@ lemma cod_le_continuous [Topology X] (HY HY' : Topology Y)  (f : X → Y)
   @IsContinuous _ _ HX HY' f
 := by
   simp [LE.le] at H
-  rw [@IsContinuous_iff_IsOpen_preimage] at Hf ⊢
+  rw [@IsContinuous_iff] at Hf ⊢
   intro U HU
   specialize H U HU
   apply Hf _ H
@@ -439,13 +439,13 @@ lemma cod_le_continuous [Topology X] (HY HY' : Topology Y)  (f : X → Y)
 --   intro c Hc; apply HC at Hc; simp at Hc
 --   rcases Hc with ⟨i, U, rfl, HU⟩
 --   specialize H i
---   rw [@IsContinuous_iff_IsOpen_preimage] at H
+--   rw [@IsContinuous_iff] at H
 --   apply H _ HU
 
 -- lemma IsContinuous_inverse {Y : ι → Type _} [HY : ∀ i, Topology (Y i)]  (f : ∀ i, X → Y i) (i : ι):
 --   @IsContinuous _ _ (inverse f) _ (f i)
 -- := by
---   rw [@IsContinuous_iff_IsOpen_preimage]
+--   rw [@IsContinuous_iff]
 --   intro U HU; simp [inverse]
 --   use {f i ⁻¹' U}; simp
 --   use {f i ⁻¹' U}; simp
