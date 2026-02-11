@@ -194,12 +194,7 @@ lemma isContinuous_iff_isHomeomorphic_graph  {X Y : Type u} [HX : Topology X] [H
     · exact prod.isContinuous (fun b => cond b X Y) false
 
 
-
-
-
-
-
-def prod.homeomorphic {I K : Type _} {X : I → Type _} {J : K → Set I} (HJ : IndexedPartition J) [HX : ∀ i, Topology (X i)] :
+def prod.partition {I K : Type _} {X : I → Type _} {J : K → Set I} (HJ : IndexedPartition J) [HX : ∀ i, Topology (X i)] :
   Homeomorphic (Π i, X i) (Π k : K,  Π i : J k, X i.val)
 where
   toFun := fun f k i => f i.val
