@@ -349,6 +349,11 @@ lemma cod_le_continuous [Topology X] (HY HY' : Topology Y)  (f : X → Y)
   apply Hf _ H
 
 
+/-
+ 教科書通り素朴に実装したもの
+ ss2_3_init.lean での実装の方がスマートなのでそちらを使う。
+ 名前が衝突するからこちらのはコメントアウトしておく
+-/
 -- def inverse  {Y : ι → Type _} [HY : ∀ i, Topology (Y i)]  (f : ∀ i, X → Y i) :
 --   Topology X
 -- := by classical
