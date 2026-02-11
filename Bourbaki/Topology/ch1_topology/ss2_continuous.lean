@@ -144,7 +144,6 @@ lemma IsContinuous_comp [Topology X] [Topology X'] [Topology X''] {f : X → X'}
   intro s; apply IsContinuousAt_comp; apply Hf; apply Hg
 
 
-#check Homeomorph
 lemma Homeomorphic_iff_continuous [Topology X] [Topology X'] :
   Nonempty (Homeomorphic X X') ↔ ∃ f : X ≃ X', IsContinuous f.toFun ∧ IsContinuous f.invFun
 := by
