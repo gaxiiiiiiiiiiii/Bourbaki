@@ -93,7 +93,7 @@ lemma Prod.isOpen_iff [HX : Topology X] [HY : Topology Y] (U : Set (X × Y)) :
       apply Topology.isOpen_sUnion
       exact IH
 
-def  Prod.Homeomorphic [HX : Topology X] [HY : Topology Y] :
+def  Prod.Homeomorphic (X Y : Type _) [HX : Topology X] [HY : Topology Y] :
   Homeomorphic (X × Y) (biProd X Y)
 := by
   apply Homeomorphic.mk (toEquiv := Prod.equiv X Y)
