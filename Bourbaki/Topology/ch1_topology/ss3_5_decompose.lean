@@ -281,4 +281,17 @@ where
 
 end decompose
 
+def _root_.Setoid.section [Topology X] (R : Setoid X) :=
+  ContinuousSection (Quotient.mk R)
+
+def kerSection [Topology X] [Topology Y] (f : X → Y) :=
+  (Setoid.ker f).section
+
+def _root_.Setoid.section_Homeomorphic [Topology X] (R : Setoid X) (s : R.section) :
+  Homeomorphic (Quotient R) (Set.range s.sect)
+:= by
+  apply ContinuousSection.Homeomorphic (Quotient.mk R)
+  apply Quotspace.isContinuous
+
+
 end Bourbaki
