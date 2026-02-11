@@ -252,3 +252,11 @@ lemma isContinuous_iff_isHomeomorphic_Graph  {X Y : Type u} [HX : Topology X] [H
     · apply H.continuous
     · apply Subtopology.isContinuous
     · apply Prod.snd_isContinuous
+
+def prod.binary_partition {I : Type _} {X : I → Type _} {J : Bool → Set I} (HJ : IndexedPartition J) [HX : ∀ i, Topology (X i)] :
+  Homeomorphic (Π i, X i) (Π b,  Π i : J b, X i.val)
+:= prod.partition HJ
+
+-- TODO
+-- def prod.toProd  {I : Type _} {X : I → Type _} {J : Bool → Set I} (HJ : IndexedPartition J) [HX : ∀ i, Topology (X i)] :
+  -- Homeomorphic (Π b,  Π i : J b, X i.val) ((Π i : J true, X i.val) × (Π i : J false, X i.val))
