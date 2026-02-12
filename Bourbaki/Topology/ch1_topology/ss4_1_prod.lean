@@ -300,11 +300,16 @@ lemma prod.uncurry {X I : Type _} {Y : I → Type _} [HY : ∀ i, Topology (Y i)
   have : f = fun x i => g i x := by ext x i; simp [g]
   rw [this, curry]
 
-def prod.subtopology_homeompophic {I : Type _} {X : I → Type _} [∀ i, Topology (X i)] (A : (i : I) → Set (X i)) :
-  Homeomorphic (Π i, A i)  {f : Π i,  X i | ∀ i, f i ∈ A i}
+def subprod {I : Type _} {X : I → Type _} [∀ i, Topology (X i)] :
+  (Π i, Set (X i)) → Set (Π i, X i)
+:= fun A => Set.univ.pi A
+
+
+def prod.subprod_homeompophic {I : Type _} {X : I → Type _} [∀ i, Topology (X i)] (A : (i : I) → Set (X i)) :
+  Homeomorphic (Π i, A i)  (subprod A)
 where
-  toFun := fun f => ⟨fun i => (f i).val, by simp⟩
-  invFun := fun x i => ⟨x.val i, x.prop i⟩
+  toFun := fun f => ⟨fun i => (f i).val, by simp [subprod]⟩
+  invFun := fun x i => ⟨x.val i, x.prop i (by simp)⟩
   left_inv := by intro x; simp
   right_inv := by intro p; simp
   continuous_fun := by
@@ -354,7 +359,7 @@ where
 lemma prod.subtopology_eq {I : Type _} {Y : I → Type _} [HY : ∀ i, Topology (Y i)] (A : (i : I) →  Set (Y i)) :
   prod (fun i => A i) = Init.inverse (fun (f : Π i, A i) i => (f i).val)
 := by
-  let σ := subtopology_homeompophic A
+  let σ := subprod_homeompophic A
   rw [<- curry (fun i (f : Π i, A i) => (f i).val )]
   simp [prod]
   apply le_antisymm
@@ -383,7 +388,7 @@ lemma prod.subtopology_eq {I : Type _} {Y : I → Type _} [HY : ∀ i, Topology 
     simp at E
     rw [Equiv.preimage_eq_iff_eq_image] at E
     rw [E,Equiv.image_symm_eq_preimage]; clear E
-    simp [σ,subtopology_homeompophic]
+    simp [σ,subprod_homeompophic]
     induction HV with
     | base W HW =>
       simp [Init.subbase, Init.to] at HW
