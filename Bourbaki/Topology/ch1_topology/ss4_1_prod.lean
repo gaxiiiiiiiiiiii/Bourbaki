@@ -300,12 +300,109 @@ lemma prod.uncurry {X I : Type _} {Y : I → Type _} [HY : ∀ i, Topology (Y i)
   have : f = fun x i => g i x := by ext x i; simp [g]
   rw [this, curry]
 
+def prod.subtopology_homeompophic {I : Type _} {X : I → Type _} [∀ i, Topology (X i)] (A : (i : I) → Set (X i)) :
+  Homeomorphic (Π i, A i)  {f : Π i,  X i | ∀ i, f i ∈ A i}
+where
+  toFun := fun f => ⟨fun i => (f i).val, by simp⟩
+  invFun := fun x i => ⟨x.val i, x.prop i⟩
+  left_inv := by intro x; simp
+  right_inv := by intro p; simp
+  continuous_fun := by
+    intro U HU
+    rw [Subtopology.isOpen_eq] at HU
+    rcases HU with ⟨V, HV, rfl⟩; simp
+    have : {a : (i : I) → (A i) | (fun i ↦ ↑(a i)) ∈ V} = prod.lift (fun i => @Subtype.val (X i) (A i)) ⁻¹' V := by ext x; unfold prod.lift; simp
+    rw [this]
+    have : IsContinuous (prod.lift (fun i => @Subtype.val (X i) (A i)) : (Π i, A i) → (Π i, X i)) := by {
+      intro g
+      rw [prod.lift_isContinuousAt]
+      intro i
+      apply Subtopology.isContinuous (A i) (g i)
+    }
+    rw [IsContinuous_iff] at this
+    apply this V HV
+  continuous_inv := by
+    intro U (HU : U ∈ Topology.isOpen)
+    induction HU with
+    | base V HV =>
+      simp [Init.subbase, Init.to] at HV
+      rcases HV with ⟨i, W, HW, rfl⟩
+      rw [<- Set.preimage_comp]
+      rw [Subtopology.isOpen_eq] at HW
+      rcases HW with ⟨W', HW', rfl⟩; simp
+      apply GenedOpen.base
+      simp [Init.subbase, Init.to, Function.Embedding.subtype]
+      have Hi := prod.isContinuous X i
+      rw [IsContinuous_iff] at Hi
+      specialize Hi W' HW'
+      use ((fun (f : Π i, X i) ↦ f i) ⁻¹' W'), Hi
+      ext p; simp
+    | univ =>
+      simp
+      apply GenedOpen.univ
+    | inter S T HS HT IHS IHT =>
+      simp; apply Topology.isOpen_inter _ _ IHS IHT
+    | union S HS IHS =>
+      simp; apply GenedOpen.union
+      intro s Hs; simp at Hs
+      rcases Hs with ⟨W, rfl⟩
+      apply GenedOpen.union
+      intro s Hs; simp at Hs
+      rcases Hs with ⟨H, rfl⟩
+      apply IHS W H
 
-/-
-  各 ι ∈ I について、Aι を Yι の部分空間とする。
-  A = Π ι, Aι で、 積位相 Π ι, Yι からの導入位相は、部分空間Aιの積位相である
--/
--- A := Π i, A i を Π i, Y i の部分空間と見做せる前提の主張のようで、命題の形式化すら怪しい
--- lemma prod.hoge {I : Type _} {Y : I → Type _} [HY : ∀ i, Topology (Y i)] (A : (i : I) →  Set (Y i)) :
-  -- prod (fun i => A i) = Init.inverse (fun (f : Π i, A i) i => (f i).val) --(lift (fun i => @Subtype.val (Y i) (A i)))
--- := by
+lemma prod.subtopology_eq {I : Type _} {Y : I → Type _} [HY : ∀ i, Topology (Y i)] (A : (i : I) →  Set (Y i)) :
+  prod (fun i => A i) = Init.inverse (fun (f : Π i, A i) i => (f i).val)
+:= by
+  let σ := subtopology_homeompophic A
+  rw [<- curry (fun i (f : Π i, A i) => (f i).val )]
+  simp [prod]
+  apply le_antisymm
+  · apply Init.le_init
+    intro i
+    rw [IsContinuous_iff]
+    intro U HU
+    let g := Subtype.val ∘ (fun f : Π i, A i => f i)
+    have E :(fun f : Π i, A i ↦ ↑(f i)) = g := by ext f; simp [g]
+    rw [E]
+    suffices : IsContinuous g
+    rw [IsContinuous_iff] at this
+    apply this U HU
+    simp [g]
+    apply IsContinuous_comp
+    · apply prod.isContinuous (fun i => A i) i
+    · apply Subtopology.isContinuous
+  · apply Init.le_init
+    intro i
+    have Hi := prod.isContinuous (fun i => A i) i
+    rw [IsContinuous_iff] at Hi ⊢
+    intro U HU; specialize Hi U HU
+    apply σ.continuous_inv at Hi
+    rw [Subtopology.isOpen_eq] at Hi
+    rcases Hi with ⟨V, HV, E⟩
+    simp at E
+    rw [Equiv.preimage_eq_iff_eq_image] at E
+    rw [E,Equiv.image_symm_eq_preimage]; clear E
+    simp [σ,subtopology_homeompophic]
+    induction HV with
+    | base W HW =>
+      simp [Init.subbase, Init.to] at HW
+      rcases HW with ⟨i, K, HK, rfl⟩; simp
+      apply GenedOpen.base
+      simp [Init.subbase, Init.to]
+      use i, K, HK; ext f; simp
+    | univ =>
+      simp
+      apply GenedOpen.univ
+    | inter S T HS HT IHS IHT =>
+      simp; apply Topology.isOpen_inter _ _ IHS IHT
+    | union S HS IHS =>
+      have : {a : Π i, A i| (fun i ↦ ↑(a i)) ∈ ⋃₀ S} = ⋃ s ∈ S, {a : Π i, A i | (fun i ↦ ↑(a i)) ∈ s} := by ext x; simp
+      rw [this]
+      apply GenedOpen.union
+      intro s Hs; simp at Hs
+      rcases Hs with ⟨W, rfl⟩
+      apply GenedOpen.union
+      intro s Hs; simp at Hs
+      rcases Hs with ⟨H, rfl⟩
+      apply IHS W H
