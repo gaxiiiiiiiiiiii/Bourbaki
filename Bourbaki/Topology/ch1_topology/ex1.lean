@@ -233,7 +233,7 @@ example [HX : Topology X]  (A B : Set X) (HA : HX.isOpen A) (HB : HX.isOpen B) :
   rw [mem_closure_iff] at H1 H2
   by_cases Ax : x ∈ A
   · left; left; use Ax
-    rw [frontier_mem_iff]
+    rw [mem_frontier_iff]
     intro U HU
     constructor<;> intro F
     · have Ux := neighborOf_mem_self HU
@@ -249,7 +249,7 @@ example [HX : Topology X]  (A B : Set X) (HA : HX.isOpen A) (HB : HX.isOpen B) :
       simp
   by_cases Bx : x ∈ B
   · left; right; use Bx
-    rw [frontier_mem_iff]
+    rw [mem_frontier_iff]
     intro U HU
     constructor<;> intro F
     · have Ux := neighborOf_mem_self HU
@@ -264,7 +264,7 @@ example [HX : Topology X]  (A B : Set X) (HA : HX.isOpen A) (HB : HX.isOpen B) :
       apply H2 _ HAB
       simp
   · right
-    rw [frontier_mem_iff, frontier_mem_iff]
+    rw [mem_frontier_iff, mem_frontier_iff]
     constructor<;> intro U HU<;> constructor<;> intro F
     · apply H1 U HU
       rw [Set.inter_comm A B, Set.inter_assoc, F]; simp
