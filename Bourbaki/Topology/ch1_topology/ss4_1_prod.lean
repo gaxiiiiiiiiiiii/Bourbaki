@@ -9,6 +9,10 @@ instance prod {I : Type _} (f : I → Type _) [HY : ∀ i, Topology (f i)] :
   Topology (Π i, f i)
 := Init.topology (fun i (X : Π i, f i) => X i)
 
+def prod.pr {I : Type _} (X : I → Type _) [∀ i, Topology (X i)] (i : I) :
+  (Π i, X i) → X i
+:= fun f => f i
+
 
 lemma prod.isOpen_iff {I : Type _} (X : I → Type _) [HX : ∀ i, Topology (X i)] (U : Set (Π i, X i)) :
   U ∈ Topology.isOpen  ↔  (∃ B ⊆ {V | ∃ U : Finset (Set ((i : I) → X i)), ((U : Set (Set (Π i, X i))) ⊆ Init.subbase fun i X ↦ X i) ∧ V = ⋂₀ (U : Set (Set (Π i, X i)))}, U = ⋃₀ B)
