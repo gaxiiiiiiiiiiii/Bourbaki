@@ -21,8 +21,8 @@ lemma prod.isOpen_iff {I : Type _} (X : I → Type _) [HX : ∀ i, Topology (X i
 
 
 lemma prod.isContinuous {I : Type _} (f : I → Type _) [HY : ∀ i, Topology (f i)] :
-  ∀ (i : I), IsContinuous fun (X : Π i, f i) ↦ X i
-:= Init.isContinuous (fun i (X : Π i, f i) => X i)
+  ∀ (i : I), IsContinuous (prod.pr f i)
+:= Init.isContinuous (prod.pr f)
 
 def prod.subbase {I : Type _}(X : I → Type _) [HX : ∀ i, Topology (X i)] :
   Set (Set (Π i, X i))
@@ -391,6 +391,7 @@ lemma prod.subtopology_eq {I : Type _} {Y : I → Type _} [HY : ∀ i, Topology 
     rcases Hi with ⟨V, HV, E⟩
     simp at E
     rw [Equiv.preimage_eq_iff_eq_image] at E
+    unfold pr at E
     rw [E,Equiv.image_symm_eq_preimage]; clear E
     simp [σ,subprod_homeompophic]
     induction HV with
