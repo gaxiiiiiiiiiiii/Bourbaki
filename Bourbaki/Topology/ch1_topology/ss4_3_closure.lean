@@ -38,6 +38,6 @@ lemma prod.closure_eq {I : Type _} {X : I → Type _}  [HX : ∀ i, Topology (X 
   have Hi := prod.isContinuous X i f B HB
   apply H at Hi
   apply Hi
-  ext g; simp
+  ext g; simp [pr]
   intro HA HB
   have : g i ∈ A i ∩ B := by {grind}; grind
