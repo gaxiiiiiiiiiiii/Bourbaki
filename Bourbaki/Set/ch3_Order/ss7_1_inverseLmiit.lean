@@ -1,5 +1,7 @@
 import Mathlib
 
+namespace Bourbaki
+
 @[ext]
 structure InvSystem [Preorder I] (E : I → Type k)  where
   map {i j} : i ≤ j →  E j → E i
