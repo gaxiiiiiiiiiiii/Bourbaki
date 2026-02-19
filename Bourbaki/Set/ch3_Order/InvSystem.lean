@@ -7,6 +7,8 @@ open Opposite
 open Limits
 
 
+namespace Bourbaki
+
 abbrev InvSystem (I 𝓒) [Preorder I] [Category 𝓒] := Iᵒᵖ ⥤ 𝓒
 
 
