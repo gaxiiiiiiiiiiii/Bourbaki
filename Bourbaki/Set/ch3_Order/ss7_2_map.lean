@@ -8,24 +8,6 @@ open Opposite
 open Limits
 
 
-lemma InvSystem.limMap_π
-  [Preorder I] [Category 𝓒] {E F : InvSystem I 𝓒}
-  [HasLimit E] [HasLimit F]
-  (u : E ⟶ F) (i : I) :
-  limMap u ≫ F.π i = E.π i ≫ u.app (op i)
-:= by simp [limMap, InvSystem.π]
-
-
-lemma InvSystem.map_comp
-  [Preorder I] [Category 𝓒] {E F G : InvSystem I 𝓒}
-  [HasLimit E] [HasLimit F] [HasLimit G]
-  (u : E ⟶ F) (v : F ⟶ G) :
-  limMap (u ≫ v) = limMap u ≫ limMap v
-:= by
-  apply limMap_ext
-  intro i
-  rw [Category.assoc, limMap_π, limMap_π, <- Category.assoc, limMap_π]
-  simp
 
 #check HasLimitsOfShape
 

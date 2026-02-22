@@ -74,3 +74,24 @@ lemma InvSystem.limMap_ext [Preorder I] [Category 𝓒] {S : InvSystem I 𝓒} {
   (f f' : S.limit ⟶ T.limit) (H : ∀ (i : I), f ≫ T.π i = f' ≫ T.π i) :
   f = f'
 := hom_ext _ _ _ H
+
+
+
+lemma InvSystem.limMap_π
+  [Preorder I] [Category 𝓒] {E F : InvSystem I 𝓒}
+  [HasLimit E] [HasLimit F]
+  (u : E ⟶ F) (i : I) :
+  limMap u ≫ F.π i = E.π i ≫ u.app (op i)
+:= by simp [limMap, InvSystem.π]
+
+
+lemma InvSystem.limMap_comp
+  [Preorder I] [Category 𝓒] {E F G : InvSystem I 𝓒}
+  [HasLimit E] [HasLimit F] [HasLimit G]
+  (u : E ⟶ F) (v : F ⟶ G) :
+  limMap (u ≫ v) = limMap u ≫ limMap v
+:= by
+  apply limMap_ext
+  intro i
+  rw [Category.assoc, limMap_π, limMap_π, <- Category.assoc, limMap_π]
+  simp
