@@ -27,194 +27,104 @@ lemma InvSystem.map_comp
   rw [Category.assoc, limMap_π, limMap_π, <- Category.assoc, limMap_π]
   simp
 
+#check HasLimitsOfShape
 
+def InvSystem.Sub [Preorder I] [Category 𝓒] (E : InvSystem I 𝓒) := MonoOver E
 
-structure InvSystem.Sub [Preorder I] [Category 𝓒] (E : InvSystem I 𝓒) : Type where
-  hom i : Subobject (E.proj (op i))
-  map {i j : I} (H : i ≤ j)  : Subobject.underlying.obj (hom j) ⟶ Subobject.underlying.obj (hom i)
-  fac { i j : I} (H : i ≤ j) : map H ≫ (hom i).arrow = (hom j).arrow ≫ E.mapOf H
-
-
-noncomputable def InvSystem.Sub.invSystem [Preorder I] [Category 𝓒] {E : InvSystem I 𝓒} (S : E.Sub) :
+def InvSystem.Sub.invSystem [Preorder I] [Category 𝓒] {E : InvSystem I 𝓒} (S : E.Sub) :
   InvSystem I 𝓒
-where
-  obj i := Subobject.underlying.obj (S.hom (unop i))
-  map {i j} f := S.map f.unop.down.down
-  map_id := by
-    intro i
-    refine Subobject.eq_of_comp_arrow_eq_iff.mpr ?_
-    rw [S.fac (le_refl (unop i))]
-    simp
-    conv => arg 2; rw [<- Category.comp_id ((S.hom (unop i)).arrow)]
-    rfl
-  map_comp {i j k} f g := by
-    refine Subobject.eq_of_comp_arrow_eq_iff.mpr ?_
-    rw [Category.assoc, S.fac (g.unop.down.down)]
-    slice_rhs 1 2 => rw [S.fac (f.unop.down.down)]
-    rw [S.fac (le_trans (g.unop.down.down) (f.unop.down.down))]
-    simp
-    rw [<- mapOf_comp]
+:= S.obj.left
 
-noncomputable def InvSystem.Sub.incl [Preorder I] [Category 𝓒] {E : InvSystem I 𝓒} (S : E.Sub) :
-  S.invSystem ⟶ E
-where
-  app i := (S.hom i.unop).arrow
-  naturality {i j} f := S.fac f.unop.down.down
-
-noncomputable def InvSystem.Sub.limMap [Preorder I] [Category 𝓒] {E : InvSystem I 𝓒} (S : E.Sub) [HasLimit E] [HasLimit S.invSystem] :
+noncomputable def InvSystem.Sub.limMap [Preorder I] [Category 𝓒] {E : InvSystem I 𝓒} (S : E.Sub) [HasLimit E] [HasLimit (S.invSystem)] :
   S.invSystem.limit ⟶ E.limit
-:= InvSystem.limMap S.incl
+:= Limits.limMap S.obj.hom
 
-lemma InvSystem.Sub.limMap_mono [Preorder I] [Category 𝓒] {E : InvSystem I 𝓒} (S : E.Sub) [HasLimit E] [HasLimit S.invSystem] :
+lemma InvSystem.Sub.limMap_mono [Preorder I] [Category 𝓒] {E : InvSystem I 𝓒} (S : E.Sub) [HasLimit E] [HasLimit (S.invSystem)] :
   Mono (S.limMap)
 := by
-  constructor; intro X f g H
+  constructor; intro c f g H
   apply InvSystem.hom_ext
   intro i
-  apply (S.hom i).arrow_mono.right_cancellation
-  rw [Category.assoc, Category.assoc]
+  let C : InvSystem I 𝓒 := (CategoryTheory.Functor.const (J := Iᵒᵖ)).obj c
+  let F : C ⟶ S.invSystem := {
+    app i := f ≫ S.invSystem.π i.unop
+    naturality := by intro i j h; simp [C, InvSystem.π]
+  }
+  let G : C ⟶ S.invSystem := {
+    app i := g ≫ S.invSystem.π i.unop
+    naturality := by intro i j h; simp [C, InvSystem.π]
+  }
+  suffices : F = G
+  rw [CategoryTheory.NatTrans.ext_iff] at this
+  have := congr_fun this (op i)
+  simp [F, G] at this; assumption
+  apply S.property.right_cancellation
+  apply NatTrans.ext; ext j; simp [F, G]
   simp [InvSystem.π]
-  have E1 := Limits.limMap_π (S.incl) (op i)
-  change S.limMap  ≫ E.π i = limit.π S.invSystem (op i) ≫ S.incl.app (op i) at E1
-  simp [InvSystem.Sub.incl] at E1
+  rw [<- Limits.limMap_π, <- Category.assoc]
+  simp [InvSystem.Sub.limMap] at H
   grind
 
 
-noncomputable def InvSystem.subobject [Preorder I] [Category 𝓒] [HasPullbacks 𝓒] :
-  (InvSystem I 𝓒)ᵒᵖ ⥤ I ⥤ Type
-where
-  obj E := {
-    obj i := Subobject (E.unop.proj (op i))
-    map {i j} f := (Subobject.pullback (E.unop.map (op f))).obj
-    map_id := by
-      intro i
-      conv => arg 1; arg 1; arg 1; arg 2; change (𝟙 i).op
-      funext x; simp
-      rw [Subobject.pullback_id]
-    map_comp {i j k} f g:= by
-      funext x; simp
-      conv => arg 1; arg 1; arg 1; arg 2; change (f ≫ g).op
-      simp
-      rw [Subobject.pullback_comp]
-      conv => arg 2; arg 1; arg 1; arg 2; change g.op
-      conv => arg 2; arg 2; arg 1; arg 1; arg 2; change f.op
-  }
-  map {E F} u := {
-    app i := (Subobject.pullback (u.unop.app (op i))).obj
-    naturality := by
-      intro i j f; simp
-      have Hf := u.unop.naturality (op f)
-      funext x; simp
-      rw [<-  Subobject.pullback_comp,  <- Subobject.pullback_comp, Hf]
-  }
-  map_id := by
-    intro E; simp
-    apply NatTrans.ext; simp
-    funext i; simp
-    funext x; simp
-    rw [Subobject.pullback_id]
-  map_comp {E F J} u v:= by
-    apply NatTrans.ext; simp
-    funext i; simp
-    funext x; simp
-    rw [Subobject.pullback_comp]
-
-
-def Sub [Preorder I] [Category 𝓒] (E : InvSystem I 𝓒) := Subobject E
-
-noncomputable def Sub.invSystem [Preorder I] [Category 𝓒] {E : InvSystem I 𝓒} (S : Sub E) :
-  InvSystem I 𝓒
-:= Subobject.underlying.obj S
-
-lemma Sub.naturality [Preorder I] [Category 𝓒] {E : InvSystem I 𝓒} (S : Sub E) {i j : Iᵒᵖ} (f : i ⟶ j) :
-  S.invSystem.map f ≫ S.arrow.app j = S.arrow.app i ≫ E.map f
-:= S.arrow.naturality f
-
-noncomputable def Sub.limMap [Preorder I] [Category 𝓒] {E : InvSystem I 𝓒} (S : Sub E) [HasLimit E] [HasLimit S.invSystem] :
-  S.invSystem.limit ⟶ E.limit
-:= InvSystem.limMap S.arrow
-
-lemma Sub.limMap_mono [Preorder I] [Category 𝓒] {E : InvSystem I 𝓒} (S : Sub E) [HasLimit E] [HS : HasLimit S.invSystem] :
-  Mono (S.limMap)
+set_option maxHeartbeats 1000000
+-- CategoryTheory.Limits.PreservesPullback.iso
+noncomputable def InvSystem.Sub.PreservesPullback [Preorder I] [Category 𝓒] {E E' : InvSystem I 𝓒}
+  (u : E ⟶ E') (S' : E'.Sub) [HasLimitsOfShape Iᵒᵖ 𝓒] [HasPullbacks 𝓒]:
+  (pullback u S'.arrow).limit ≅ pullback (InvSystem.limMap u) (InvSystem.limMap S'.arrow)
 := by
-  unfold Sub.limMap InvSystem.limMap
-  simp [Sub.invSystem] at HS
-  have : ∀ (j : Iᵒᵖ), Mono ((Subobject.arrow S).app j) := by {
-    intro i; constructor; intro X f g H
-    #check S.arrow_mono.right_cancellation
-
-
+  let hom : (pullback u (MonoOver.arrow S')).limit ⟶ pullback (InvSystem.limMap u) (InvSystem.limMap (MonoOver.arrow S')) := by
+    apply pullback.lift ?_ ?_ ?_
+    · apply InvSystem.limMap (pullback.fst u (MonoOver.arrow S'))
+    · apply InvSystem.limMap (pullback.snd u (MonoOver.arrow S'))
+    · simp [InvSystem.limMap]
+      apply limit.hom_ext; intro i; simp
+      rw [<- NatTrans.comp_app, <- NatTrans.comp_app]
+      rw [pullback.condition]
+  let c : Cone (pullback u (MonoOver.arrow S')) := {
+    pt := pullback (InvSystem.limMap u) (InvSystem.limMap (MonoOver.arrow S'))
+    π := by
+      apply pullback.lift ?_ ?_ ?_
+      · refine {
+          app i := pullback.fst (InvSystem.limMap u) (InvSystem.limMap (MonoOver.arrow S')) ≫ E.π i.unop
+          naturality {i j} f := by simp [InvSystem.π]
+        }
+      · refine {
+          app i := pullback.snd (InvSystem.limMap u) (InvSystem.limMap (MonoOver.arrow S')) ≫ S'.invSystem.π i.unop
+          naturality {i j} f := by simp [InvSystem.π, invSystem]
+        }
+      · apply NatTrans.ext; simp
+        ext i; simp
+        rw [<-  InvSystem.limMap_π, <-  InvSystem.limMap_π]
+        rw [<- Category.assoc, pullback.condition]; grind
   }
 
-
-  #check Limits.limMap_mono (α := S.arrow)
-  constructor; intro X f g H
-  apply InvSystem.hom_ext
-  intro i
-  #check S.arrow_mono.right_cancellation
-  apply (S.hom i).arrow_mono.right_cancellation
-  rw [Category.assoc, Category.assoc]
-  simp [InvSystem.π]
-  have E1 := Limits.limMap_π (S.incl) (op i)
-  change S.limMap  ≫ E.π i = limit.π S.invSystem (op i) ≫ S.incl.app (op i) at E1
-  simp [InvSystem.Sub.incl] at E1
-  grind
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  refine {
+  hom := hom
+  inv := limit.lift (pullback u (MonoOver.arrow S')) c
+  hom_inv_id := by
+    apply limit.hom_ext; intro i; simp
+    let C : InvSystem I 𝓒 := (CategoryTheory.Functor.const (J := Iᵒᵖ)).obj (pullback u (MonoOver.arrow S')).limit
+    let L : C ⟶ (pullback u (MonoOver.arrow S')) := {
+      app i := hom ≫ c.π.app i
+      naturality := by intro i j h; simp [C]
+    }
+    let R : C ⟶ (pullback u (MonoOver.arrow S')) := {
+      app i := limit.π (pullback u (MonoOver.arrow S')) i
+      naturality := by intro i j h; simp [C]
+    }
+    suffices : L = R
+    rw [CategoryTheory.NatTrans.ext_iff] at this
+    have := congr_fun this i
+    simp [L, R] at this; assumption
+    apply pullback.hom_ext<;> simp [L, R]<;>
+    apply NatTrans.ext<;> ext i<;>
+    simp [c, hom, InvSystem.limMap, InvSystem.π, invSystem]
+  inv_hom_id := by
+    simp [hom, c]
+    apply pullback.hom_ext<;>
+    apply limit.hom_ext<;> intro i<;>
+    simp [InvSystem.limMap, InvSystem.π]; rfl
+}
 
 
 
