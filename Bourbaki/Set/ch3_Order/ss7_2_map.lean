@@ -21,31 +21,37 @@ noncomputable def InvSystem.Sub.limMap [Preorder I] [Category 𝓒] {E : InvSyst
   S.invSystem.limit ⟶ E.limit
 := Limits.limMap S.obj.hom
 
+lemma InvSystem.limMap_mono [Preorder I] [Category 𝓒] {E E' : InvSystem I 𝓒}  [HasLimit E] [HasLimit E']  (u : E ⟶ E') (Hu : Mono u):
+  Mono (Limits.limMap u)
+:= by
+  constructor; intro c f g H
+  apply limit.hom_ext; intro i
+  let C : InvSystem I 𝓒 := (CategoryTheory.Functor.const (J := Iᵒᵖ)).obj c
+  let F : C ⟶ E := {
+    app i := f ≫ E.π i.unop
+    naturality := by intro i j h; simp [C, InvSystem.π]
+  }
+  let G : C ⟶ E := {
+    app i := g ≫ E.π i.unop
+    naturality := by intro i j h; simp [C, InvSystem.π]
+  }
+  have : F = G := by{
+    apply Hu.right_cancellation
+    apply NatTrans.ext; ext i; simp [F, G]
+    simp [InvSystem.π]
+    rw [<- Limits.limMap_π, <- Category.assoc, H, Category.assoc]
+  }
+  rw [CategoryTheory.NatTrans.ext_iff] at this
+  have := congr_fun this i
+  simp [F, G] at this; assumption
+
 lemma InvSystem.Sub.limMap_mono [Preorder I] [Category 𝓒] {E : InvSystem I 𝓒} (S : E.Sub) [HasLimit E] [HasLimit (S.invSystem)] :
   Mono (S.limMap)
 := by
-  constructor; intro c f g H
-  apply InvSystem.hom_ext
-  intro i
-  let C : InvSystem I 𝓒 := (CategoryTheory.Functor.const (J := Iᵒᵖ)).obj c
-  let F : C ⟶ S.invSystem := {
-    app i := f ≫ S.invSystem.π i.unop
-    naturality := by intro i j h; simp [C, InvSystem.π]
-  }
-  let G : C ⟶ S.invSystem := {
-    app i := g ≫ S.invSystem.π i.unop
-    naturality := by intro i j h; simp [C, InvSystem.π]
-  }
-  suffices : F = G
-  rw [CategoryTheory.NatTrans.ext_iff] at this
-  have := congr_fun this (op i)
-  simp [F, G] at this; assumption
-  apply S.property.right_cancellation
-  apply NatTrans.ext; ext j; simp [F, G]
-  simp [InvSystem.π]
-  rw [<- Limits.limMap_π, <- Category.assoc]
-  simp [InvSystem.Sub.limMap] at H
-  grind
+  simp [InvSystem.Sub.limMap]
+  apply InvSystem.limMap_mono
+  apply S.property
+
 
 
 
@@ -124,6 +130,12 @@ noncomputable def InvSystem.Sub.PreservesPullback [Preorder I] [Category 𝓒] {
 := by
   change Limits.lim.obj (pullback u S'.arrow) ≅ pullback (Limits.lim.map u) (Limits.lim.map S'.arrow)
   apply CategoryTheory.Limits.PreservesPullback.iso
+
+
+
+
+
+
 
 
 
