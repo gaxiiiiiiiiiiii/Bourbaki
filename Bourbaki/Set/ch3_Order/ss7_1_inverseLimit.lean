@@ -28,7 +28,7 @@ def InvSystem.restrict [Preorder I] [Category 𝓒] (E : InvSystem I 𝓒) (J : 
   InvSystem J.obj.left 𝓒
 := J.functor.op ⋙ E
 
-noncomputable def InvSystem.restrict.limMap [Preorder I] [Category 𝓒] {E : InvSystem I 𝓒} (J : MonoOver I) [HasLimit E] [HasLimit (E.restrict J)] :
+noncomputable def InvSystem.restrict.limMap [Preorder I] [Category 𝓒] (E : InvSystem I 𝓒) (J : MonoOver I) [HasLimit E] [HasLimit (E.restrict J)] :
   E.limit ⟶ (E.restrict J).limit
 := by
   let c : Cone (E.restrict J) := {
