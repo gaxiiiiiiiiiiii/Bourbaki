@@ -132,16 +132,66 @@ noncomputable def InvSystem.Sub.PreservesPullback [Preorder I] [Category 𝓒] {
   apply CategoryTheory.Limits.PreservesPullback.iso
 
 
+-- 自前で実装はできたけど、Functor.Initialを使った方がエレガントで早そうだから、そっちを使う
+-- noncomputable def InvSystem.restrict_limit_equiv [Preorder I] [Category 𝓒]
+--   (J : MonoOver I) (HJ1 : IsDirectedOrder J.obj.left)
+--   (HJ2 : ∀ i : I, ∃ j : J.obj.left, i ≤ J.arrow j )
+--    (E : InvSystem I 𝓒)[HasLimit E] [HasLimit (E.restrict J)] [HasLimit (J.functor.op ⋙ E)]
+--   :
+--    E.limit ≅ (E.restrict J).limit
+-- := by
+--   let c : Cone E := {
+--     pt := (E.restrict J).limit
+--     π := {
+--       app i := (E.restrict J).π ((HJ2 i.unop).choose) ≫ E.mapOf (HJ2 i.unop).choose_spec
+--       naturality {i j} f := by
+--         simp
+--         have Hi := (HJ2 (unop i)).choose_spec
+--         have Hj := (HJ2 (unop j)).choose_spec
+--         set i' := (HJ2 (unop i)).choose
+--         set j' := (HJ2 (unop j)).choose
+--         have ⟨c, ic, jc⟩ := HJ1.directed i' j'
+--         have Ei := (E.restrict J).w ic
+--         have Ej := (E.restrict J).w jc
+--         conv => arg 1; arg 1; change (E.restrict J).π j'
+--         conv => arg 2; arg 1; change (E.restrict J).π i'
+--         rw [<- Ei, <- Ej]; simp
+--         simp [mapOf, InvSystem.restrict]
+--         rw [<- CategoryTheory.Functor.map_comp, <- CategoryTheory.Functor.map_comp, <- CategoryTheory.Functor.map_comp]
+--         suffices : ((J.functor.map (homOfLE jc)).op ≫ (homOfLE Hj).op) = ((J.functor.map (homOfLE ic)).op ≫ (homOfLE Hi).op ≫ f)
+--         rw [this]
+--         apply Subsingleton.elim
+--     }
+--   }
+--   refine {
+--     hom := restrict.limMap E J
+--     inv := E.lift c
+--     hom_inv_id := by
+--       apply E.hom_ext; intro i; simp
+--       rw [E.lift_π c]
+--       simp [restrict.limMap, c]
+--       rw [<- Category.assoc, (E.restrict J).lift_π]; simp
+--       rw [E.w]
+--     inv_hom_id := by
+--       apply (E.restrict J).hom_ext; intro i; simp
+--       simp [restrict.limMap]
+--       rw [((E.restrict J)).lift_π]; simp
+--       rw [E.lift_π]
+--       simp [c]
+--       have ⟨j, Hj⟩ := HJ2 (J.arrow i)
+--       have Hj :=( HJ2 (J.arrow i)).choose_spec
+--       set j := (HJ2 (J.arrow i)).choose
+--       change (E.restrict J).π j ≫ mapOf Hj = (E.restrict J).π i
+--       rw [(E.restrict J).w Hj]
+--   }
 
-
-
-
-
-
-
-
-
-
+-- TODO
+-- Functor.Initial.limitIso
+noncomputable def InvSystem.restrict.limitIso [Preorder I] [Category 𝓒]
+  (E : InvSystem I 𝓒)[HasLimit E]
+  (J : MonoOver I) [HJ : J.functor.op.Initial] [HasLimit (E.restrict J)] :
+  (E.restrict J).limit ≅ E.limit
+:= Functor.Initial.limitIso J.functor.op E
 
 
 
