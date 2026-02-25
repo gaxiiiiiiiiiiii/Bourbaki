@@ -45,7 +45,7 @@ noncomputable def InvSystem.restrict.limMap [Preorder I] [Category 𝓒] (E : In
 
 noncomputable def InvSystem.restrict.lmMap
   [Preorder I] [Category 𝓒] (E : InvSystem I 𝓒) {J K : MonoOver I}
-  [HasLimit E] [HasLimit (E.restrict J)] [HasLimit (E.restrict K)]
+  [HasLimit (E.restrict J)] [HasLimit (E.restrict K)]
   (u : J ⟶ K) :
   (E.restrict K).limit ⟶ (E.restrict J).limit
 := by
