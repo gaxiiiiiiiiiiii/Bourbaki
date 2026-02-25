@@ -233,6 +233,54 @@ noncomputable def InvSystem.limImage [Preorder I] [Category 𝓒] (E : InvSystem
 := MonoOver.mk (image.ι (limit.cone E).π)
 
 
+noncomputable def InvSystem.limImage_limit_iso [Preorder I] [Category 𝓒] (E : InvSystem I 𝓒) [HasLimit E] [HasImages (Iᵒᵖ ⥤ 𝓒)] [HasImageMaps (Iᵒᵖ ⥤ 𝓒)] [HasLimit E.limImage.invSystem] [HasLimit (image (limit.cone E).π)] :
+  E.limImage.invSystem.limit ≅ E.limit
+:= by
+  let c : Cone (image (limit.cone E).π) := {
+    pt := E.limit
+    π := (factorThruImage ((limit.cone E).π))
+  }
+
+  refine {
+    hom := InvSystem.limMap (image.ι (limit.cone E).π)
+    inv := (image (limit.cone E).π : InvSystem I 𝓒).lift c
+    hom_inv_id := by
+      apply limit.hom_ext; intro i; simp
+      simp [Sub.invSystem, limImage, limit, limMap, c]
+      let C : InvSystem I 𝓒 := (Functor.const (J := Iᵒᵖ)).obj (Limits.limit (image (limit.cone E).π))
+      let L : C ⟶ (image (limit.cone E).π) := {
+        app i := Limits.limMap (image.ι (limit.cone E).π) ≫ (factorThruImage (limit.cone E).π).app i
+        naturality i j f := by
+          simp [C]
+          have := (factorThruImage (limit.cone E).π).naturality f
+          rw [<- this]; simp
+      }
+      let R : C ⟶ (image (limit.cone E).π) := {
+        app i := limit.π (image (limit.cone E).π) i
+        naturality i j f := by simp [C]
+      }
+      suffices : L = R
+      rw [CategoryTheory.NatTrans.ext_iff] at this
+      have := congr_fun this i
+      simp [L, R] at this; assumption
+      have : Mono (image.ι (limit.cone E).π) := by infer_instance
+      apply this.right_cancellation
+
+      apply NatTrans.ext
+      ext i; simp [L, R]
+      rw [<- NatTrans.comp_app, image.fac]; simp
+    inv_hom_id := by
+      apply limit.hom_ext; intro i; simp
+      simp [Sub.invSystem, limMap, InvSystem.lift, limImage, c]
+      have := image.fac ((limit.cone E).π)
+      rw [NatTrans.ext_iff] at this
+      have := congr_fun this i
+      rw [<- NatTrans.comp_app, this]
+      rfl
+  }
+
+
+
 
 
 
