@@ -195,6 +195,44 @@ noncomputable def InvSystem.restrict.limitIso [Preorder I] [Category 𝓒]
 
 
 
+-- noncomputable def InvSystem.limImage [Preorder I] [Category 𝓒] (E : InvSystem I 𝓒) [HasLimit E] [HasImages 𝓒] [HasImageMaps 𝓒] : --[∀ i, HasImage (E.π i)]:
+--   E.Sub
+-- := by
+--   let hom {i j : Iᵒᵖ} (f : i ⟶ j) : Arrow.mk (E.π i.unop) ⟶ Arrow.mk (E.π j.unop) := by
+--     apply Arrow.homMk' (𝟙 E.limit) (E.map f) ?_
+--     simp [InvSystem.π]
+
+--   refine {
+--     obj := {
+--       left := {
+--         obj i := image (E.π i.unop)
+--         map {i j} f := (HasImageMap.imageMap (hom f)).map
+--       }
+--       right := ⟨PUnit.unit⟩
+--       hom := {
+--         app i := Limits.image.ι ((E.π (unop i)))
+--         naturality {i j} f := by
+--           simp
+--           have  := (HasImageMap.imageMap (hom f)).map_ι ; simp at this
+--           rw [this]
+--           simp [hom]
+--       }
+--     }
+--     property := by
+--       constructor
+--       intro E' g h H; simp at *
+--       apply NatTrans.ext; ext i; simp
+--       rw [NatTrans.ext_iff] at H
+--       have := congr_fun H i; simp at this
+--       apply Mono.right_cancellation
+--   }
+
+
+noncomputable def InvSystem.limImage [Preorder I] [Category 𝓒] (E : InvSystem I 𝓒) [HasLimit E] [HasImages (Iᵒᵖ ⥤ 𝓒)] [HasImageMaps (Iᵒᵖ ⥤ 𝓒)] : --[∀ i, HasImage (E.π i)]:
+  E.Sub
+:= MonoOver.mk (image.ι (limit.cone E).π)
+
+
 
 
 
