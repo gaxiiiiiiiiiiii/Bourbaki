@@ -1,4 +1,8 @@
-import Bourbaki.Set.ch3_Order.invSystem
+-- https://www.math.s.chiba-u.ac.jp/~matsu/math/limit.pdf
+import Mathlib.tactic
+import Mathlib.CategoryTheory.Limits.HasLimits
+import Mathlib.CategoryTheory.Subobject.MonoOver
+
 
 open CategoryTheory
 open Opposite
@@ -6,85 +10,92 @@ open Limits
 
 namespace Bourbaki
 
-instance [Preorder I] (J : MonoOver I) :
-  Preorder J.obj.left
-:= Preorder.lift J.arrow
+abbrev InvSystem (I 𝓒) [SmallCategory I] [Category 𝓒] := Iᵒᵖ ⥤ 𝓒
 
-instance [Preorder I] (J : MonoOver I) :
-  Category (J.obj.left)
-:= Preorder.smallCategory J.obj.left
+noncomputable abbrev InvSystem.limit {I 𝓒} [SmallCategory I] [Category 𝓒] (S : InvSystem I 𝓒) [HasLimit S] : 𝓒 := Limits.limit S
 
-def _root_.CategoryTheory.MonoOver.functor [Preorder I] (J : MonoOver I) :
-  J.obj.left ⥤ I
-:= {
-  obj i := J.arrow i
-  map  f :=  ⟨⟨f.down.down⟩⟩
-  map_id _ :=  Eq.symm (eq_of_comp_right_eq fun {_} ↦ congrFun rfl)
-  map_comp _ _ := Eq.symm (eq_of_comp_right_eq fun {_} ↦ congrFun rfl)
-}
+lemma InvSystem.limMap_comp
+  [SmallCategory I] [Category 𝓒] {E F G : InvSystem I 𝓒}
+  [HasLimit E] [HasLimit F] [HasLimit G]
+  (u : E ⟶ F) (v : F ⟶ G) :
+  limMap (u ≫ v) = limMap u ≫ limMap v
+:= by
+  apply limit.hom_ext
+  intro i; simp
 
 
-def InvSystem.restrict [Preorder I] [Category 𝓒] (E : InvSystem I 𝓒) (J : MonoOver I) :
-  InvSystem J.obj.left 𝓒
+
+
+abbrev SubIndex I [SmallCategory.{u} I] :=
+  MonoOver (Cat.of.{u, u} I)
+
+
+abbrev SubIndex.index [SmallCategory I] (J : SubIndex I) := Bundled.α J.obj.left
+
+instance SubIndex.smallCategory_index [SmallCategory I] (J : SubIndex  I) :
+  SmallCategory J.index := J.obj.left.str
+
+
+abbrev SubIndex.functor [SmallCategory I] (J : SubIndex I) :
+  J.index ⥤ I
+:= J.arrow.toFunctor
+
+abbrev SubIndex.mono [SmallCategory I] (J : SubIndex I) :
+  Mono J.arrow
+:= J.mono_obj_hom
+
+abbrev InvSystem.restrict [SmallCategory I] [Category 𝓒] (E : InvSystem I 𝓒) (J : SubIndex I) :
+  InvSystem J.index 𝓒
 := J.functor.op ⋙ E
 
-noncomputable def InvSystem.restrict.limMap [Preorder I] [Category 𝓒] (E : InvSystem I 𝓒) (J : MonoOver I) [HasLimit E] [HasLimit (E.restrict J)] :
+noncomputable def InvSystem.restrict.limMap [SmallCategory I] [Category 𝓒] (E : InvSystem I 𝓒) (J : SubIndex I) [HasLimit E] [HasLimit (E.restrict J)] :
   E.limit ⟶ (E.restrict J).limit
 := by
   let c : Cone (E.restrict J) := {
     pt := E.limit
     π := {
       app i := by
-        simp [InvSystem.restrict, MonoOver.functor]
-        exact E.π (J.arrow i.unop)
-      naturality {i j} f := by
-        simp [InvSystem.restrict, MonoOver.functor, InvSystem.π]
+        simp
+        exact limit.π E (op (J.functor.obj (unop i)))
+      naturality {i j} f := by simp
     }
   }
-  exact (E.restrict J).lift c
+  exact limit.lift (E.restrict J) c
 
 noncomputable def InvSystem.restrict.lmMap
-  [Preorder I] [Category 𝓒] (E : InvSystem I 𝓒) {J K : MonoOver I}
+  [SmallCategory I] [Category 𝓒] (E : InvSystem I 𝓒) {J K : SubIndex I}
   [HasLimit (E.restrict J)] [HasLimit (E.restrict K)]
   (u : J ⟶ K) :
   (E.restrict K).limit ⟶ (E.restrict J).limit
 := by
 
-  let jk (j : J.obj.leftᵒᵖ) : J.arrow (unop j) ⟶ K.arrow (u.hom.left (unop j)) := by {
-    have Hw := u.hom.w
-    conv at Hw => arg 1; arg 1; simp
-    conv at Hw => arg 2; simp
-    simp [MonoOver.arrow]
-    rw [<- Hw]; simp
-    exact 𝟙 _
-  }
+  have Hw := u.hom.w
+  conv at Hw => arg 1; arg 1; simp
+  conv at Hw => arg 2; simp
+  let σ := (eqToHom Hw.symm).toNatTrans
+
+
 
   let c : Cone (E.restrict J) := {
     pt := (E.restrict K).limit
     π := {
-      app j := (E.restrict K).π (u.hom.left j.unop) ≫ E.map (jk j).op
+      app j := limit.π (E.restrict K) (op ((u.hom.left).toFunctor.obj j.unop)) ≫ E.map (σ.app j.unop).op
+
       naturality {j j'} f := by
         simp
-        let f' := J.functor.map f.unop
-        simp [MonoOver.functor, MonoOver.arrow ] at f'
-        have Hw := u.hom.w
-        conv at Hw => arg 1; arg 1; simp
-        conv at Hw => arg 2; simp
-        rw [<- Hw] at f'; simp at f'
-        have Jw := limit.w (E.restrict K) f'.op
-        conv at Jw => arg 2; change limit.π (E.restrict K) (op (u.hom.left (unop j')))
-        simp [InvSystem.π]
-        rw [<- Jw]
-        set g := (limit.π (E.restrict K) (op (u.hom.1 (unop j))))
-        simp [InvSystem.restrict]
+        let f' := u.hom.left.toFunctor.map f.unop
+        have Hw := limit.w (E.restrict K) f'.op
+        rw [<- Hw]; clear Hw; simp
         rw [<- CategoryTheory.Functor.map_comp, <- CategoryTheory.Functor.map_comp]
-        suffices :((K.functor.map f'.op.unop).op ≫ (jk j').op  ) =((jk j).op ≫ (J.functor.map f.unop).op)
-        rw [<- this]; rfl
-        apply Subsingleton.elim
+        rw [<- op_comp, <- op_comp]
+        suffices : σ.app (unop j') ≫ K.functor.map f' = J.functor.map f.unop ≫ σ.app (unop j)
+        rw [this]
+        have := σ.naturality f.unop
+        simp [SubIndex.functor, MonoOver.arrow]
+        grind
     }
   }
-  exact  (E.restrict J).lift c
-
+  exact  limit.lift (E.restrict J) c
 
 
 end Bourbaki
