@@ -12,8 +12,6 @@ namespace Bourbaki
 
 abbrev InvSystem (I 𝓒) [SmallCategory I] [Category 𝓒] := Iᵒᵖ ⥤ 𝓒
 
-noncomputable abbrev InvSystem.limit {I 𝓒} [SmallCategory I] [Category 𝓒] (S : InvSystem I 𝓒) [HasLimit S] : 𝓒 := Limits.limit S
-
 lemma InvSystem.limMap_comp
   [SmallCategory I] [Category 𝓒] {E F G : InvSystem I 𝓒}
   [HasLimit E] [HasLimit F] [HasLimit G]
@@ -22,8 +20,6 @@ lemma InvSystem.limMap_comp
 := by
   apply limit.hom_ext
   intro i; simp
-
-
 
 
 abbrev SubIndex I [SmallCategory.{u} I] :=
@@ -49,10 +45,10 @@ abbrev InvSystem.restrict [SmallCategory I] [Category 𝓒] (E : InvSystem I �
 := J.functor.op ⋙ E
 
 noncomputable def InvSystem.restrict.limMap [SmallCategory I] [Category 𝓒] (E : InvSystem I 𝓒) (J : SubIndex I) [HasLimit E] [HasLimit (E.restrict J)] :
-  E.limit ⟶ (E.restrict J).limit
+  limit E ⟶ limit (E.restrict J)
 := by
   let c : Cone (E.restrict J) := {
-    pt := E.limit
+    pt := limit E
     π := {
       app i := by
         simp
@@ -66,7 +62,7 @@ noncomputable def InvSystem.restrict.lmMap
   [SmallCategory I] [Category 𝓒] (E : InvSystem I 𝓒) {J K : SubIndex I}
   [HasLimit (E.restrict J)] [HasLimit (E.restrict K)]
   (u : J ⟶ K) :
-  (E.restrict K).limit ⟶ (E.restrict J).limit
+  limit (E.restrict K) ⟶ limit (E.restrict J)
 := by
 
   have Hw := u.hom.w
@@ -77,7 +73,7 @@ noncomputable def InvSystem.restrict.lmMap
 
 
   let c : Cone (E.restrict J) := {
-    pt := (E.restrict K).limit
+    pt := limit (E.restrict K)
     π := {
       app j := limit.π (E.restrict K) (op ((u.hom.left).toFunctor.obj j.unop)) ≫ E.map (σ.app j.unop).op
 
