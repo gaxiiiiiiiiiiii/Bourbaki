@@ -53,21 +53,22 @@ abbrev InvSystem.restrict [SmallCategory I] [Category 𝓒] (E : InvSystem I �
   InvSystem J.index 𝓒
 := J.functor.op ⋙ E
 
-noncomputable def InvSystem.restrict.limMap [SmallCategory I] [Category 𝓒] (E : InvSystem I 𝓒) (J : SubIndex I) [HasLimit E] [HasLimit (E.restrict J)] :
+noncomputable def InvSystem.restrict.pre [SmallCategory I] [Category 𝓒] (E : InvSystem I 𝓒) (J : SubIndex I) [HasLimit E] [HasLimit (E.restrict J)] :
   limit E ⟶ limit (E.restrict J)
 := by
-  let c : Cone (E.restrict J) := {
-    pt := limit E
-    π := {
-      app i := by
-        simp
-        exact limit.π E (op (J.functor.obj (unop i)))
-      naturality {i j} f := by simp
-    }
-  }
-  exact limit.lift (E.restrict J) c
+  apply limit.pre
+  -- let c : Cone (E.restrict J) := {
+  --   pt := limit E
+  --   π := {
+  --     app i := by
+  --       simp
+  --       exact limit.π E (op (J.functor.obj (unop i)))
+  --     naturality {i j} f := by simp
+  --   }
+  -- }
+  -- exact limit.lift (E.restrict J) c
 
-noncomputable def InvSystem.restrict.lmMap
+noncomputable def InvSystem.restrict.limMap
   [SmallCategory I] [Category 𝓒] (E : InvSystem I 𝓒) {J K : SubIndex I}
   [HasLimit (E.restrict J)] [HasLimit (E.restrict K)]
   (u : J ⟶ K) :
