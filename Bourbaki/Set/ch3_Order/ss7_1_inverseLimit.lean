@@ -73,18 +73,18 @@ noncomputable def InvSystem.restrict.lmMap
   (u : J ⟶ K) :
   limit (E.restrict K) ⟶ limit (E.restrict J)
 := by
-  have Hw := u.hom.w
+  have Hw := u.down.hom.w
   conv at Hw => arg 1; arg 1; simp
   conv at Hw => arg 2; simp
   let σ := (eqToHom Hw.symm).toNatTrans
   let c : Cone (E.restrict J) := {
     pt := limit (E.restrict K)
     π := {
-      app j := limit.π (E.restrict K) (op ((u.hom.left).toFunctor.obj j.unop)) ≫ E.map (σ.app j.unop).op
+      app j := limit.π (E.restrict K) (op ((u.down.hom.left).toFunctor.obj j.unop)) ≫ E.map (σ.app j.unop).op
 
       naturality {j j'} f := by
         simp
-        let f' := u.hom.left.toFunctor.map f.unop
+        let f' := u.down.hom.left.toFunctor.map f.unop
         have Hw := limit.w (E.restrict K) f'.op
         rw [<- Hw]; clear Hw; simp
         rw [<- CategoryTheory.Functor.map_comp, <- CategoryTheory.Functor.map_comp]
