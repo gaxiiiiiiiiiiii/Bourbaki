@@ -99,5 +99,16 @@ noncomputable def InvSystem.restrict.limMap
   }
   exact  limit.lift (E.restrict J) c
 
+lemma InvSystem.restrict.limMap_comp
+  [SmallCategory I] [Category 𝓒] (E : InvSystem I 𝓒) {J K L : SubIndex I}
+  [HasLimit (E.restrict J)] [HasLimit (E.restrict K)] [HasLimit (E.restrict L)]
+  (u : J ⟶ K) (v : K ⟶ L) :
+  limMap E (u ≫ v) = limMap E v ≫ limMap E u
+:= by
+  apply limit.hom_ext; intro j; simp
+  simp [limMap]
+  congr
+
+
 
 end Bourbaki
