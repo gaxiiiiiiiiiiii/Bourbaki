@@ -26,6 +26,15 @@ abbrev SubIndex I [SmallCategory.{u} I] :=
   MonoOver (Cat.of.{u, u} I)
 
 
+instance SubIndex.smallCategory [SmallCategory.{u} I] :
+  SmallCategory.{u + 1} (SubIndex I)
+where
+  Hom F G := PLift (F ⟶ G)
+  id F := ⟨𝟙 F⟩
+  comp f g := ⟨f.down ≫ g.down⟩
+  id_comp {X Y} f := by simp
+  comp_id {X Y} f := by simp
+
 abbrev SubIndex.index [SmallCategory I] (J : SubIndex I) := Bundled.α J.obj.left
 
 instance SubIndex.smallCategory_index [SmallCategory I] (J : SubIndex  I) :
@@ -64,14 +73,10 @@ noncomputable def InvSystem.restrict.lmMap
   (u : J ⟶ K) :
   limit (E.restrict K) ⟶ limit (E.restrict J)
 := by
-
   have Hw := u.hom.w
   conv at Hw => arg 1; arg 1; simp
   conv at Hw => arg 2; simp
   let σ := (eqToHom Hw.symm).toNatTrans
-
-
-
   let c : Cone (E.restrict J) := {
     pt := limit (E.restrict K)
     π := {
