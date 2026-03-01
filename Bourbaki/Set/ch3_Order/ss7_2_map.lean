@@ -9,9 +9,6 @@ open Opposite
 open Limits
 
 
-
-#check HasLimitsOfShape
-
 def InvSystem.Sub [SmallCategory I] [Category 𝓒] (E : InvSystem I 𝓒) := MonoOver E
 
 def InvSystem.Sub.invSystem [SmallCategory I] [Category 𝓒] {E : InvSystem I 𝓒} (S : E.Sub) :
@@ -136,7 +133,7 @@ noncomputable def InvSystem.Sub.PreservesPullback [SmallCategory I] [Category �
 
 
 -- TODO  Functor.Initial.induction
-#check Functor.Initial.extendCone
+-- Functor.Initial.extendCone
 noncomputable example [Category 𝓒] [Category 𝓓] [Category 𝓔] (F : 𝓒 ⥤ 𝓓) (G : 𝓓 ⥤ 𝓔) [F.Initial] [HasLimit G] :
   Cone (F ⋙ G) ⥤ Cone G
 where
@@ -163,34 +160,34 @@ where
 
 
 -- 自前で実装はできたけど、Functor.Initialを使った方がエレガントで早そうだから、そっちを使う
-noncomputable def InvSystem.restrict_limit_equiv [SmallCategory I] [Category 𝓒]
-  (J : SubIndex I) [J.functor.op.Initial]
-   (E : InvSystem I 𝓒)[HasLimit E] [HasLimit (E.restrict J)] [HasLimit (J.functor.op ⋙ E)]
-  :
-   limit E ≅ limit (E.restrict J)
-where
-  hom := restrict.limMap E J
-  inv := limit.lift E (Functor.Initial.extendCone.obj (limit.cone (E.restrict J)))
-  hom_inv_id := by
-    apply limit.hom_ext; intro i; simp [restrict.limMap]
-  inv_hom_id := by
-    apply limit.hom_ext; intro i
-    simp [restrict.limMap]
-    apply Functor.Initial.induction J.functor.op fun Z k => limit.π (J.functor.op ⋙ E) Z ≫ E.map k = limit.π (E.restrict J) i
-    · intro x y X Y u HX H
-      rw [<- H, <- HX]
-      rw [<- limit.w (J.functor.op ⋙ E) u]
-      simp
+-- noncomputable def InvSystem.restrict_limit_equiv [SmallCategory I] [Category 𝓒]
+--   (J : SubIndex I) [J.functor.op.Initial]
+--    (E : InvSystem I 𝓒)[HasLimit E] [HasLimit (E.restrict J)] [HasLimit (J.functor.op ⋙ E)]
+--   :
+--    limit E ≅ limit (E.restrict J)
+-- where
+--   hom := restrict.limMap E J
+--   inv := limit.lift E (Functor.Initial.extendCone.obj (limit.cone (E.restrict J)))
+--   hom_inv_id := by
+--     apply limit.hom_ext; intro i; simp [restrict.limMap]
+--   inv_hom_id := by
+--     apply limit.hom_ext; intro i
+--     simp [restrict.limMap]
+--     apply Functor.Initial.induction J.functor.op fun Z k => limit.π (J.functor.op ⋙ E) Z ≫ E.map k = limit.π (E.restrict J) i
+--     · intro x y X Y u HX H
+--       rw [<- H, <- HX]
+--       rw [<- limit.w (J.functor.op ⋙ E) u]
+--       simp
 
-    · intro x y X Y u HX H
-      rw [<- H, <- HX]; simp
-      rw [<- limit.w (J.functor.op ⋙ E) u]
-      simp
-    · exact  limit.w (J.functor.op ⋙ E) (𝟙 i)
+--     · intro x y X Y u HX H
+--       rw [<- H, <- HX]; simp
+--       rw [<- limit.w (J.functor.op ⋙ E) u]
+--       simp
+--     · exact  limit.w (J.functor.op ⋙ E) (𝟙 i)
 
 
 -- TODO
-#check Functor.Initial.limitIso
+-- Functor.Initial.limitIso
 noncomputable def InvSystem.restrict.limitIso [SmallCategory I] [Category 𝓒]
   (E : InvSystem I 𝓒)[HasLimit E]
   (J : SubIndex I) [HJ : J.functor.op.Initial] [HasLimit (E.restrict J)] :
@@ -276,12 +273,43 @@ noncomputable def InvSystem.limImage_limit_iso [SmallCategory I] [Category 𝓒]
       apply limit.hom_ext; intro i; simp [c]
   }
 
+abbrev InvSystem.const I [SmallCategory I] [Category 𝓒] (F : 𝓒) :
+  InvSystem I 𝓒
+:= (CategoryTheory.Functor.const Iᵒᵖ).obj F
+
+-- TODO
+-- CategoryTheory.IsFiltered.isDirectedOrder
+-- CategoryTheory.isFiltered_of_directed_le_nonempty
+noncomputable def InvSystem.const_iso [SmallCategory I] [HI : IsFiltered I] [Category 𝓒] (F : 𝓒) [HasLimit (const I F)]   :
+  limit (const I F) ≅ F
+where
+  hom := limit.π (const I F) (op (Classical.choice HI.nonempty))
+  inv := limit.lift (const I F) ⟨F, 𝟙 _⟩
+  hom_inv_id := by
+    apply limit.hom_ext; intro i; simp
+    have ⟨z, f, g, _⟩ := HI.cocone_objs i.unop (Classical.choice HI.nonempty)
+    have Eg := limit.w (const I F) g.op; simp at Eg
+    have Ef := limit.w (const I F) f.op; simp at Ef
+    rw [<- Eg, <- Ef]
+  inv_hom_id := by simp
 
 
-
-
-
-
-
+noncomputable def InvSystem.limRestrict [SmallCategory I] [Category 𝓒] (E : InvSystem I 𝓒) [HasLimits  𝓒] :
+  InvSystem (SubIndex I) 𝓒
+where
+  obj J := limit (E.restrict J.unop)
+  map {J K} u := InvSystem.restrict.limMap E u.unop
+  map_id J := by
+    simp
+    apply limit.hom_ext; intro K; simp
+    simp [restrict.limMap]
+    rw [E.map_id ((op ((unop J).obj.hom.toFunctor.obj (unop K))) : Iᵒᵖ)]
+    rw [Category.comp_id (Y := E.obj (op ((unop J).obj.hom.toFunctor.obj (unop K))))]
+    congr
+  map_comp {J K L} f g := by
+    simp
+    apply limit.hom_ext; intro K; simp
+    simp [restrict.limMap]
+    congr
 
 end Bourbaki
